@@ -1,0 +1,12 @@
+export 'trangchu/trangchu_page.dart';
+export 'nhansu/nhansu_page.dart';
+export 'hoso/hoso_page.dart';
+export 'gioithieu/gioithieu_page.dart';
+export 'dangnhap/dangnhap_page.dart';
+export 'chamcong/chamcong_page.dart';
+export 'chamcong/bosungcong_page.dart';
+export 'chamcong/danhsach_bosungcong_page.dart';
+export 'vanban/vanban_page.dart';
+export 'vanban/vanban_chitiet_page.dart';
+export 'luong/luong_page.dart';
+export 'lichtruc/lichtruc_page.dart';
