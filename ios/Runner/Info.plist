@@ -56,5 +56,7 @@
 			<string>fetch</string>
 			<string>remote-notification</string>
 		</array>
+		<key>CFBundleIconName</key>
+		<string>AppIcon</string>
 	</dict>
 </plist>
