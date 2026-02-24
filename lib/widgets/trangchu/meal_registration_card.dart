@@ -28,7 +28,6 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
       message: _isLunchRegistered
           ? 'Bạn đã đăng ký suất ăn trưa.'
           : 'Đã hủy suất ăn trưa.',
-      autoCloseDuration: const Duration(milliseconds: 1500),
     );
   }
 
@@ -43,7 +42,6 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
       message: _isDinnerRegistered
           ? 'Bạn đã đăng ký suất ăn tối.'
           : 'Đã hủy suất ăn tối.',
-      autoCloseDuration: const Duration(milliseconds: 1500),
     );
   }
 

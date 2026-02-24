@@ -28,37 +28,39 @@ class NhansuModel {
   });
 
   factory NhansuModel.fromJson(Map<String, dynamic> json) {
-    final chucVu = json['chucVu']?.toString() ?? '';
+    final tenChucVu = json['tenChucVu']?.toString() ?? '';
+    final tenChucDanh = json['tenChucDanh']?.toString() ?? '';
+    // Hiển thị chức danh chuyên môn (Bác sĩ, Điều dưỡng...) ưu tiên hơn chức vụ hành chính
+    final chucVu = tenChucDanh.isNotEmpty ? tenChucDanh : tenChucVu;
 
     return NhansuModel(
       id: json['maSo']?.toString() ?? '',
       maSo: json['maSo']?.toString() ?? '',
       hoVaTen: json['hoVaTen']?.toString() ?? '',
-      soDienThoai: json['sdt']?.toString(),
+      soDienThoai: json['soDienThoai']?.toString(),
       chucVu: chucVu,
       khoaPhongId: '',
-      khoaPhongTen: json['khoaPhong']?.toString() ?? '',
-      hinhAnh: json['imageData']?.toString(),
+      khoaPhongTen: json['tenKhoaPhong']?.toString() ?? '',
+      hinhAnh: null,
       gioiTinh: json['gioiTinh']?.toString(),
       namSinh: json['namSinh']?.toString(),
-    
-      isHead: chucVu.toLowerCase().contains('trưởng'),
+      diaChi: json['noiOHienTai']?.toString(),
+      isHead: tenChucVu.toLowerCase().contains('trưởng'),
     );
   }
 
   Map<String, dynamic> toJson({bool excludeImage = false}) {
     return {
-      'id': id,
       'maSo': maSo,
       'hoVaTen': hoVaTen,
       'soDienThoai': soDienThoai,
-      'chucVu': chucVu,
-      'khoaPhongId': khoaPhongId,
-      'khoaPhongTen': khoaPhongTen,
+      'tenChucDanh': chucVu,
+      'tenChucVu': isHead ? 'Trưởng' : '',
+      'tenKhoaPhong': khoaPhongTen,
       if (!excludeImage) 'hinhAnh': hinhAnh,
       'gioiTinh': gioiTinh,
       'namSinh': namSinh,
-      'isHead': isHead,
+      'noiOHienTai': diaChi,
     };
   }
 }

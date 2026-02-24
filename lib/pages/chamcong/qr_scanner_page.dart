@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/qr_scanner_provider.dart';
@@ -18,6 +19,16 @@ class QrScannerPage extends StatefulWidget {
 }
 
 class _QrScannerPageState extends State<QrScannerPage> {
+  final MobileScannerController _controller = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -38,7 +49,18 @@ class _QrScannerPageState extends State<QrScannerPage> {
           builder: (context, provider, _) {
             return Stack(
               children: [
-                _buildCameraBackground(),
+                MobileScanner(
+                  controller: _controller,
+                  onDetect: (BarcodeCapture capture) {
+                    for (final barcode in capture.barcodes) {
+                      final code = barcode.rawValue;
+                      if (code != null && provider.isScanning) {
+                        provider.onQRCodeScanned(code);
+                        break;
+                      }
+                    }
+                  },
+                ),
 
                 const QrScannerOverlay(),
 
@@ -62,39 +84,6 @@ class _QrScannerPageState extends State<QrScannerPage> {
               ],
             );
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCameraBackground() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1a1a2e), Color(0xFF0f0f1e), Color(0xFF16213e)],
-        ),
-      ),
-      child: CustomPaint(
-        painter: GridPatternPainter(),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.05),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 2,
-              ),
-            ),
-            child: FaIcon(
-              FontAwesomeIcons.qrcode,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
-          ),
         ),
       ),
     );
@@ -130,7 +119,10 @@ class _QrScannerPageState extends State<QrScannerPage> {
             ),
 
             GestureDetector(
-              onTap: provider.toggleFlash,
+              onTap: () {
+                _controller.toggleTorch();
+                provider.toggleFlash();
+              },
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -159,27 +151,4 @@ class _QrScannerPageState extends State<QrScannerPage> {
       ),
     );
   }
-}
-
-class GridPatternPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-
-    const gridSize = 40.0;
-
-    for (double i = 0; i < size.width; i += gridSize) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-
-    for (double i = 0; i < size.height; i += gridSize) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

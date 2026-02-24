@@ -156,7 +156,7 @@ class NhansuCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (staff.soDienThoai != null) ...[
+                  if (staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -386,7 +386,7 @@ class _StaffDetailSheet extends StatelessWidget {
                     label: 'Khoa/Phòng',
                     value: staff.khoaPhongTen,
                   ),
-                  if (staff.soDienThoai != null) ...[
+                  if (staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty) ...[
                     _buildDivider(),
                     _buildInfoRow(
                       icon: Icons.phone,

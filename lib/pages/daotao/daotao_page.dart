@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/daotao_provider.dart';
-import '../../data/models/daotao_model.dart';
 import '../../widgets/common/common_app_bar.dart';
 import '../../widgets/common/common_search_bar.dart';
 import '../../widgets/daotao/daotao_header_stats.dart';
 import '../../widgets/daotao/daotao_loc_trangthai.dart';
 import '../../widgets/daotao/daotao_ketqua_boloc.dart';
 import '../../widgets/daotao/daotao_danh_sach.dart';
-import 'daotao_chitiet_page.dart';
 
 class DaotaoPage extends StatefulWidget {
   const DaotaoPage({super.key});
@@ -70,25 +68,13 @@ class _DaotaoPageState extends State<DaotaoPage> {
                   searchController: _searchController,
                 ),
               ),
-            
-              DaotaoDanhSach(
-                onItemTap: _navigateToDetail,
-              ),
+              const DaotaoDanhSach(),
               const SliverToBoxAdapter(
                 child: SizedBox(height: 20),
               ),
             ],
           );
         },
-      ),
-    );
-  }
-
-  void _navigateToDetail(DaotaoModel lopDaoTao) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DaotaoChitietPage(lopDaoTao: lopDaoTao),
       ),
     );
   }

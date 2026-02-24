@@ -110,7 +110,6 @@ class VanbanChitietActions {
         context,
         title: 'Thành công!',
         message: 'Tài liệu đã được tải về thư mục Downloads',
-        autoCloseDuration: const Duration(milliseconds: 2000),
       );
     }
   }
