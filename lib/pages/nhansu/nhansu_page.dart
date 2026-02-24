@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../providers/nhansu_provider.dart';
 import '../../widgets/nhansu/nhansu_card.dart';
+import '../../widgets/nhansu/phongban_section.dart';
 import '../../widgets/common/common_search_bar.dart';
 
 class NhansuPage extends StatefulWidget {
@@ -26,7 +27,10 @@ class _NhansuPageState extends State<NhansuPage> {
   Widget build(BuildContext context) {
     return Consumer<NhansuProvider>(
       builder: (context, provider, child) {
+        final searchByEmployee = provider.isSearchByEmployee;
         final staffList = provider.filteredStaff;
+        final departments = provider.filteredDepartments;
+        final isEmpty = searchByEmployee ? staffList.isEmpty : departments.isEmpty;
 
         return Container(
           color: Colors.grey[50],
@@ -44,21 +48,21 @@ class _NhansuPageState extends State<NhansuPage> {
                   const SliverFillRemaining(
                     child: Center(child: CircularProgressIndicator()),
                   )
-                else if (staffList.isEmpty)
+                else if (isEmpty)
                   SliverFillRemaining(
                     child: _buildEmptyState(provider.searchQuery.isNotEmpty),
                   )
-                else
+                else if (searchByEmployee)
+                  // Tìm theo tên NV / mã NV → hiện flat list nhân viên
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          final staff = staffList[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: NhansuCard(
-                              staff: staff,
+                              staff: staffList[index],
                               index: index,
                             )
                                 .animate()
@@ -76,6 +80,37 @@ class _NhansuPageState extends State<NhansuPage> {
                           );
                         },
                         childCount: staffList.length,
+                      ),
+                    ),
+                  )
+                else
+                 
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final dept = departments[index];
+                          final deptStaff = provider.getFilteredStaffByDepartment(dept.tenKhoa);
+                          return PhongbanSection(
+                            department: dept,
+                            staffList: deptStaff,
+                            index: index,
+                          )
+                              .animate()
+                              .fadeIn(
+                                delay: Duration(milliseconds: 40 * index),
+                                duration: const Duration(milliseconds: 250),
+                              )
+                              .slideY(
+                                begin: 0.05,
+                                end: 0,
+                                delay: Duration(milliseconds: 40 * index),
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeOutCubic,
+                              );
+                        },
+                        childCount: departments.length,
                       ),
                     ),
                   ),
@@ -114,6 +149,16 @@ class _NhansuPageState extends State<NhansuPage> {
                   label: 'Nhân viên',
                   color: const Color(0xFF2196F3),
                   index: 0,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatCard(
+                  icon: FontAwesomeIcons.buildingUser,
+                  value: '${provider.departments.length}',
+                  label: 'Khoa / Phòng',
+                  color: const Color(0xFF4CAF50),
+                  index: 1,
                 ),
               ),
             ],
@@ -162,23 +207,26 @@ class _NhansuPageState extends State<NhansuPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(icon, color: color, size: 20),
-          const SizedBox(width: 12),
+          FaIcon(icon, color: color, size: 18),
+          const SizedBox(width: 10),
           Text(
             value,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -210,12 +258,14 @@ class _NhansuPageState extends State<NhansuPage> {
               color: Colors.grey[200],
               shape: BoxShape.circle,
             ),
-            child: FaIcon(
-              isSearching
-                  ? FontAwesomeIcons.magnifyingGlass
-                  : FontAwesomeIcons.userGroup,
-              size: 32,
-              color: Colors.grey[400],
+            child: Center(
+              child: FaIcon(
+                isSearching
+                    ? FontAwesomeIcons.magnifyingGlass
+                    : FontAwesomeIcons.userGroup,
+                size: 32,
+                color: Colors.grey[400],
+              ),
             ),
           ),
           const SizedBox(height: 16),

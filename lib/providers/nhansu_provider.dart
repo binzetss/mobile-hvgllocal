@@ -142,9 +142,10 @@ class NhansuProvider extends ChangeNotifier {
 
   int _getDepartmentPriority(PhongbanModel dept) {
     final name = dept.tenKhoa.toLowerCase();
-    if (name.contains('hoi dong thanh vien') || name.contains('hội đồng thành viên')) return 1;
-    if (name.contains('ban giam doc') || name.contains('ban giám đốc')) return 2;
-    if (name.contains('cong nghe thong tin') || name.contains('công nghệ thông tin')) return 3;
+    if (name.contains('hội đồng thành viên')) return 1;
+    if (name.contains('ban giám đốc')) return 2;
+    if (name.contains('công nghệ thông tin')) return 3;
+    if (name == 'chưa phân loại') return 99;
     return 4;
   }
 
@@ -204,6 +205,15 @@ class NhansuProvider extends ChangeNotifier {
       VietnameseUtils.containsIgnoreDiacritics(staff.chucVu, _searchQuery) ||
       VietnameseUtils.containsIgnoreDiacritics(staff.maSo, _searchQuery),
     ).toList();
+  }
+
+  /// True khi search khớp tên NV/mã NV nhưng không khớp tên khoa phòng
+  bool get isSearchByEmployee {
+    if (_searchQuery.isEmpty) return false;
+    final matchesDept = _departments.any(
+      (dept) => VietnameseUtils.containsIgnoreDiacritics(dept.tenKhoa, _searchQuery),
+    );
+    return !matchesDept;
   }
 
   int get totalStaff => _allStaff.length;
