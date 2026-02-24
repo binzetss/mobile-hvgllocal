@@ -12,12 +12,14 @@ class ApiEndpoints {
 
   static const String dmKhoaPhong = '$baseUrl/DmKhoaPhong';
 
-  static const String thongTinNhanVien = '$baseUrl/ThongTinHanhChinh/NhanVien';
+  static const String danhSachNhanVien = '$baseUrl/DanhSachNhanVien';
 
   static const String lichLamViec = '$lichKhamBaseUrl/lichlamviec';
 
   static const String daoTao = '$baseUrl/DaoTao';
+  static const String lopDaoTao = '$baseUrl/LopDaoTao';
   static const String dangKyDaoTao = '$baseUrl/DangKyDaoTao';
+  static const String huyDangKyDaoTao = '$baseUrl/HuyDangKyDaoTao';
 
   static const String logoHeader = '$imageBaseUrl/logodautrang.png';
   static const String logo = '$imageBaseUrl/logodautrang.png';

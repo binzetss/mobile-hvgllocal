@@ -7,6 +7,7 @@ class DaotaoProvider extends ChangeNotifier {
 
   List<DaotaoModel> _danhSach = [];
   List<DaotaoModel> _danhSachLoc = [];
+  final Set<int> _daDangKyIds = {};
   String _tuKhoa = '';
   String _locTrangThai = 'all';
   bool _isLoading = false;
@@ -18,6 +19,7 @@ class DaotaoProvider extends ChangeNotifier {
   String get tuKhoa => _tuKhoa;
   String get locTrangThai => _locTrangThai;
   bool get isLoading => _isLoading;
+  bool daDangKy(int idLopDaoTao) => _daDangKyIds.contains(idLopDaoTao);
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
   bool get isInitialized => _isInitialized;
@@ -45,6 +47,11 @@ class DaotaoProvider extends ChangeNotifier {
 
     try {
       _danhSach = await _service.getDanhSach();
+      // Sync trạng thái đăng ký từ API
+      _daDangKyIds.clear();
+      for (final lop in _danhSach) {
+        if (lop.isTrangThai) _daDangKyIds.add(lop.idLopDaoTao);
+      }
       _applyFilters();
       _isInitialized = true;
       _isLoading = false;
@@ -119,6 +126,25 @@ class DaotaoProvider extends ChangeNotifier {
   Future<bool> dangKy(int idLopDaoTao) async {
     try {
       final result = await _service.dangKy(idLopDaoTao);
+      if (result) {
+        _daDangKyIds.add(idLopDaoTao);
+        _safeNotifyListeners();
+      }
+      return result;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _safeNotifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> huyDangKy(int idLopDaoTao) async {
+    try {
+      final result = await _service.huyDangKy(idLopDaoTao);
+      if (result) {
+        _daDangKyIds.remove(idLopDaoTao);
+        _safeNotifyListeners();
+      }
       return result;
     } catch (e) {
       _errorMessage = e.toString();

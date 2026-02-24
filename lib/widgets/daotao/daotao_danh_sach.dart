@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
-import '../../data/models/daotao_model.dart';
 import '../../providers/daotao_provider.dart';
 import '../common/shimmer_loading.dart';
 import 'daotao_the.dart';
 
 class DaotaoDanhSach extends StatelessWidget {
-  final Function(DaotaoModel) onItemTap;
-
-  const DaotaoDanhSach({
-    super.key,
-    required this.onItemTap,
-  });
+  const DaotaoDanhSach({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -184,10 +178,7 @@ class DaotaoDanhSach extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final lopDaoTao = provider.danhSach[index];
-                return DaotaoThe(
-                  lopDaoTao: lopDaoTao,
-                  onTap: () => onItemTap(lopDaoTao),
-                );
+                return DaotaoThe(lopDaoTao: lopDaoTao);
               },
               childCount: provider.danhSach.length,
             ),

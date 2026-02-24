@@ -9,7 +9,7 @@ class ApiService {
 
   final TokenManager _tokenManager = TokenManager();
 
-  /// Lấy headers với token (nếu có)
+
   Future<Map<String, String>> _getHeaders({bool includeToken = true}) async {
     final headers = {
       'Content-Type': 'application/json',
@@ -45,6 +45,35 @@ class ApiService {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401) {
         // Token hết hạn hoặc không hợp lệ
+        await _tokenManager.clearToken();
+        throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// GET request với body và tự động thêm Bearer token
+  Future<Map<String, dynamic>> getWithBody(
+    String url,
+    Map<String, dynamic> body, {
+    bool requiresAuth = true,
+  }) async {
+    try {
+      final headers = await _getHeaders(includeToken: requiresAuth);
+
+      final request = http.Request('GET', Uri.parse(url));
+      request.headers.addAll(headers);
+      request.body = jsonEncode(body);
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 401) {
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
@@ -154,6 +183,35 @@ class ApiService {
         Uri.parse(url),
         headers: headers,
       );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 401) {
+        await _tokenManager.clearToken();
+        throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// DELETE request với body và tự động thêm Bearer token
+  Future<Map<String, dynamic>> deleteWithBody(
+    String url,
+    Map<String, dynamic> body, {
+    bool requiresAuth = true,
+  }) async {
+    try {
+      final headers = await _getHeaders(includeToken: requiresAuth);
+
+      final request = http.Request('DELETE', Uri.parse(url));
+      request.headers.addAll(headers);
+      request.body = jsonEncode(body);
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);

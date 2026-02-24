@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../providers/nhansu_provider.dart';
-import '../../widgets/nhansu/phongban_section.dart';
+import '../../widgets/nhansu/nhansu_card.dart';
 import '../../widgets/common/common_search_bar.dart';
 
 class NhansuPage extends StatefulWidget {
@@ -25,28 +25,28 @@ class _NhansuPageState extends State<NhansuPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NhansuProvider>(
-      builder: (context, staffProvider, child) {
+      builder: (context, provider, child) {
+        final staffList = provider.filteredStaff;
+
         return Container(
           color: Colors.grey[50],
           child: RefreshIndicator(
             onRefresh: () async {
-              await Future.delayed(const Duration(milliseconds: 500));
+              await provider.refresh();
             },
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverToBoxAdapter(
-                  child: _buildStatsSection(staffProvider),
+                  child: _buildStatsSection(provider),
                 ),
-                if (staffProvider.isLoading)
+                if (provider.isLoading)
                   const SliverFillRemaining(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
                   )
-                else if (staffProvider.filteredDepartments.isEmpty)
+                else if (staffList.isEmpty)
                   SliverFillRemaining(
-                    child: _buildEmptyState(),
+                    child: _buildEmptyState(provider.searchQuery.isNotEmpty),
                   )
                 else
                   SliverPadding(
@@ -54,27 +54,28 @@ class _NhansuPageState extends State<NhansuPage> {
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          final dept = staffProvider.filteredDepartments[index];
-                          
-                          return PhongbanSection(
-                            department: dept,
-                         
-                            index: index,
-                          )
-                              .animate()
-                              .fadeIn(
-                                delay: Duration(milliseconds: 50 * index),
-                                duration: const Duration(milliseconds: 20),
-                              )
-                              .slideY(
-                                begin: 0.05,
-                                end: 0,
-                                delay: Duration(milliseconds: 50 * index),
-                                duration: const Duration(milliseconds: 20),
-                                curve: Curves.easeOutCubic,
-                              );
+                          final staff = staffList[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: NhansuCard(
+                              staff: staff,
+                              index: index,
+                            )
+                                .animate()
+                                .fadeIn(
+                                  delay: Duration(milliseconds: 20 * index),
+                                  duration: const Duration(milliseconds: 200),
+                                )
+                                .slideY(
+                                  begin: 0.05,
+                                  end: 0,
+                                  delay: Duration(milliseconds: 20 * index),
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeOutCubic,
+                                ),
+                          );
                         },
-                        childCount: staffProvider.filteredDepartments.length,
+                        childCount: staffList.length,
                       ),
                     ),
                   ),
@@ -86,23 +87,22 @@ class _NhansuPageState extends State<NhansuPage> {
     );
   }
 
-  Widget _buildStatsSection(NhansuProvider staffProvider) {
+  Widget _buildStatsSection(NhansuProvider provider) {
     return Column(
       children: [
         CommonSearchBar(
           controller: _searchController,
           hintText: 'Tìm theo tên, chức vụ, mã NV...',
-          searchQuery: staffProvider.searchQuery,
+          searchQuery: provider.searchQuery,
           onChanged: (value) {
-            staffProvider.setSearchQuery(value);
+            provider.setSearchQuery(value);
             setState(() {});
           },
           onClear: () {
-            staffProvider.setSearchQuery('');
+            provider.setSearchQuery('');
             setState(() {});
           },
         ),
-
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Row(
@@ -110,30 +110,10 @@ class _NhansuPageState extends State<NhansuPage> {
               Expanded(
                 child: _buildStatCard(
                   icon: FontAwesomeIcons.userGroup,
-                  value: '${staffProvider.totalStaff}',
+                  value: '${provider.totalStaff}',
                   label: 'Nhân viên',
                   color: const Color(0xFF2196F3),
                   index: 0,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  icon: FontAwesomeIcons.hospital,
-                  value: '${staffProvider.departments.length}',
-                  label: 'Khoa/Phòng',
-                  color: const Color(0xFF9C27B0),
-                  index: 1,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  icon: FontAwesomeIcons.userTie,
-                  value: '${staffProvider.departments.length}',
-                  label: 'Lãnh đạo',
-                  color: const Color(0xFFFF9800),
-                  index: 2,
                 ),
               ),
             ],
@@ -179,10 +159,11 @@ class _NhansuPageState extends State<NhansuPage> {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          FaIcon(icon, color: color, size: 20),
+          const SizedBox(width: 12),
           Text(
             value,
             style: TextStyle(
@@ -191,11 +172,11 @@ class _NhansuPageState extends State<NhansuPage> {
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(width: 8),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.grey[600],
             ),
@@ -217,7 +198,7 @@ class _NhansuPageState extends State<NhansuPage> {
         );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isSearching) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -230,15 +211,17 @@ class _NhansuPageState extends State<NhansuPage> {
               shape: BoxShape.circle,
             ),
             child: FaIcon(
-              FontAwesomeIcons.magnifyingGlass,
+              isSearching
+                  ? FontAwesomeIcons.magnifyingGlass
+                  : FontAwesomeIcons.userGroup,
               size: 32,
               color: Colors.grey[400],
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Không tìm thấy kết quả',
-            style: TextStyle(
+          Text(
+            isSearching ? 'Không tìm thấy kết quả' : 'Chưa có nhân viên nào',
+            style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -246,7 +229,9 @@ class _NhansuPageState extends State<NhansuPage> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Thử tìm kiếm với từ khóa khác',
+            isSearching
+                ? 'Thử tìm kiếm với từ khóa khác'
+                : 'Danh sách nhân viên sẽ hiển thị tại đây',
             style: TextStyle(
               fontSize: 15,
               color: Colors.grey[600],

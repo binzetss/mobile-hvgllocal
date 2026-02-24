@@ -58,5 +58,7 @@
 		</array>
 		<key>CFBundleIconName</key>
 		<string>AppIcon</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Ứng dụng cần truy cập camera để quét mã QR chấm công.</string>
 	</dict>
 </plist>

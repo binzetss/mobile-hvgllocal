@@ -5,6 +5,7 @@ class DaotaoModel {
   final DateTime ngayBatDau;
   final DateTime ngayBatDauDangKy;
   final DateTime ngayKetThucDangKy;
+  final bool isTrangThai;
 
   DaotaoModel({
     required this.idLopDaoTao,
@@ -13,6 +14,7 @@ class DaotaoModel {
     required this.ngayBatDau,
     required this.ngayBatDauDangKy,
     required this.ngayKetThucDangKy,
+    this.isTrangThai = false,
   });
 
   String get id => idLopDaoTao.toString();
@@ -64,6 +66,7 @@ class DaotaoModel {
       ngayKetThucDangKy: json['ngayKetThucDangKy'] != null
           ? DateTime.parse(json['ngayKetThucDangKy'])
           : DateTime.now(),
+      isTrangThai: json['isTrangThai'] == true,
     );
   }
 
@@ -75,6 +78,7 @@ class DaotaoModel {
       'ngayBatDau': ngayBatDau.toIso8601String(),
       'ngayBatDauDangKy': ngayBatDauDangKy.toIso8601String(),
       'ngayKetThucDangKy': ngayKetThucDangKy.toIso8601String(),
+      'isTrangThai': isTrangThai,
     };
   }
 
@@ -85,6 +89,7 @@ class DaotaoModel {
     DateTime? ngayBatDau,
     DateTime? ngayBatDauDangKy,
     DateTime? ngayKetThucDangKy,
+    bool? isTrangThai,
   }) {
     return DaotaoModel(
       idLopDaoTao: idLopDaoTao ?? this.idLopDaoTao,
@@ -93,6 +98,7 @@ class DaotaoModel {
       ngayBatDau: ngayBatDau ?? this.ngayBatDau,
       ngayBatDauDangKy: ngayBatDauDangKy ?? this.ngayBatDauDangKy,
       ngayKetThucDangKy: ngayKetThucDangKy ?? this.ngayKetThucDangKy,
+      isTrangThai: isTrangThai ?? this.isTrangThai,
     );
   }
 }

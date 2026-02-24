@@ -18,7 +18,6 @@ class XacthucService {
   static const String _credentialsKey = 'saved_credentials';
   static const String _rememberMeKey = 'remember_me';
 
-  /// Lưu credentials (mã số và mật khẩu)
   Future<void> saveCredentials(String maSo, String matKhau) async {
     final prefs = await SharedPreferences.getInstance();
     final credentials = jsonEncode({

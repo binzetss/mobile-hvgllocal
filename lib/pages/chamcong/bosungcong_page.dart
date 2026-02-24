@@ -129,9 +129,8 @@ class _BosungcongPageState
         context,
         title: 'Thành công!',
         message: 'Đăng ký bổ sung công thành công.',
-        autoCloseDuration: const Duration(milliseconds: 1500),
       );
-      Future.delayed(const Duration(milliseconds: 1500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) Navigator.pop(context, true);
       });
     } else if (mounted) {

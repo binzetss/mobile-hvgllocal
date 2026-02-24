@@ -6,7 +6,7 @@ void showSuccessDialog(
   BuildContext context, {
   required String title,
   required String message,
-  Duration autoCloseDuration = const Duration(seconds: 2),
+  Duration autoCloseDuration = const Duration(milliseconds: 500),
 }) {
   showDialog(
     context: context,
