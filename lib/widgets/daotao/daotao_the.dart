@@ -132,6 +132,24 @@ class DaotaoThe extends StatelessWidget {
                         color: AppColors.primary,
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  height: 1,
+                  color: AppColors.border.withValues(alpha: 0.1),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InfoChip(
+                        icon: FontAwesomeIcons.calendarPlus,
+                        label: 'Bắt đầu đăng ký',
+                        value: _formatDateTime(lopDaoTao.ngayBatDauDangKy),
+                        color: const Color(0xFF10B981),
+                      ),
+                    ),
                     Container(
                       width: 1,
                       height: 36,
@@ -141,8 +159,8 @@ class DaotaoThe extends StatelessWidget {
                     Expanded(
                       child: _InfoChip(
                         icon: FontAwesomeIcons.calendarXmark,
-                        label: 'Hạn đăng ký',
-                        value: _formatDate(lopDaoTao.ngayKetThucDangKy),
+                        label: 'Hết hạn đăng ký',
+                        value: _formatDateTime(lopDaoTao.ngayKetThucDangKy),
                         color: const Color(0xFFF59E0B),
                       ),
                     ),
@@ -173,6 +191,12 @@ class DaotaoThe extends StatelessWidget {
     final compareDate = DateTime(date.year, date.month, date.day);
     if (today == compareDate) return 'Hôm nay';
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  String _formatDateTime(DateTime date) {
+    final d = '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    final t = '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    return '$d $t';
   }
 }
 

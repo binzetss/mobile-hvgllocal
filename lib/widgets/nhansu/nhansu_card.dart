@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/nhansu_model.dart';
 
 class NhansuCard extends StatelessWidget {
@@ -295,75 +296,85 @@ class _StaffDetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: avatarColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: staff.hinhAnh != null && staff.hinhAnh!.isNotEmpty
-                    ? Image.memory(
-                        base64Decode(
-                          staff.hinhAnh!.contains(',')
-                              ? staff.hinhAnh!.split(',').last
-                              : staff.hinhAnh!,
-                        ),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Text(
-                              initials,
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w700,
-                                color: avatarColor,
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    : Center(
-                        child: Text(
-                          initials,
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                            color: avatarColor,
-                          ),
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(height: 14),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                staff.hoVaTen,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: departmentColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                staff.chucVu,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: departmentColor,
-                ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: avatarColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: staff.hinhAnh != null && staff.hinhAnh!.isNotEmpty
+                          ? Image.memory(
+                              base64Decode(
+                                staff.hinhAnh!.contains(',')
+                                    ? staff.hinhAnh!.split(',').last
+                                    : staff.hinhAnh!,
+                              ),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    initials,
+                                    style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w700,
+                                      color: avatarColor,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                initials,
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w700,
+                                  color: avatarColor,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          staff.hoVaTen,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: departmentColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            staff.chucVu,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: departmentColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -421,14 +432,18 @@ class _StaffDetailSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4CAF50),
+                        backgroundColor: staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty
+                            ? const Color(0xFF4CAF50)
+                            : Colors.grey[300],
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty
+                          ? () => launchUrl(Uri(scheme: 'tel', path: staff.soDienThoai))
+                          : null,
                       icon: const Icon(Icons.phone, size: 18),
                       label: const Text(
                         'Gọi điện',
@@ -443,14 +458,21 @@ class _StaffDetailSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2196F3),
+                        backgroundColor: staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty
+                            ? const Color(0xFF2196F3)
+                            : Colors.grey[300],
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty
+                          ? () => launchUrl(
+                                Uri.parse('https://zalo.me/${staff.soDienThoai}'),
+                                mode: LaunchMode.externalApplication,
+                              )
+                          : null,
                       icon: const Icon(Icons.chat_bubble, size: 18),
                       label: const Text(
                         'Zalo',
