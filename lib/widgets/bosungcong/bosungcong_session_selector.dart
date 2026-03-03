@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/bosung_chamcong_model.dart';
 
 class BosungcongSessionSelector extends StatelessWidget {
@@ -23,13 +24,13 @@ class BosungcongSessionSelector extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: context.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const FaIcon(
+              child: FaIcon(
                 FontAwesomeIcons.clock,
                 size: 12,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
             ),
             const SizedBox(width: 8),
@@ -38,7 +39,6 @@ class BosungcongSessionSelector extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -102,18 +102,18 @@ class _SessionOption extends StatelessWidget {
                     colors: AppColors.primaryGradient,
                   )
                 : null,
-            color: isSelected ? null : Colors.white,
+            color: isSelected ? null : context.cardColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
-                  ? AppColors.primary.withValues(alpha: 0.3)
-                  : AppColors.border.withValues(alpha: 0.2),
+                  ? context.primaryColor.withValues(alpha: 0.3)
+                  : context.borderColor,
               width: isSelected ? 1.5 : 0.5,
             ),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: context.primaryColor.withValues(alpha: 0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -132,7 +132,7 @@ class _SessionOption extends StatelessWidget {
               FaIcon(
                 icon,
                 size: 18,
-                color: isSelected ? Colors.white : AppColors.primary,
+                color: isSelected ? Colors.white : context.primaryColor,
               ),
               const SizedBox(width: 10),
               Text(
@@ -140,7 +140,7 @@ class _SessionOption extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),

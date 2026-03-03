@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class BosungcongDatePicker extends StatelessWidget {
   final DateTime selectedDate;
@@ -22,13 +23,13 @@ class BosungcongDatePicker extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: context.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const FaIcon(
+              child: FaIcon(
                 FontAwesomeIcons.calendar,
                 size: 12,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
             ),
             const SizedBox(width: 8),
@@ -37,7 +38,6 @@ class BosungcongDatePicker extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -45,7 +45,7 @@ class BosungcongDatePicker extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Material(
-          color: Colors.white,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             onTap: () => _selectDate(context),
@@ -55,7 +55,7 @@ class BosungcongDatePicker extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.2),
+                  color: context.borderColor,
                   width: 0.5,
                 ),
                 boxShadow: [
@@ -91,15 +91,14 @@ class BosungcongDatePicker extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                         letterSpacing: -0.2,
                       ),
                     ),
                   ),
-                  const FaIcon(
+                  FaIcon(
                     FontAwesomeIcons.chevronRight,
                     size: 12,
-                    color: AppColors.primary,
+                    color: context.primaryColor,
                   ),
                 ],
               ),
@@ -123,11 +122,9 @@ class BosungcongDatePicker extends StatelessWidget {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: context.primaryColor,
               onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,

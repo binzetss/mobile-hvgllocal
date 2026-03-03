@@ -4,8 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/firebase_notification_service.dart';
+import '../../providers/chamcong_provider.dart';
 import '../../providers/qr_scanner_provider.dart';
 import '../../providers/navigation_provider.dart';
+import '../../providers/thongbao_provider.dart';
 import '../../widgets/chamcong/qr_scanner_overlay.dart';
 import '../../widgets/chamcong/qr_scanner_frame.dart';
 import '../../widgets/chamcong/qr_scanner_instructions.dart';
@@ -23,16 +26,51 @@ class _QrScannerPageState extends State<QrScannerPage> {
     detectionSpeed: DetectionSpeed.noDuplicates,
   );
 
+  late final QrScannerProvider _scannerProvider;
+  bool _notificationFired = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scannerProvider = QrScannerProvider()..resumeScanning();
+    _scannerProvider.addListener(_onScannerStateChanged);
+  }
+
   @override
   void dispose() {
+    _scannerProvider.removeListener(_onScannerStateChanged);
+    _scannerProvider.dispose();
     _controller.dispose();
     super.dispose();
   }
 
+  /// Lắng nghe thay đổi state — bắn notification ngay khi scan thành công
+  void _onScannerStateChanged() {
+    if (!mounted) return;
+
+    if (_scannerProvider.state == ScannerState.success && !_notificationFired) {
+      _notificationFired = true;
+      final time = DateTime.now();
+      // Dùng postFrameCallback để tránh setState/notifyListeners trong build cycle
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        // Bắn local push notification
+        FirebaseNotificationService().showChamcongNotification(time: time);
+        // Ghi vào mục thông báo trong app
+        context.read<ThongBaoProvider>().addChamcongNotification(time: time);
+      });
+    }
+
+    // Reset flag khi scanner quay về scanning (cho lần scan tiếp theo)
+    if (_scannerProvider.state == ScannerState.scanning) {
+      _notificationFired = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => QrScannerProvider()..resumeScanning(),
+    return ChangeNotifierProvider.value(
+      value: _scannerProvider,
       child: Scaffold(
         backgroundColor: Colors.black,
         extendBodyBehindAppBar: true,
@@ -78,7 +116,11 @@ class _QrScannerPageState extends State<QrScannerPage> {
                         ? 'Chấm công thành công!'
                         : provider.errorMessage ?? 'Quét QR thất bại',
                     onClose: () {
+                      final wasSuccess = provider.state == ScannerState.success;
                       provider.resetScanner();
+                      if (wasSuccess) {
+                        context.read<ChamcongProvider>().refresh();
+                      }
                     },
                   ),
               ],

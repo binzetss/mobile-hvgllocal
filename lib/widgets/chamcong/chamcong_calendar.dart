@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/chamcong_model.dart';
 
 class ChamcongCalendar extends StatefulWidget {
@@ -45,61 +45,53 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.1),
-          width: 0.5,
+          color: isDark ? const Color(0xFF38383A) : const Color(0xFFF0F1F5),
+          width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           const SizedBox(height: 16),
-          _buildWeekDays(),
+          _buildWeekDays(context),
           const SizedBox(height: 12),
-          _buildCalendarGrid(),
+          _buildCalendarGrid(context),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = context.isDark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           _getMonthYearText(_currentMonth),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.3,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.4,
+            color: isDark ? Colors.white : const Color(0xFF0F0F0F),
           ),
         ),
         Row(
           children: [
             _buildNavigationButton(
+              context: context,
               icon: Icons.chevron_left_rounded,
               onPressed: _previousMonth,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             _buildNavigationButton(
+              context: context,
               icon: Icons.chevron_right_rounded,
               onPressed: _nextMonth,
             ),
@@ -110,22 +102,23 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
   }
 
   Widget _buildNavigationButton({
+    required BuildContext context,
     required IconData icon,
     required VoidCallback onPressed,
   }) {
     return Material(
-      color: AppColors.primary.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(10),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
+        splashColor: context.primaryColor.withValues(alpha: 0.1),
         child: Container(
           width: 36,
           height: 36,
           alignment: Alignment.center,
           child: Icon(
             icon,
-            color: AppColors.primary,
+            color: context.primaryColor,
             size: 20,
           ),
         ),
@@ -133,7 +126,8 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
     );
   }
 
-  Widget _buildWeekDays() {
+  Widget _buildWeekDays(BuildContext context) {
+    final isDark = context.isDark;
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -143,10 +137,12 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
             child: Text(
               day,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textSecondary.withValues(alpha: 0.8),
-                letterSpacing: -0.2,
+                color: isDark 
+                  ? Colors.grey[400]
+                  : Colors.grey[600],
+                letterSpacing: -0.1,
               ),
             ),
           ),
@@ -155,7 +151,7 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
     );
   }
 
-  Widget _buildCalendarGrid() {
+  Widget _buildCalendarGrid(BuildContext context) {
     final daysInMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day;
     final firstDayOfMonth = DateTime(_currentMonth.year, _currentMonth.month, 1);
     final startingWeekday = firstDayOfMonth.weekday % 7;
@@ -168,7 +164,7 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
 
     for (int day = 1; day <= daysInMonth; day++) {
       final date = DateTime(_currentMonth.year, _currentMonth.month, day);
-      dayWidgets.add(_buildDayCell(date));
+      dayWidgets.add(_buildDayCell(context, date));
     }
 
     return GridView.count(
@@ -177,11 +173,13 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 8,
       crossAxisSpacing: 8,
+      childAspectRatio: 1.0,
       children: dayWidgets,
     );
   }
 
-  Widget _buildDayCell(DateTime date) {
+  Widget _buildDayCell(BuildContext context, DateTime date) {
+    final isDark = context.isDark;
     final attendance = widget.attendances.firstWhere(
       (a) => a.date.year == date.year && a.date.month == date.month && a.date.day == date.day,
       orElse: () => ChamcongModel(
@@ -204,14 +202,16 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
 
     Color backgroundColor = Colors.transparent;
     Color dotColor = Colors.transparent;
-    Color textColor = AppColors.textPrimary;
+    Color textColor = context.textPrimary;
 
     if (isSelected) {
-      backgroundColor = AppColors.primary;
+      backgroundColor = context.primaryColor;
       textColor = Colors.white;
     } else if (isToday) {
-      backgroundColor = AppColors.primary.withValues(alpha: 0.1);
-      textColor = AppColors.primary;
+      backgroundColor = isDark 
+        ? context.primaryColor.withValues(alpha: 0.12)
+        : context.primaryColor.withValues(alpha: 0.08);
+      textColor = context.primaryColor;
     }
 
     if (!isFuture && attendance.id.isNotEmpty) {
@@ -229,7 +229,9 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
           dotColor = Colors.amber;
           break;
         case ChamcongStatus.weekend:
-          dotColor = AppColors.textSecondary.withValues(alpha: 0.3);
+          dotColor = isDark
+            ? Colors.grey[500]!
+            : Colors.grey[300]!;
           break;
         case ChamcongStatus.holiday:
           dotColor = Colors.blue;
@@ -239,10 +241,11 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
 
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: () => widget.onDateSelected(date),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
+        splashColor: context.primaryColor.withValues(alpha: 0.1),
         child: Container(
           alignment: Alignment.center,
           child: Column(
@@ -254,21 +257,21 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
                   fontSize: 14,
                   fontWeight: isSelected || isToday ? FontWeight.w700 : FontWeight.w600,
                   color: isFuture
-                      ? AppColors.textSecondary.withValues(alpha: 0.3)
+                      ? (isDark ? Colors.grey[600] : Colors.grey[400])
                       : textColor,
-                  letterSpacing: -0.3,
                 ),
               ),
-              const SizedBox(height: 2),
-              if (dotColor != Colors.transparent)
+              if (dotColor != Colors.transparent) ...[
+                const SizedBox(height: 2),
                 Container(
-                  width: 5,
-                  height: 5,
+                  width: 4,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: isSelected ? Colors.white : dotColor,
                     shape: BoxShape.circle,
                   ),
                 ),
+              ]
             ],
           ),
         ),

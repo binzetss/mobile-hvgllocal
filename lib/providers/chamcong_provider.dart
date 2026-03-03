@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import '../core/services/firebase_notification_service.dart';
 import '../data/models/chamcong_model.dart';
 import '../data/services/chamcong_service.dart';
+import './dangky_com_provider.dart';
+import './thongbao_provider.dart';
 
-class ChamcongProvider extends ChangeNotifier {
-  final ChamcongService _attendanceService = ChamcongService();
+class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
+  final ChamcongService _service = ChamcongService();
 
   List<ChamcongModel> _monthlyAttendances = [];
   ChamcongModel? _todayAttendance;
@@ -11,6 +16,18 @@ class ChamcongProvider extends ChangeNotifier {
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
   String? _error;
+  int _knownTodayPunchCount = 0;
+  bool _initialLoadDone = false;
+  Timer? _webRefreshTimer;
+
+  ChamcongProvider() {
+    WidgetsBinding.instance.addObserver(this);
+    if (kIsWeb) {
+      _webRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+        if (_initialLoadDone) refresh();
+      });
+    }
+  }
 
   List<ChamcongModel> get monthlyAttendances => _monthlyAttendances;
   ChamcongModel? get todayAttendance => _todayAttendance;
@@ -19,50 +36,135 @@ class ChamcongProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> init() async {
-    await loadMonthData(_selectedDate.year, _selectedDate.month);
-    await loadTodayAttendance();
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _initialLoadDone) {
+      debugPrint('ChamCong: app resumed, refreshing...');
+      refresh();
+    }
   }
 
-  Future<void> loadMonthData(int year, int month) async {
+  static Map<String, dynamic> _computeStats(List<ChamcongModel> list) {
+    int presentDays = 0;
+    int absentDays = 0;
+    for (final a in list) {
+      if (a.status == ChamcongStatus.weekend ||
+          a.status == ChamcongStatus.holiday) {
+        continue;
+      }
+      if (a.status == ChamcongStatus.present ||
+          a.status == ChamcongStatus.late) {
+        presentDays++;
+      } else if (a.status == ChamcongStatus.absent) {
+        absentDays++;
+      }
+    }
+    return {
+      'presentDays': presentDays,
+      'lateDays': 0,
+      'absentDays': absentDays,
+      'earlyLeaveDays': 0,
+      'totalWorkingHours': 0.0,
+      'totalWorkingDays': presentDays + absentDays,
+    };
+  }
+
+  void _updateTodayFromList(List<ChamcongModel> list) {
+    final now = DateTime.now();
     try {
-      _isLoading = true;
+      _todayAttendance = list.firstWhere(
+        (a) =>
+            a.date.year == now.year &&
+            a.date.month == now.month &&
+            a.date.day == now.day,
+      );
+    } catch (_) {
+      _todayAttendance = null;
+    }
+  }
+
+  void _checkAndNotifyNewPunches() {
+    final newCount = _todayAttendance?.punches.length ?? 0;
+    if (!_initialLoadDone) {
+      _knownTodayPunchCount = newCount;
+      _initialLoadDone = true;
+      debugPrint('ChamCong: initial load done, knownPunchCount=$newCount');
+      return;
+    }
+    if (newCount > _knownTodayPunchCount) {
+      final newPunches =
+          _todayAttendance!.punches.skip(_knownTodayPunchCount).toList();
+      debugPrint(
+          'ChamCong: ${newPunches.length} new punch(es) detected, firing notifications');
+      for (final punch in newPunches) {
+        FirebaseNotificationService().showChamcongNotification(
+          time: punch.time,
+          loai: punch.loaiChamCong,
+        );
+        ThongBaoProvider.addChamcongStatic(
+          time: punch.time,
+          loai: punch.loaiChamCong,
+        );
+        // Chấm cơm / Chấm thư viện → reload ngay card đăng ký suất ăn (mobile + web)
+        if (punch.loaiChamCong == 'Chấm cơm' ||
+            punch.loaiChamCong == 'Chấm thư viện') {
+          DangkyComProvider.reloadStatic();
+        }
+      }
+    }
+    _knownTodayPunchCount = newCount;
+  }
+
+  Future<void> init() async {
+    if (_monthlyAttendances.isNotEmpty && _error == null) {
+      // Dữ liệu đã có, chỉ cần silent refresh
+      refresh();
+      return;
+    }
+    // Chưa có dữ liệu hoặc có lỗi trước đó → tải lại từ đầu
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    await _fetchAndUpdate(_selectedDate.year, _selectedDate.month);
+  }
+
+  Future<void> _fetchAndUpdate(int year, int month) async {
+    try {
+      final attendances = await _service.getAttendanceByMonth(year, month);
+      _monthlyAttendances = attendances;
+      _monthlyStats = _computeStats(attendances);
+      final now = DateTime.now();
+      if (year == now.year && month == now.month) {
+        _updateTodayFromList(attendances);
+        _checkAndNotifyNewPunches();
+      }
+      _isLoading = false;
       _error = null;
       notifyListeners();
-
-      final attendances = await _attendanceService.getAttendanceByMonth(year, month);
-      final stats = await _attendanceService.getMonthlyStats(year, month);
-
-      _monthlyAttendances = attendances;
-      _monthlyStats = stats;
-      _isLoading = false;
-      notifyListeners();
     } catch (e) {
-      _error = e.toString();
       _isLoading = false;
+      _error = e.toString();
+      debugPrint('ChamCong fetch error: $e');
       notifyListeners();
     }
   }
 
-  Future<void> loadTodayAttendance() async {
-    try {
-      final attendance = await _attendanceService.getTodayAttendance();
-      _todayAttendance = attendance;
-      notifyListeners();
-    } catch (e) {
-      _error = e.toString();
-      notifyListeners();
-    }
+  Future<void> changeMonth(int year, int month) async {
+    _selectedDate = DateTime(year, month, 1);
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    await _fetchAndUpdate(year, month);
+  }
+
+  Future<void> refresh() async {
+    debugPrint('ChamCong: silent refresh...');
+    await _fetchAndUpdate(_selectedDate.year, _selectedDate.month);
   }
 
   void selectDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();
-  }
-
-  Future<void> changeMonth(int year, int month) async {
-    _selectedDate = DateTime(year, month, 1);
-    await loadMonthData(year, month);
   }
 
   ChamcongModel? getAttendanceByDate(DateTime date) {
@@ -73,13 +175,25 @@ class ChamcongProvider extends ChangeNotifier {
             a.date.month == date.month &&
             a.date.day == date.day,
       );
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }
 
-  Future<void> refresh() async {
-    await loadMonthData(_selectedDate.year, _selectedDate.month);
-    await loadTodayAttendance();
+  Future<void> loadMonthData(int year, int month) => changeMonth(year, month);
+
+  Future<void> loadTodayAttendance() async {
+    final now = DateTime.now();
+    if (_selectedDate.year == now.year && _selectedDate.month == now.month) {
+      _updateTodayFromList(_monthlyAttendances);
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _webRefreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }

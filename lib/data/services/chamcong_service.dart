@@ -1,179 +1,166 @@
+import 'package:flutter/foundation.dart';
+import '../../core/constants/api_endpoints.dart';
 import '../models/chamcong_model.dart';
+import '../services/xacthuc_service.dart';
+import 'api_service.dart';
 
 class ChamcongService {
   static final ChamcongService _instance = ChamcongService._internal();
   factory ChamcongService() => _instance;
   ChamcongService._internal();
 
+  final ApiService _apiService = ApiService();
+  final XacthucService _xacthucService = XacthucService();
 
-  List<ChamcongModel> _generateMockData() {
-    final now = DateTime.now();
-    final List<ChamcongModel> attendances = [];
-    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+  Future<String> _getMaSo() async {
+    final user = await _xacthucService.getSavedUser();
+    return user?.maSo ?? '';
+  }
 
-    for (int day = 1; day <= daysInMonth; day++) {
-      final date = DateTime(now.year, now.month, day);
-
-      
-      if (date.isAfter(now)) continue;
-
-      final weekday = date.weekday;
-
-
-      if (weekday == DateTime.saturday || weekday == DateTime.sunday) {
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          status: ChamcongStatus.weekend,
-        ));
-        continue;
-      }
-
-    
-      final random = day % 10;
-
-      if (random == 0) {
-   
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          status: ChamcongStatus.absent,
-          notes: 'Nghỉ phép',
-        ));
-      } else if (random == 1 || random == 2) {
-   
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          checkInMorning: DateTime(date.year, date.month, date.day, 7, 15 + random * 5),
-          checkOutMorning: DateTime(date.year, date.month, date.day, 11, 30),
-          checkInAfternoon: DateTime(date.year, date.month, date.day, 13, 0),
-          checkOutAfternoon: DateTime(date.year, date.month, date.day, 16, 30),
-          status: ChamcongStatus.late,
-          location: 'Bệnh viện Hùng Vương Gia Lai',
-          workingHours: 8.0,
-        ));
-      } else if (random == 3) {
- 
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          checkInMorning: DateTime(date.year, date.month, date.day, 7, 0),
-          checkOutMorning: DateTime(date.year, date.month, date.day, 11, 30),
-          checkInAfternoon: DateTime(date.year, date.month, date.day, 13, 0),
-          checkOutAfternoon: DateTime(date.year, date.month, date.day, 16, 0),
-          status: ChamcongStatus.earlyLeave,
-          location: 'Bệnh viện Hùng Vương Gia Lai',
-          workingHours: 7.5,
-          notes: 'Có việc cá nhân',
-        ));
-      } else {
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          checkInMorning: DateTime(date.year, date.month, date.day, 7, 0),
-          checkOutMorning: DateTime(date.year, date.month, date.day, 11, 30),
-          checkInAfternoon: DateTime(date.year, date.month, date.day, 13, 0),
-          checkOutAfternoon: DateTime(date.year, date.month, date.day, 16, 30),
-          status: ChamcongStatus.present,
-          location: 'Bệnh viện Hùng Vương Gia Lai',
-          workingHours: 8.0,
-        ));
-        attendances.add(ChamcongModel(
-          id: 'att_$day',
-          userId: 'user_1',
-          date: date,
-          checkInMorning: DateTime(date.year, date.month, date.day, 7, 0),
-          checkOutMorning: DateTime(date.year, date.month, date.day, 11, 30),
-          checkInAfternoon: DateTime(date.year, date.month, date.day, 13, 0),
-          checkOutAfternoon: DateTime(date.year, date.month, date.day, 16, 30),
-          status: ChamcongStatus.present,
-          location: 'Bệnh viện Hùng Vương Gia Lai',
-          workingHours: 8.0,
-        ));
-      }
+  String _pad(int n) => n.toString().padLeft(2, '0');
+  static String mapLoaiChamCong(dynamic loaiChamCong) {
+    if (loaiChamCong is String && loaiChamCong.isNotEmpty) {
+      return loaiChamCong;
     }
-
-    return attendances;
+    final code = loaiChamCong is int
+        ? loaiChamCong
+        : int.tryParse('$loaiChamCong') ?? -1;
+    switch (code) {
+      case 10:
+        return 'Chấm cơm';
+      case 16:
+        return 'Chấm đào tạo';
+      case 18:
+        return 'Chấm thư viện';
+      default:
+        return 'Chấm công';
+    }
   }
 
-  Future<List<ChamcongModel>> getAttendanceByMonth(
-    int year,
-    int month,
-  ) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final allData = _generateMockData();
-    return allData
-        .where((a) => a.date.year == year && a.date.month == month)
-        .toList();
-  }
+  Future<List<ChamcongModel>> getAttendanceByMonth(int year, int month) async {
+    try {
+      final maSo = await _getMaSo();
+      final tuNgay = '$year-${_pad(month)}-01';
+      final lastDay = DateTime(year, month + 1, 0).day;
+      final denNgay = '$year-${_pad(month)}-${_pad(lastDay)}';
 
-  Future<List<ChamcongModel>> getAttendanceByDate(DateTime date) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    final allData = _generateMockData();
-    return allData
-        .where((a) =>
-            a.date.year == date.year &&
-            a.date.month == date.month &&
-            a.date.day == date.day)
-        .toList();
+      debugPrint('ChamCong: maSo=$maSo, tuNgay=$tuNgay, denNgay=$denNgay');
+
+      final response = await _apiService.fetchData(
+        ApiEndpoints.chamCong,
+        {'tuNgay': tuNgay, 'denNgay': denNgay},
+      );
+
+      debugPrint('ChamCong response: $response');
+
+      final List<dynamic> dataList = response['data'] ?? [];
+      final Map<String, List<ChamcongPunch>> byDate = {};
+
+      for (final item in dataList) {
+        final ngayStr = item['ngay'] as String? ?? '';
+        if (ngayStr.isEmpty) continue;
+        final dt = DateTime.tryParse(ngayStr);
+        if (dt == null) continue;
+        final key = '${dt.year}-${_pad(dt.month)}-${_pad(dt.day)}';
+        final loaiText = mapLoaiChamCong(item['loaiChamCong']);
+        byDate.putIfAbsent(key, () => []).add(ChamcongPunch(time: dt, loaiChamCong: loaiText));
+      }
+      for (final key in byDate.keys) {
+        byDate[key]!.sort((a, b) => a.time.compareTo(b.time));
+      }
+
+      final List<ChamcongModel> result = [];
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      for (int day = 1; day <= lastDay; day++) {
+        final date = DateTime(year, month, day);
+        if (date.isAfter(today)) continue;
+
+        final weekday = date.weekday;
+        if (weekday == DateTime.saturday || weekday == DateTime.sunday) {
+          result.add(ChamcongModel(
+            id: 'weekend_${year}_${_pad(month)}_${_pad(day)}',
+            userId: maSo,
+            date: date,
+            status: ChamcongStatus.weekend,
+          ));
+          continue;
+        }
+
+        final key = '$year-${_pad(month)}-${_pad(day)}';
+        if (byDate.containsKey(key)) {
+          final punches = byDate[key]!;
+          result.add(ChamcongModel(
+            id: '${maSo}_$key',
+            userId: maSo,
+            date: date,
+            status: ChamcongStatus.present,
+            punches: punches,
+            checkInMorning: punches.isNotEmpty ? punches[0].time : null,
+            checkOutMorning: punches.length >= 2 ? punches[1].time : null,
+            checkInAfternoon: punches.length >= 3 ? punches[2].time : null,
+            checkOutAfternoon: punches.length >= 4 ? punches[3].time : null,
+            notes: punches.map((p) => p.loaiChamCong).toSet().join(' • '),
+          ));
+        } else {
+          result.add(ChamcongModel(
+            id: 'absent_${year}_${_pad(month)}_${_pad(day)}',
+            userId: maSo,
+            date: date,
+            status: ChamcongStatus.absent,
+          ));
+        }
+      }
+
+      return result;
+    } catch (e) {
+      debugPrint('ChamCong error: $e');
+      throw Exception('Lỗi khi tải dữ liệu chấm công: $e');
+    }
   }
 
   Future<ChamcongModel?> getTodayAttendance() async {
     final now = DateTime.now();
-    final today = await getAttendanceByDate(now);
-    return today.isNotEmpty ? today.first : null;
+    final list = await getAttendanceByMonth(now.year, now.month);
+    try {
+      return list.firstWhere(
+        (a) =>
+            a.date.year == now.year &&
+            a.date.month == now.month &&
+            a.date.day == now.day,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<Map<String, dynamic>> getMonthlyStats(int year, int month) async {
     final attendances = await getAttendanceByMonth(year, month);
 
     int presentDays = 0;
-    int lateDays = 0;
     int absentDays = 0;
-    int earlyLeaveDays = 0;
-    double totalWorkingHours = 0;
 
-    for (var att in attendances) {
+    for (final att in attendances) {
       if (att.status == ChamcongStatus.weekend ||
           att.status == ChamcongStatus.holiday) {
         continue;
       }
-
-      switch (att.status) {
-        case ChamcongStatus.present:
-          presentDays++;
-          break;
-        case ChamcongStatus.late:
-          lateDays++;
-          break;
-        case ChamcongStatus.absent:
-          absentDays++;
-          break;
-        case ChamcongStatus.earlyLeave:
-          earlyLeaveDays++;
-          break;
-        default:
-          break;
-      }
-
-      if (att.workingHours != null) {
-        totalWorkingHours += att.workingHours!;
+      if (att.status == ChamcongStatus.present ||
+          att.status == ChamcongStatus.late) {
+        presentDays++;
+      } else if (att.status == ChamcongStatus.absent) {
+        absentDays++;
       }
     }
 
     return {
       'presentDays': presentDays,
-      'lateDays': lateDays,
+      'lateDays': 0,
       'absentDays': absentDays,
-      'earlyLeaveDays': earlyLeaveDays,
-      'totalWorkingHours': totalWorkingHours,
-      'totalWorkingDays': presentDays + lateDays + absentDays + earlyLeaveDays,
+      'earlyLeaveDays': 0,
+      'totalWorkingHours': 0.0,
+      'totalWorkingDays': presentDays + absentDays,
     };
   }
 }

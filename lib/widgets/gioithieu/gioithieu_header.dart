@@ -3,12 +3,29 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/api_endpoints.dart';
+import '../../core/extensions/theme_extensions.dart';
 
-class GioithieuHeader extends StatelessWidget {
+class GioithieuHeader extends StatefulWidget {
   const GioithieuHeader({super.key});
 
   @override
+  State<GioithieuHeader> createState() => _GioithieuHeaderState();
+}
+
+class _GioithieuHeaderState extends State<GioithieuHeader> {
+  bool _imageReady = false;
+
+  void _markReady() {
+    if (!_imageReady) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _imageReady = true);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Center(
       child: Column(
         children: [
@@ -16,11 +33,13 @@ class GioithieuHeader extends StatelessWidget {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -28,24 +47,53 @@ class GioithieuHeader extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              child: CachedNetworkImage(
-                imageUrl: ApiEndpoints.logoHeader,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => _buildPlaceholder(),
-                errorWidget: (context, url, error) => _buildPlaceholder(),
+              child: AnimatedOpacity(
+                opacity: _imageReady ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeIn,
+                child: CachedNetworkImage(
+                  imageUrl: ApiEndpoints.logoHeader,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                  imageBuilder: (context, imageProvider) {
+                    _markReady();
+                    return Image(image: imageProvider, fit: BoxFit.cover);
+                  },
+                  placeholder: (context, url) => const SizedBox.shrink(),
+                  errorWidget: (context, url, error) {
+                    _markReady();
+                    return Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: AppColors.primaryGradient,
+                        ),
+                      ),
+                      child: const Center(
+                        child: FaIcon(
+                          FontAwesomeIcons.hospital,
+                          size: 46,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Bệnh viện Hùng Vương Gia Lai',
+          Text(
+            'Bệnh viện Hùng Vượng Gia Lai',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
               letterSpacing: -0.3,
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
             textAlign: TextAlign.center,
           ),
@@ -66,26 +114,6 @@ class GioithieuHeader extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: AppColors.primaryGradient,
-        ),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: const FaIcon(
-        FontAwesomeIcons.hospital,
-        size: 46,
-        color: Colors.white,
       ),
     );
   }

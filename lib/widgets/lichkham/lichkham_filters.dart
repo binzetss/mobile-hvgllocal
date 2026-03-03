@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/lichkham_provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class LichkhamFilters extends StatelessWidget {
   const LichkhamFilters({super.key});
@@ -26,14 +27,20 @@ class LichkhamFilters extends StatelessWidget {
 class _DateRangeFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     final provider = context.watch<LichkhamProvider>();
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFF38383A)
+              : const Color(0xFFE8EAF0),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -60,12 +67,12 @@ class _DateRangeFilter extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Khoảng thời gian',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                 ),
               ),
             ],
@@ -126,15 +133,16 @@ class _DateRangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : const Color(0xFFF8F9FA),
+          color: isSelected ? AppColors.primary : (isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFE8EAF0),
+            color: isSelected ? AppColors.primary : (isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
             width: 1.5,
           ),
         ),
@@ -144,7 +152,7 @@ class _DateRangeButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF1A1A1A),
+            color: isSelected ? Colors.white : (isDark ? Colors.white : const Color(0xFF1A1A1A)),
           ),
         ),
       ),
@@ -155,12 +163,13 @@ class _DateRangeButton extends StatelessWidget {
 class _CustomDatePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     final provider = context.watch<LichkhamProvider>();
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -236,33 +245,34 @@ class _DateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE8EAF0)),
+          border: Border.all(color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF757575),
+                color: isDark ? Colors.grey[400] : const Color(0xFF757575),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               DateFormat('dd/MM/yyyy').format(date),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
+                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
               ),
             ),
           ],
@@ -275,6 +285,7 @@ class _DateField extends StatelessWidget {
 class _RoomFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     final provider = context.watch<LichkhamProvider>();
 
     if (provider.rooms.isEmpty) {
@@ -284,9 +295,9 @@ class _RoomFilter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -313,12 +324,12 @@ class _RoomFilter extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Chọn phòng khám',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                 ),
               ),
             ],
@@ -328,21 +339,21 @@ class _RoomFilter extends StatelessWidget {
             value: provider.selectedRoom,
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color(0xFFF8F9FA),
+              fillColor: isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE8EAF0)),
+                borderSide: BorderSide(color: isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE8EAF0)),
+                borderSide: BorderSide(color: isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             ),
             items: [
-              const DropdownMenuItem(value: 'all', child: Text('Tất cả phòng khám')),
+              DropdownMenuItem(value: 'all', child: Text('Tất cả phòng khám', style: TextStyle(color: isDark ? Colors.white : Colors.black))),
               ...provider.rooms.map(
-                (room) => DropdownMenuItem(value: room, child: Text(room)),
+                (room) => DropdownMenuItem(value: room, child: Text(room, style: TextStyle(color: isDark ? Colors.white : Colors.black))),
               ),
             ],
             onChanged: (value) {

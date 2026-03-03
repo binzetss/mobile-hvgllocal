@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/vanban_model.dart';
 import '../../providers/vanban_provider.dart';
 import '../common/shimmer_loading.dart';
@@ -55,7 +56,7 @@ class VanbanDocumentsList extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary.withValues(alpha: 0.7),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -65,7 +66,7 @@ class VanbanDocumentsList extends StatelessWidget {
                       provider.errorMessage ?? 'Không thể tải dữ liệu',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        color: context.textSecondary.withValues(alpha: 0.8),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -99,7 +100,7 @@ class VanbanDocumentsList extends StatelessWidget {
                   FaIcon(
                     FontAwesomeIcons.fileLines,
                     size: 60,
-                    color: AppColors.textSecondary.withValues(alpha: 0.3),
+                    color: context.textSecondary.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -109,7 +110,7 @@ class VanbanDocumentsList extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary.withValues(alpha: 0.5),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -119,7 +120,7 @@ class VanbanDocumentsList extends StatelessWidget {
                         : 'Các văn bản sẽ được hiển thị tại đây',
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary.withValues(alpha: 0.6),
+                      color: context.textSecondary.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

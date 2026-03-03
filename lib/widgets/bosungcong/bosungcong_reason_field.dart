@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/bosung_chamcong_model.dart';
 
 class BosungcongReasonField extends StatelessWidget {
@@ -21,13 +22,13 @@ class BosungcongReasonField extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: context.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const FaIcon(
+              child: FaIcon(
                 FontAwesomeIcons.commentDots,
                 size: 12,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
             ),
             const SizedBox(width: 8),
@@ -36,7 +37,6 @@ class BosungcongReasonField extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -58,10 +58,10 @@ class BosungcongReasonField extends StatelessWidget {
             controller.text = fieldController.text;
             return Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.2),
+                  color: context.borderColor,
                   width: 0.5,
                 ),
                 boxShadow: [
@@ -91,7 +91,6 @@ class BosungcongReasonField extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
                   letterSpacing: -0.2,
                   height: 1.4,
                 ),
@@ -108,10 +107,10 @@ class BosungcongReasonField extends StatelessWidget {
                   width: MediaQuery.of(context).size.width - 40,
                   constraints: const BoxConstraints(maxHeight: 240),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.cardColor,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: AppColors.border.withValues(alpha: 0.2),
+                      color: context.borderColor,
                       width: 0.5,
                     ),
                   ),
@@ -121,7 +120,7 @@ class BosungcongReasonField extends StatelessWidget {
                     itemCount: options.length,
                     separatorBuilder: (context, index) => Divider(
                       height: 1,
-                      color: AppColors.border.withValues(alpha: 0.1),
+                      color: context.borderColor,
                     ),
                     itemBuilder: (context, index) {
                       final option = options.elementAt(index);
@@ -134,10 +133,10 @@ class BosungcongReasonField extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              const FaIcon(
+                              FaIcon(
                                 FontAwesomeIcons.circleCheck,
                                 size: 14,
-                                color: AppColors.primary,
+                                color: context.primaryColor,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -146,7 +145,6 @@ class BosungcongReasonField extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.textPrimary,
                                   ),
                                 ),
                               ),

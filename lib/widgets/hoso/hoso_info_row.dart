@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class HosoInfoRow extends StatelessWidget {
   final String label;
@@ -29,7 +29,7 @@ class HosoInfoRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary.withValues(alpha: 0.85),
+                    color: context.textSecondary.withValues(alpha: 0.85),
                     letterSpacing: -0.1,
                   ),
                 ),
@@ -42,8 +42,8 @@ class HosoInfoRow extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: value.isEmpty
-                        ? AppColors.textSecondary.withValues(alpha: 0.4)
-                        : AppColors.textPrimary,
+                        ? context.textSecondary.withValues(alpha: 0.4)
+                        : context.textPrimary,
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -54,7 +54,7 @@ class HosoInfoRow extends StatelessWidget {
         if (!isLast)
           Divider(
             height: 1,
-            color: AppColors.border.withValues(alpha: 0.15),
+            color: context.borderColor,
           ),
       ],
     );

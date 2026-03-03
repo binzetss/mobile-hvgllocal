@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../providers/daotao_provider.dart';
 
 class DaotaoHeaderStats extends StatelessWidget {
@@ -13,6 +14,7 @@ class DaotaoHeaderStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     final tongSo = provider.isLoading ? 0 : provider.danhSach.length;
     final dangMo = provider.soLopDangMo;
 
@@ -20,11 +22,17 @@ class DaotaoHeaderStats extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        gradient: LinearGradient(
+          colors: isDark
+              ? [AppColors.primaryDark, AppColors.primaryLight]
+              : [AppColors.primary, AppColors.primary],
+        ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

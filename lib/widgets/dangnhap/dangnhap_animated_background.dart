@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
 import 'dangnhap_particles.dart';
 
 class DangnhapAnimatedBackground extends StatelessWidget {
@@ -17,7 +16,7 @@ class DangnhapAnimatedBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _buildProfessionalGradient(),
+        _buildProfessionalGradient(context),
         _buildParticles(),
         Positioned.fill(
           child: BackdropFilter(
@@ -29,31 +28,53 @@ class DangnhapAnimatedBackground extends StatelessWidget {
     );
   }
 
-  Widget _buildProfessionalGradient() {
+  Widget _buildProfessionalGradient(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedBuilder(
       animation: gradientController,
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.lerp(
-                  const Color(0xFF0D47A1),
-                  const Color(0xFF1565C0),
-                  gradientController.value,
-                )!,
-                const Color(0xFF1976D2),
-                Color.lerp(
-                  const Color(0xFF1E88E5),
-                  const Color(0xFF42A5F5),
-                  gradientController.value,
-                )!,
-                const Color(0xFF64B5F6),
-              ],
-              stops: const [0.0, 0.3, 0.7, 1.0],
-            ),
+            gradient: isDark
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.lerp(
+                        const Color(0xFF000000),
+                        const Color(0xFF050D1A),
+                        gradientController.value,
+                      )!,
+                      const Color(0xFF0A1628),
+                      Color.lerp(
+                        const Color(0xFF0D1F3C),
+                        const Color(0xFF091424),
+                        gradientController.value,
+                      )!,
+                      const Color(0xFF000000),
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.lerp(
+                        const Color(0xFF0D47A1),
+                        const Color(0xFF1565C0),
+                        gradientController.value,
+                      )!,
+                      const Color(0xFF1976D2),
+                      Color.lerp(
+                        const Color(0xFF1E88E5),
+                        const Color(0xFF42A5F5),
+                        gradientController.value,
+                      )!,
+                      const Color(0xFF64B5F6),
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  ),
           ),
         );
       },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/thongbao_model.dart';
 import '../../providers/thongbao_provider.dart';
 import '../../providers/vanban_provider.dart';
@@ -23,7 +23,7 @@ class ThongBaoDetailModal extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -35,7 +35,7 @@ class ThongBaoDetailModal extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: context.borderColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -46,7 +46,6 @@ class ThongBaoDetailModal extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
               letterSpacing: -0.3,
             ),
           ),
@@ -55,7 +54,7 @@ class ThongBaoDetailModal extends StatelessWidget {
             thongBao.content,
             style: TextStyle(
               fontSize: 15,
-              color: AppColors.textSecondary,
+              color: context.textSecondary,
               height: 1.5,
             ),
           ),
@@ -65,14 +64,14 @@ class ThongBaoDetailModal extends StatelessWidget {
               Icon(
                 Icons.access_time,
                 size: 16,
-                color: AppColors.textSecondary.withValues(alpha: 0.6),
+                color: context.textSecondary.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 6),
               Text(
                 _formatFullDate(thongBao.time),
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.textSecondary.withValues(alpha: 0.6),
+                  color: context.textSecondary.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -96,7 +95,7 @@ class ThongBaoDetailModal extends StatelessWidget {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: context.primaryColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -112,10 +111,10 @@ class ThongBaoDetailModal extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.textPrimary,
+                    foregroundColor: context.textPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(
-                      color: AppColors.textSecondary.withValues(alpha: 0.3),
+                      color: context.textSecondary.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class ThongBaoFilterChips extends StatelessWidget {
   final String currentFilter;
@@ -22,48 +22,25 @@ class ThongBaoFilterChips extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
-          _buildChip(
-            key: 'all',
-            label: 'Tất cả',
-            icon: FontAwesomeIcons.list,
-          ),
-          _buildChip(
+          _buildChip(context, key: 'all', label: 'Tất cả', icon: FontAwesomeIcons.list),
+          _buildChip(context,
             key: 'unread',
             label: 'Chưa đọc',
             icon: FontAwesomeIcons.circleExclamation,
             badge: unreadCount > 0 ? unreadCount : null,
           ),
-          _buildChip(
-            key: 'chamcong',
-            label: 'Chấm công',
-            icon: FontAwesomeIcons.fingerprint,
-          ),
-          _buildChip(
-            key: 'luong',
-            label: 'Lương',
-            icon: FontAwesomeIcons.wallet,
-          ),
-          _buildChip(
-            key: 'vanban',
-            label: 'Văn bản',
-            icon: FontAwesomeIcons.fileLines,
-          ),
-          _buildChip(
-            key: 'hethong',
-            label: 'Hệ thống',
-            icon: FontAwesomeIcons.gear,
-          ),
-          _buildChip(
-            key: 'sukien',
-            label: 'Sự kiện',
-            icon: FontAwesomeIcons.calendar,
-          ),
+          _buildChip(context, key: 'chamcong', label: 'Chấm công', icon: FontAwesomeIcons.fingerprint),
+          _buildChip(context, key: 'luong', label: 'Lương', icon: FontAwesomeIcons.wallet),
+          _buildChip(context, key: 'vanban', label: 'Văn bản', icon: FontAwesomeIcons.fileLines),
+          _buildChip(context, key: 'hethong', label: 'Hệ thống', icon: FontAwesomeIcons.gear),
+          _buildChip(context, key: 'sukien', label: 'Sự kiện', icon: FontAwesomeIcons.calendar),
         ],
       ),
     );
   }
 
-  Widget _buildChip({
+  Widget _buildChip(
+    BuildContext context, {
     required String key,
     required String label,
     required IconData icon,
@@ -78,13 +55,13 @@ class ThongBaoFilterChips extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary
-              : AppColors.backgroundSecondary.withValues(alpha: 0.6),
+              ? context.primaryColor
+              : context.surfaceColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary
-                : AppColors.textSecondary.withValues(alpha: 0.15),
+                ? context.primaryColor
+                : context.borderColor,
             width: 1,
           ),
         ),
@@ -94,7 +71,7 @@ class ThongBaoFilterChips extends StatelessWidget {
             FaIcon(
               icon,
               size: 13,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : context.textSecondary,
             ),
             const SizedBox(width: 6),
             Text(
@@ -102,7 +79,7 @@ class ThongBaoFilterChips extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected ? Colors.white : context.textSecondary,
               ),
             ),
             if (badge != null) ...[
@@ -112,7 +89,7 @@ class ThongBaoFilterChips extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? Colors.white.withValues(alpha: 0.2)
-                      : AppColors.primary.withValues(alpha: 0.15),
+                      : context.primaryColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -120,7 +97,7 @@ class ThongBaoFilterChips extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : AppColors.primary,
+                    color: isSelected ? Colors.white : context.primaryColor,
                   ),
                 ),
               ),

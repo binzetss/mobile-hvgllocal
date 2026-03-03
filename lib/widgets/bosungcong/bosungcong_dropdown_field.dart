@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class BosungcongDropdownField extends StatelessWidget {
   final String label;
@@ -30,13 +31,13 @@ class BosungcongDropdownField extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: context.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: FaIcon(
                 icon,
                 size: 12,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
             ),
             const SizedBox(width: 8),
@@ -45,7 +46,6 @@ class BosungcongDropdownField extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -55,10 +55,10 @@ class BosungcongDropdownField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: AppColors.border.withValues(alpha: 0.2),
+              color: context.borderColor,
               width: 0.5,
             ),
             boxShadow: [
@@ -82,10 +82,10 @@ class BosungcongDropdownField extends StatelessWidget {
                     )
                   : null,
               isExpanded: true,
-              icon: const FaIcon(
+              icon: FaIcon(
                 FontAwesomeIcons.chevronDown,
                 size: 12,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
               items: items.map((item) {
                 return DropdownMenuItem<String>(
@@ -95,7 +95,6 @@ class BosungcongDropdownField extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
                       letterSpacing: -0.2,
                     ),
                   ),

@@ -6,6 +6,7 @@ class SupportMember {
   final String avatar;
   final String phone;
   final Color color;
+  final String? avatarPath;
 
   SupportMember({
     required this.name,
@@ -13,5 +14,6 @@ class SupportMember {
     required this.avatar,
     required this.phone,
     required this.color,
+    this.avatarPath,
   });
 }

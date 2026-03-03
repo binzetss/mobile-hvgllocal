@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/xacthuc_provider.dart';
@@ -7,8 +8,14 @@ import '../../widgets/dangnhap/dangnhap_header.dart';
 import '../../widgets/dangnhap/dangnhap_login_card.dart';
 import '../../widgets/dangnhap/dangnhap_footer.dart';
 import '../../widgets/dangnhap/dangnhap_success_overlay.dart';
+import '../../widgets/dangnhap/dangnhap_web_background.dart';
+import '../../widgets/dangnhap/dangnhap_web_header.dart';
+import '../../widgets/dangnhap/dangnhap_web_card.dart';
+import '../../widgets/dangnhap/dangnhap_web_footer.dart';
+import '../../widgets/dangnhap/dangnhap_web_download.dart';
 import '../../data/services/data_preload_service.dart';
 import '../trangchu/trangchu_page.dart';
+import '../doimatkhau_landau/doimatkhau_landau_page.dart';
 
 class DangnhapPage extends StatefulWidget {
   const DangnhapPage({super.key});
@@ -19,12 +26,17 @@ class DangnhapPage extends StatefulWidget {
 
 class _DangnhapPageState extends State<DangnhapPage>
     with TickerProviderStateMixin {
+  // ── State ──────────────────────────────────────────────────────────────────
+
   final _formKey = GlobalKey<FormState>();
   final _maSoController = TextEditingController();
   final _matKhauController = TextEditingController();
 
   late AnimationController _gradientController;
   late AnimationController _particleController;
+  late XacthucProvider _authProviderRef;
+
+  // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   @override
   void initState() {
@@ -32,6 +44,18 @@ class _DangnhapPageState extends State<DangnhapPage>
     _initAnimations();
     _listenToProviderInit();
   }
+
+  @override
+  void dispose() {
+    _authProviderRef.removeListener(_onProviderChanged);
+    _gradientController.dispose();
+    _particleController.dispose();
+    _maSoController.dispose();
+    _matKhauController.dispose();
+    super.dispose();
+  }
+
+  // ── Init helpers ───────────────────────────────────────────────────────────
 
   void _initAnimations() {
     _gradientController = AnimationController(
@@ -47,36 +71,32 @@ class _DangnhapPageState extends State<DangnhapPage>
 
   void _listenToProviderInit() {
     if (!mounted) return;
-
-    // Listen for when provider finishes initialization
-    final authProvider = context.read<XacthucProvider>();
-    if (authProvider.isInitialized) {
-      // Already initialized, load credentials immediately
+    _authProviderRef = context.read<XacthucProvider>();
+    if (_authProviderRef.isInitialized) {
       _initCredentials();
     } else {
-      // Not initialized yet, listen for changes
-      authProvider.addListener(_onProviderChanged);
+      _authProviderRef.addListener(_onProviderChanged);
     }
   }
 
   void _onProviderChanged() {
-    if (!mounted) return; // Check if widget is still mounted
-
+    if (!mounted) return;
     final authProvider = context.read<XacthucProvider>();
     if (authProvider.isInitialized) {
       _initCredentials();
-      // Remove listener after loading credentials once
       authProvider.removeListener(_onProviderChanged);
     }
   }
 
   void _initCredentials() {
-    if (!mounted) return; // Check if widget is still mounted
-
+    if (!mounted) return;
     final authProvider = context.read<XacthucProvider>();
     _maSoController.text = authProvider.savedUsername;
     _matKhauController.text = authProvider.savedPassword;
   }
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+
   Future<void> _handleLogin() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -90,14 +110,17 @@ class _DangnhapPageState extends State<DangnhapPage>
 
     if (success) {
       await _showLoginSuccessAnimation();
-
       if (!mounted) return;
 
-
-      DataPreloadService().preloadAllData(context);
-
-      if (!mounted) return;
-      _navigateToHome();
+      if (authProvider.isFirstLogin) {
+        _navigateToFirstLogin();
+      } else {
+        // Reset để buộc tải lại dữ liệu mới sau mỗi lần đăng nhập
+        DataPreloadService().reset();
+        DataPreloadService().preloadAllData(context);
+        if (!mounted) return;
+        _navigateToHome();
+      }
     } else {
       _showLoginError(authProvider.errorMessage);
     }
@@ -106,53 +129,54 @@ class _DangnhapPageState extends State<DangnhapPage>
   Future<void> _showLoginSuccessAnimation() async {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
-
     overlayEntry = OverlayEntry(
       builder: (context) => const DangnhapSuccessOverlay(),
     );
-
     overlay.insert(overlayEntry);
-
     await Future.delayed(const Duration(milliseconds: 900));
     overlayEntry.remove();
+  }
+
+  void _navigateToFirstLogin() {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, _, _) => const DoimatkhauLandauPage(),
+        transitionDuration: Duration.zero,
+      ),
+    );
   }
 
   void _navigateToHome() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const TrangchuPage(),
+        pageBuilder: (_, _, _) => const TrangchuPage(),
         transitionDuration: Duration.zero,
       ),
     );
   }
+
   void _showLoginError(String? errorMessage) {
     showErrorDialog(
       context,
       title: 'Đăng nhập thất bại',
-      message: errorMessage ?? 'Mã số hoặc mật khẩu không đúng.\nVui lòng kiểm tra lại.',
+      message: errorMessage ??
+          'Mã số hoặc mật khẩu không đúng.\nVui lòng kiểm tra lại.',
     );
   }
 
-  @override
-  void dispose() {
-    try {
-      final authProvider = context.read<XacthucProvider>();
-      authProvider.removeListener(_onProviderChanged);
-    } catch (e) {
-      // Provider might not be available during dispose
-    }
-    _gradientController.dispose();
-    _particleController.dispose();
-    _maSoController.dispose();
-    _matKhauController.dispose();
-    super.dispose();
-  }
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+    if (isDesktop) return _buildWebLayout(context);
+    return _buildMobileLayout(context);
+  }
 
+  // ── Mobile layout ──────────────────────────────────────────────────────────
+
+  Widget _buildMobileLayout(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
@@ -164,8 +188,7 @@ class _DangnhapPageState extends State<DangnhapPage>
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight:
-                      size.height -
+                  minHeight: size.height -
                       MediaQuery.of(context).padding.top -
                       MediaQuery.of(context).padding.bottom,
                 ),
@@ -188,6 +211,65 @@ class _DangnhapPageState extends State<DangnhapPage>
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWebLayout(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Nền web: xanh nhạt + blobs + sóng
+          DangnhapWebBackground(controller: _gradientController),
+
+          Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 48, vertical: 32),
+                  child: Row(
+                    children: [
+                      // Cột trái: form đăng nhập
+                      Expanded(
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: DangnhapWebCard(
+                              formKey: _formKey,
+                              maSoController: _maSoController,
+                              matKhauController: _matKhauController,
+                              onSubmit: _handleLogin,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        width: 1,
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        color: Colors.white.withValues(alpha: 0.25),
+                      ),
+
+                      // Cột phải: logo + QR tải app
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const DangnhapWebHeader(),
+                            const SizedBox(height: 48),
+                            const DangnhapWebDownload(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const DangnhapWebFooter(),
+            ],
           ),
         ],
       ),

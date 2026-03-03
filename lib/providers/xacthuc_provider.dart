@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hvgl/core/utils/local.dart';
+import '../core/services/firebase_notification_service.dart';
 import '../data/models/user_model.dart';
 import '../data/services/xacthuc_service.dart';
 
@@ -16,8 +18,9 @@ class XacthucProvider extends ChangeNotifier {
   String _savedMatKhau = '';
   String _token = "";
   bool _isInitialized = false;
-
-  // Getters
+  bool _isFirstLogin = false;
+  File? _localAvatarFile;
+  bool _isUploadingAvatar = false;
   AuthStatus get status => _status;
   UserModel? get user => _user;
   String get token => _token;
@@ -30,6 +33,9 @@ class XacthucProvider extends ChangeNotifier {
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _status == AuthStatus.loading;
   bool get isInitialized => _isInitialized;
+  bool get isFirstLogin => _isFirstLogin;
+  File? get localAvatarFile => _localAvatarFile;
+  bool get isUploadingAvatar => _isUploadingAvatar;
   Future<void> init() async {
     _rememberMe = await _authService.isRememberMe();
 
@@ -68,6 +74,16 @@ class XacthucProvider extends ChangeNotifier {
 
       if (mapUser["token"] != "") {
         _user = mapUser["user"];
+
+        // Nếu API login không trả về hinhAnh → luôn dùng URL server lấy từ database
+        final maSoStr = _user?.maSo ?? '';
+        if ((_user?.hinhAnh == null || _user!.hinhAnh!.isEmpty) &&
+            maSoStr.isNotEmpty) {
+          _user = _user!.copyWith(
+            hinhAnh: _authService.buildAvatarUrl(maSoStr),
+          );
+        }
+
         _status = AuthStatus.authenticated;
         _token = mapUser["token"];
         await Local.saveLocal("token", _token);
@@ -75,8 +91,6 @@ class XacthucProvider extends ChangeNotifier {
         if (_user != null) {
           await _authService.saveUser(_user!);
         }
-
-        // Lưu credentials sau khi login thành công
         if (_rememberMe) {
           _savedMaSo = maSo;
           _savedMatKhau = matKhau;
@@ -86,6 +100,13 @@ class XacthucProvider extends ChangeNotifier {
           await _clearCredentialsInternal();
           await _authService.setRememberMe(false);
         }
+        _isFirstLogin = await _authService.checkDoiMatKhau(maSo);
+
+        // Nếu login API không trả về tên, lấy từ DanhSachNhanVien
+        await refreshUserNameIfNeeded();
+
+        // Đăng ký FCM token với server để nhận notification khi tắt app
+        FirebaseNotificationService().sendTokenToServer(maSo: maSo);
 
         notifyListeners();
         return true;
@@ -102,6 +123,19 @@ class XacthucProvider extends ChangeNotifier {
       return false;
     }
   }
+  /// Nếu hoVaTen rỗng, lấy từ DanhSachNhanVien và cập nhật
+  Future<void> refreshUserNameIfNeeded() async {
+    final maSo = _user?.maSo ?? '';
+    if (maSo.isEmpty) return;
+    if (_user?.hoVaTen != null && _user!.hoVaTen!.isNotEmpty) return;
+    final hoVaTen = await _authService.fetchHoVaTen(maSo);
+    if (hoVaTen != null && hoVaTen.isNotEmpty) {
+      _user = _user!.copyWith(hoVaTen: hoVaTen);
+      await _authService.saveUser(_user!);
+      notifyListeners();
+    }
+  }
+
   Future<void> setRememberMe(bool value) async {
     _rememberMe = value;
     await _authService.setRememberMe(value);
@@ -123,6 +157,39 @@ class XacthucProvider extends ChangeNotifier {
       await _clearCredentialsInternal();
     }
 
+    notifyListeners();
+  }
+
+  /// Upload ảnh đại diện — trả về null nếu thành công, error message nếu thất bại
+  Future<String?> uploadAnhDaiDien(File file) async {
+    final maSo = _user?.maSo ?? '';
+    if (maSo.isEmpty) return 'Không tìm thấy thông tin người dùng';
+
+    _isUploadingAvatar = true;
+    _localAvatarFile = file; // optimistic preview
+    notifyListeners();
+
+    try {
+      final anhDaiDienUrl = await _authService.uploadAnhDaiDien(maSo: maSo, file: file);
+      final newUrl = (anhDaiDienUrl != null && anhDaiDienUrl.isNotEmpty)
+          ? anhDaiDienUrl
+          : '${_authService.buildAvatarUrl(maSo)}?t=${DateTime.now().millisecondsSinceEpoch}';
+      _user = _user!.copyWith(hinhAnh: newUrl);
+      await _authService.saveUser(_user!);
+      _isUploadingAvatar = false;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      _localAvatarFile = null;
+      _isUploadingAvatar = false;
+      notifyListeners();
+      return e.toString().replaceFirst('Exception: ', '');
+    }
+  }
+  Future<void> markFirstLoginDone() async {
+    final maSo = _user?.maSo ?? '';
+    await _authService.markFirstLoginDone(maSo);
+    _isFirstLogin = false;
     notifyListeners();
   }
 

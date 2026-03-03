@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../providers/xacthuc_provider.dart';
 
 enum HvglMenuAction {
@@ -30,27 +31,21 @@ class HvglMenuSheet extends StatefulWidget {
 }
 
 class _HvglMenuSheetState extends State<HvglMenuSheet> {
+  bool _isGopyKienExpanded = false;
   bool _isHelpExpanded = false;
   bool _isSettingsExpanded = false;
 
-  String _buildInitials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty) return '';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    final first = parts.first.substring(0, 1);
-    final last = parts.last.substring(0, 1);
-    return (first + last).toUpperCase();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF0F2F5),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: context.bgColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -60,30 +55,34 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
             height: 4,
             margin: const EdgeInsets.only(top: 12, bottom: 8),
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: isDark ? const Color(0xFF38383A) : Colors.grey[300],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Row(
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xFF007AFF), Color(0xFF00BFA5)],
+                      colors: isDark
+                          ? [AppColors.primaryDark, AppColors.primaryLight]
+                          : [const Color(0xFF1877F2), const Color(0xFF0D5BC7)],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF007AFF).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: isDark
+                            ? AppColors.primaryDark.withValues(alpha: 0.4)
+                            : const Color(0xFF1877F2).withValues(alpha: 0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
@@ -91,18 +90,30 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
                     child: FaIcon(
                       FontAwesomeIcons.hospital,
                       color: Colors.white,
-                      size: 18,
+                      size: 28,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                const Text(
-                  'HÙNG VƯƠNG GIA LAI',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                    letterSpacing: -0.5,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'HÙNG VƯƠNG GIA LAI',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: context.textPrimary,
+                      letterSpacing: 0.8,
+                      height: 1.3,
+                      shadows: [
+                        Shadow(
+                          color: isDark
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -136,6 +147,7 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
         label: 'Thông tin lương',
         color: const Color(0xFF4CAF50),
         bgColor: const Color(0xFFE8F5E9),
+        darkBgColor: const Color(0xFF1B3A1F),
         action: HvglMenuAction.salary,
       ),
       _MenuItemData(
@@ -143,6 +155,7 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
         label: 'Lịch trực',
         color: const Color(0xFF2196F3),
         bgColor: const Color(0xFFE3F2FD),
+        darkBgColor: const Color(0xFF0D2A45),
         action: HvglMenuAction.dutySchedule,
       ),
       _MenuItemData(
@@ -150,6 +163,7 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
         label: 'Lịch khám',
         color: const Color(0xFF9C27B0),
         bgColor: const Color(0xFFF3E5F5),
+        darkBgColor: const Color(0xFF2D1040),
         action: HvglMenuAction.clinicSchedule,
       ),
       _MenuItemData(
@@ -157,6 +171,7 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
         label: 'Đào tạo',
         color: const Color(0xFFE91E63),
         bgColor: const Color(0xFFFCE4EC),
+        darkBgColor: const Color(0xFF3D0A1E),
         action: HvglMenuAction.training,
       ),
     ];
@@ -178,16 +193,23 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
   }
 
   Widget _buildMenuItem(_MenuItemData item) {
+    final isDark = context.isDark;
     return GestureDetector(
       onTap: () => widget.onAction(item.action),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? const Color(0xFF38383A) : Colors.grey[200]!,
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -198,25 +220,36 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 46,
-              height: 46,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: item.bgColor,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    item.color.withValues(alpha: 0.2),
+                    item.color.withValues(alpha: 0.1),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: item.color.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
               child: Center(
-                child: FaIcon(item.icon, color: item.color, size: 20),
+                child: FaIcon(item.icon, color: item.color, size: 22),
               ),
             ),
             const SizedBox(height: 12),
             Text(
               item.label,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -226,16 +259,45 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
     );
   }
 
+  static const List<String> _xemDanhGiaAllowedIds = [
+    '00949',
+    '00130',
+    '00571',
+    '00873',
+    '00008',
+    '00055',
+  ];
+
   Widget _buildExpandableSections() {
+    final maSo = context.read<XacthucProvider>().user?.maSo ?? '';
+    final canViewDanhGia = _xemDanhGiaAllowedIds.contains(maSo);
+
     return Column(
       children: [
-        _buildNavigationItem(
+        _buildExpandableSection(
           icon: FontAwesomeIcons.comment,
           title: 'Góp ý và đánh giá',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, '/gopykien');
-          },
+          isExpanded: _isGopyKienExpanded,
+          onTap: () => setState(() => _isGopyKienExpanded = !_isGopyKienExpanded),
+          children: [
+            _buildSubMenuItem(
+              icon: FontAwesomeIcons.penToSquare,
+              title: 'Góp ý và đánh giá',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/gopykien');
+              },
+            ),
+            if (canViewDanhGia)
+              _buildSubMenuItem(
+                icon: FontAwesomeIcons.star,
+                title: 'Xem Đánh Giá',
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/xemdanhgia');
+                },
+              ),
+          ],
         ),
         const SizedBox(height: 12),
         _buildExpandableSection(
@@ -265,6 +327,14 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
               setState(() => _isSettingsExpanded = !_isSettingsExpanded),
           children: [
             _buildSubMenuItem(
+              icon: FontAwesomeIcons.sliders,
+              title: 'Cài đặt cá nhân',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/caidat-ca-nhan');
+              },
+            ),
+            _buildSubMenuItem(
               icon: FontAwesomeIcons.lock,
               title: 'Đổi mật khẩu',
               onTap: () {
@@ -285,13 +355,20 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
     required VoidCallback onTap,
     required List<Widget> children,
   }) {
+    final isDark = context.isDark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? const Color(0xFF38383A) : Colors.grey[200]!,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -307,17 +384,25 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
               child: Row(
                 children: [
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F2F5),
+                      color: isDark
+                          ? const Color(0xFF3A3A3C)
+                          : Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF38383A)
+                            : Colors.grey[200]!,
+                        width: 1,
+                      ),
                     ),
                     child: Center(
                       child: FaIcon(
                         icon,
-                        color: AppColors.textPrimary,
-                        size: 18,
+                        color: context.primaryColor,
+                        size: 20,
                       ),
                     ),
                   ),
@@ -325,19 +410,19 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       size: 24,
                     ),
                   ),
@@ -361,68 +446,6 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
     );
   }
 
-  Widget _buildNavigationItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F2F5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: FaIcon(
-                    icon,
-                    color: AppColors.textPrimary,
-                    size: 18,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textSecondary,
-                size: 24,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSubMenuItem({
     required IconData icon,
     required String title,
@@ -435,14 +458,14 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         child: Row(
           children: [
-            FaIcon(icon, color: AppColors.textSecondary, size: 16),
+            FaIcon(icon, color: context.textSecondary, size: 16),
             const SizedBox(width: 14),
             Text(
               title,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary.withValues(alpha: 0.85),
+                color: context.textPrimary.withValues(alpha: 0.85),
               ),
             ),
           ],
@@ -452,23 +475,30 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
   }
 
   Widget _buildLogoutButton() {
+    final isDark = context.isDark;
     return GestureDetector(
       onTap: () => widget.onAction(HvglMenuAction.logout),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.error.withValues(alpha: isDark ? 0.3 : 0.2),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FaIcon(
@@ -476,7 +506,7 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
               color: AppColors.error,
               size: 18,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Text(
               'Đăng xuất',
               style: TextStyle(
@@ -497,6 +527,7 @@ class _MenuItemData {
   final String label;
   final Color color;
   final Color bgColor;
+  final Color darkBgColor;
   final HvglMenuAction action;
 
   _MenuItemData({
@@ -504,6 +535,7 @@ class _MenuItemData {
     required this.label,
     required this.color,
     required this.bgColor,
+    required this.darkBgColor,
     required this.action,
   });
 }

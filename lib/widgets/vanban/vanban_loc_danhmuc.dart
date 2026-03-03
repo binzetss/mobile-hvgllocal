@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/vanban_model.dart';
 import '../../providers/vanban_provider.dart';
 
@@ -40,31 +40,31 @@ class VanbanCategoryFilter extends StatelessWidget {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-                                  AppColors.primary.withValues(alpha: 0.95),
-                                  AppColors.primary,
+                                  context.primaryColor.withValues(alpha: 0.95),
+                                  context.primaryColor,
                                 ],
                               )
                             : null,
-                        color: isSelected ? null : Colors.white,
+                        color: isSelected ? null : context.cardColor,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.primary
-                              : AppColors.border.withValues(alpha: 0.2),
+                              ? context.primaryColor
+                              : context.borderColor,
                           width: isSelected ? 1.5 : 1,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.3),
+                                  color: context.primaryColor
+                                      .withValues(alpha: 0.35),
                                   blurRadius: 10,
                                   offset: const Offset(0, 3),
                                 ),
                               ]
                             : [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.03),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
@@ -77,7 +77,7 @@ class VanbanCategoryFilter extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           color: isSelected
                               ? Colors.white
-                              : AppColors.textPrimary,
+                              : context.textPrimary,
                           letterSpacing: 0.1,
                         ),
                       ),

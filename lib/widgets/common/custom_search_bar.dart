@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final TextEditingController controller;
@@ -46,7 +46,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       padding: effectivePadding,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: hasNoPadding ? BorderRadius.zero : BorderRadius.circular(12),
           border: hasNoPadding
               ? Border(

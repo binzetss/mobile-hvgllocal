@@ -1,3 +1,11 @@
+/// Một lần bấm thẻ từ API (time + loaiChamCong)
+class ChamcongPunch {
+  final DateTime time;
+  final String loaiChamCong;
+
+  const ChamcongPunch({required this.time, required this.loaiChamCong});
+}
+
 enum ChamcongStatus {
   present,
   late,
@@ -19,6 +27,8 @@ class ChamcongModel {
   final String? location;
   final String? notes;
   final double? workingHours;
+  /// Danh sách tất cả lần chấm trong ngày (không giới hạn)
+  final List<ChamcongPunch> punches;
 
   const ChamcongModel({
     required this.id,
@@ -32,6 +42,7 @@ class ChamcongModel {
     this.location,
     this.notes,
     this.workingHours,
+    this.punches = const [],
   });
 
   factory ChamcongModel.fromJson(Map<String, dynamic> json) {

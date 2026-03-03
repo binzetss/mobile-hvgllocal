@@ -23,19 +23,19 @@ class DataPreloadService {
 
       for (var config in preloadProviders) {
         try {
-          debugPrint('📥 Preloading: ${config.name}');
+          debugPrint(' Preloading: ${config.name}');
           await config.preload(context);
-          debugPrint('✅ Loaded: ${config.name}');
+          debugPrint(' Loaded: ${config.name}');
         } catch (e) {
-          debugPrint('❌ Error loading ${config.name}: $e');
+          debugPrint(' Error loading ${config.name}: $e');
 
         }
       }
 
       _isPreloaded = true;
-      debugPrint('🎉 All data preloaded successfully!');
+      debugPrint('All data preloaded successfully!');
     } catch (e) {
-      debugPrint('❌ Error preloading data: $e');
+      debugPrint('Error preloading data: $e');
 
     } finally {
       _isPreloading = false;
@@ -43,13 +43,13 @@ class DataPreloadService {
   }
 
   void clearAllCache(BuildContext context) {
-    debugPrint('🗑️ Clearing all cache...');
+    debugPrint('Clearing all cache...');
     for (var config in preloadProviders) {
       try {
         config.clearCache(context);
-        debugPrint('✅ Cleared cache: ${config.name}');
+        debugPrint('Cleared cache: ${config.name}');
       } catch (e) {
-        debugPrint('❌ Error clearing cache ${config.name}: $e');
+        debugPrint('Error clearing cache ${config.name}: $e');
       }
     }
     reset();
@@ -58,11 +58,11 @@ class DataPreloadService {
   void reset() {
     _isPreloading = false;
     _isPreloaded = false;
-    debugPrint('🔄 Preload service reset');
+    debugPrint('Preload service reset');
   }
 
   Future<void> refreshAllData(BuildContext context) async {
-    debugPrint('🔄 Refreshing all data...');
+    debugPrint('Refreshing all data...');
     _isPreloaded = false;
     await preloadAllData(context);
   }

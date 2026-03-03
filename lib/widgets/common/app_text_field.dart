@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class AppTextField extends StatefulWidget {
   final TextEditingController? controller;
@@ -50,14 +51,13 @@ class _AppTextFieldState extends State<AppTextField> {
       style: const TextStyle(
         fontSize: 17,
         fontWeight: FontWeight.w400,
-        color: AppColors.textPrimary,
         letterSpacing: -0.4,
       ),
       decoration: InputDecoration(
         hintText: widget.hintText,
         labelText: widget.labelText,
-        hintStyle: const TextStyle(
-          color: AppColors.textHint,
+        hintStyle: TextStyle(
+          color: context.textSecondary.withValues(alpha: 0.6),
           fontSize: 17,
           fontWeight: FontWeight.w400,
           letterSpacing: -0.4,
@@ -67,7 +67,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 padding: const EdgeInsets.only(left: 12, right: 8),
                 child: Icon(
                   widget.prefixIcon,
-                  color: AppColors.iconBlue,
+                  color: context.primaryColor,
                   size: 22,
                 ),
               )
@@ -76,7 +76,7 @@ class _AppTextFieldState extends State<AppTextField> {
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                  color: AppColors.iconGrey,
+                  color: context.textSecondary,
                   size: 22,
                 ),
                 onPressed: () {
@@ -87,7 +87,7 @@ class _AppTextFieldState extends State<AppTextField> {
               )
             : null,
         filled: true,
-        fillColor: AppColors.backgroundSecondary,
+        fillColor: context.surfaceColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
@@ -95,21 +95,21 @@ class _AppTextFieldState extends State<AppTextField> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.3),
+            color: context.borderColor,
             width: 0.5,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.3),
+            color: context.borderColor,
             width: 0.5,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.primary,
+          borderSide: BorderSide(
+            color: context.primaryColor,
             width: 1.5,
           ),
         ),

@@ -1,37 +1,56 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../providers/vanban_provider.dart';
+import '../../providers/navigation_provider.dart';
 import '../../data/models/vanban_model.dart';
 import '../../pages/vanban/vanban_chitiet_page.dart';
 
-class VanbanThongbaoCard extends StatelessWidget {
+class VanbanThongbaoCard extends StatefulWidget {
   const VanbanThongbaoCard({super.key});
+
+  @override
+  State<VanbanThongbaoCard> createState() => _VanbanThongbaoCardState();
+}
+
+class _VanbanThongbaoCardState extends State<VanbanThongbaoCard> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<VanbanProvider>().init();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<VanbanProvider>(
       builder: (context, provider, _) {
-        final latestDocs = provider.documents.take(2).toList();
+        final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+        final latestDocs = provider.documents.take(isDesktop ? 8 : 2).toList();
 
         if (latestDocs.isEmpty) {
           return const SizedBox.shrink();
         }
 
+        final isDark = context.isDark;
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.border.withValues(alpha: 0.1),
+              color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.3),
               width: 0.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadowLight,
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -68,7 +87,6 @@ class VanbanThongbaoCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
                             letterSpacing: -0.3,
                           ),
                         ),
@@ -140,6 +158,11 @@ class _DocumentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+        if (isDesktop) {
+          context.read<NavigationProvider>().setWebVanbanDetail(document);
+          return;
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -198,10 +221,10 @@ class _DocumentItem extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             document.fileName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1877F2),
+              color: context.primaryColor,
               height: 1.4,
               letterSpacing: -0.3,
             ),
@@ -211,10 +234,10 @@ class _DocumentItem extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const FaIcon(
+              FaIcon(
                 FontAwesomeIcons.clock,
                 size: 11,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
               ),
               const SizedBox(width: 6),
               Text(
@@ -222,16 +245,16 @@ class _DocumentItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary.withValues(alpha: 0.8),
+                  color: context.textSecondary.withValues(alpha: 0.8),
                   letterSpacing: -0.2,
                 ),
               ),
               if (document.soKiHieu.isNotEmpty) ...[
                 const SizedBox(width: 12),
-                const FaIcon(
+                FaIcon(
                   FontAwesomeIcons.hashtag,
                   size: 10,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
                 const SizedBox(width: 4),
                 Expanded(
@@ -240,7 +263,7 @@ class _DocumentItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary.withValues(alpha: 0.7),
+                      color: context.textSecondary.withValues(alpha: 0.7),
                       letterSpacing: -0.1,
                     ),
                     maxLines: 1,

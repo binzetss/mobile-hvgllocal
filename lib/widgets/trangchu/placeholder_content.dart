@@ -31,7 +31,6 @@ class PlaceholderContent extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
               letterSpacing: -0.5,
             ),
           )

@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
@@ -35,10 +35,10 @@ class CustomBottomNavBar extends StatelessWidget {
                       height: 68,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Theme.of(context).cardColor.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.5),
+                          color: Theme.of(context).cardColor.withValues(alpha: 0.5),
                           width: 1,
                         ),
                         boxShadow: [
@@ -84,7 +84,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 ),
                 Positioned(
                   top: -6,
-                  child: _buildCenterButton(),
+                  child: _buildCenterButton(context),
                 ),
               ],
             ),
@@ -141,7 +141,7 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildCenterButton() {
+  Widget _buildCenterButton(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap(2),
       child: Container(
@@ -154,7 +154,7 @@ class CustomBottomNavBar extends StatelessWidget {
             colors: AppColors.primaryGradient,
           ),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 4),
+          border: Border.all(color: Theme.of(context).cardColor, width: 4),
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withValues(alpha: 0.35),

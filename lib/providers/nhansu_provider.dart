@@ -103,7 +103,7 @@ class NhansuProvider extends ChangeNotifier {
 
   Future<void> _saveToCache() async {
     try {
-      final staffJson = _allStaff.map((s) => s.toJson(excludeImage: true)).toList();
+      final staffJson = _allStaff.map((s) => s.toJson()).toList();
       await _cacheService.cacheStaff(staffJson);
       debugPrint('Đã lưu cache: ${staffJson.length} nhân viên');
     } catch (e) {
@@ -155,7 +155,7 @@ class NhansuProvider extends ChangeNotifier {
     if (_searchQuery.isEmpty) {
       depts = List.from(_departments);
     } else {
-      depts = _departments.where((dept) {
+      final filtered = _departments.where((dept) {
         final staffInDept = _staffByDepartment[dept.tenKhoa] ?? [];
         final hasMatchingStaff = staffInDept.any(
           (staff) =>
@@ -165,6 +165,7 @@ class NhansuProvider extends ChangeNotifier {
         );
         return VietnameseUtils.containsIgnoreDiacritics(dept.tenKhoa, _searchQuery) || hasMatchingStaff;
       }).toList();
+      depts = filtered.isEmpty ? List.from(_departments) : filtered;
     }
 
     depts.sort((a, b) {
@@ -200,11 +201,12 @@ class NhansuProvider extends ChangeNotifier {
 
   List<NhansuModel> get filteredStaff {
     if (_searchQuery.isEmpty) return _allStaff;
-    return _allStaff.where((staff) =>
+    final results = _allStaff.where((staff) =>
       VietnameseUtils.containsIgnoreDiacritics(staff.hoVaTen, _searchQuery) ||
       VietnameseUtils.containsIgnoreDiacritics(staff.chucVu, _searchQuery) ||
       VietnameseUtils.containsIgnoreDiacritics(staff.maSo, _searchQuery),
     ).toList();
+    return results.isEmpty ? _allStaff : results;
   }
 
   /// True khi search khớp tên NV/mã NV nhưng không khớp tên khoa phòng

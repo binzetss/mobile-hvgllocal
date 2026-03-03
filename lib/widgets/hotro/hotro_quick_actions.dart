@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/services/hotro_service.dart';
 
 class HotroQuickActions extends StatelessWidget {
@@ -52,8 +53,9 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(16),
       elevation: 0,
       shadowColor: Colors.black.withValues(alpha: 0.1),
@@ -65,7 +67,9 @@ class _QuickActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: color.withValues(alpha: 0.2),
+              color: isDark
+                  ? color.withValues(alpha: 0.3)
+                  : color.withValues(alpha: 0.2),
               width: 1.5,
             ),
             boxShadow: [

@@ -17,13 +17,13 @@ class ShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.background,
-      highlightColor: Colors.white,
+      baseColor: Theme.of(context).scaffoldBackgroundColor,
+      highlightColor: Theme.of(context).cardColor,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
@@ -39,7 +39,7 @@ class ShimmerCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class HotroTipCard extends StatelessWidget {
   const HotroTipCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1976D2).withValues(alpha: 0.08),
-            AppColors.primary.withValues(alpha: 0.05),
-          ],
+          colors: isDark
+              ? [
+                  const Color(0xFF1976D2).withValues(alpha: 0.15),
+                  AppColors.primary.withValues(alpha: 0.12),
+                ]
+              : [
+                  const Color(0xFF1976D2).withValues(alpha: 0.08),
+                  AppColors.primary.withValues(alpha: 0.05),
+                ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
+          color: AppColors.primary.withValues(
+            alpha: isDark ? 0.3 : 0.2,
+          ),
           width: 1,
         ),
       ),
@@ -47,12 +56,12 @@ class HotroTipCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Lưu ý quan trọng',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
+                    color: isDark ? const Color(0xFF4599FF) : AppColors.primary,
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -62,7 +71,7 @@ class HotroTipCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Colors.grey[700],
+                    color: isDark ? Colors.grey[400] : Colors.grey[700],
                     height: 1.5,
                     letterSpacing: 0.1,
                   ),

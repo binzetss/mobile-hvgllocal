@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/support_member_model.dart';
-import '../../data/services/hotro_service.dart';
 
 class HotroMemberCard extends StatelessWidget {
   final SupportMember member;
@@ -13,15 +14,19 @@ class HotroMemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final service = HotroService();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isWeb = kIsWeb && MediaQuery.of(context).size.width >= 768;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(
+          color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -36,32 +41,36 @@ class HotroMemberCard extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Container(
-                width: 58,
-                height: 58,
+                width: 68,
+                height: 68,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      member.color.withValues(alpha: 0.15),
-                      member.color.withValues(alpha: 0.08),
-                    ],
-                  ),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: member.color.withValues(alpha: 0.2),
+                    color: member.color.withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
-                child: Center(
-                  child: Text(
-                    member.avatar,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: member.color,
-                    ),
-                  ),
+                child: ClipOval(
+                  child: member.avatarPath != null
+                      ? Image.asset(
+                          member.avatarPath!,
+                          width: 58,
+                          height: 58,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          color: member.color.withValues(alpha: 0.12),
+                          child: Center(
+                            child: Text(
+                              member.avatar,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: member.color,
+                              ),
+                            ),
+                          ),
+                        ),
                 ),
               ),
               Positioned(
@@ -73,7 +82,7 @@ class HotroMemberCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFF4CAF50),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
+                    border: Border.all(color: Theme.of(context).cardColor, width: 3),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
@@ -93,10 +102,10 @@ class HotroMemberCard extends StatelessWidget {
               children: [
                 Text(
                   member.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A),
+                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -120,24 +129,56 @@ class HotroMemberCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (isWeb) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.phone,
+                        size: 11,
+                        color: isDark
+                            ? const Color(0xFF8E8E93)
+                            : const Color(0xFF65676B),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        member.phone,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark
+                              ? const Color(0xFF8E8E93)
+                              : const Color(0xFF65676B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _ActionButton(
-                icon: FontAwesomeIcons.phone,
-                color: const Color(0xFF2E7D32),
-                bgColor: const Color(0xFFE8F5E9),
-                onTap: () => service.makePhoneCall(member.phone),
-              ),
-              const SizedBox(width: 10),
+              if (!isWeb) ...[
+                _ActionButton(
+                  icon: FontAwesomeIcons.phone,
+                  color: const Color(0xFF2E7D32),
+                  bgColor: const Color(0xFFE8F5E9),
+                  onTap: () => launchUrl(
+                    Uri.parse('tel:${member.phone}'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
               _ActionButton(
                 icon: FontAwesomeIcons.comments,
                 color: const Color(0xFF1976D2),
                 bgColor: const Color(0xFFE3F2FD),
-                onTap: () => service.openZalo(member.phone),
+                onTap: () => launchUrl(
+                  Uri.parse('https://zalo.me/${member.phone}'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
             ],
           ),

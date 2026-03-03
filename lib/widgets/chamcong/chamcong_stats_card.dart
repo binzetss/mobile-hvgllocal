@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class ChamcongStatsCard extends StatelessWidget {
   final Map<String, dynamic>? stats;
@@ -22,10 +23,10 @@ class ChamcongStatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.1),
+          color: context.borderColor,
           width: 0.5,
         ),
         boxShadow: [
@@ -49,12 +50,12 @@ class ChamcongStatsCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: context.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.assessment_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 24,
                 ),
               ),
@@ -68,7 +69,6 @@ class ChamcongStatsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -78,7 +78,7 @@ class ChamcongStatsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        color: context.textSecondary.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -91,6 +91,7 @@ class ChamcongStatsCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatItem(
+                  context: context,
                   icon: Icons.check_circle_rounded,
                   label: 'Có mặt',
                   value: '$presentDays',
@@ -100,6 +101,7 @@ class ChamcongStatsCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatItem(
+                  context: context,
                   icon: Icons.cancel_rounded,
                   label: 'Vắng mặt',
                   value: '$absentDays',
@@ -147,6 +149,7 @@ class ChamcongStatsCard extends StatelessWidget {
   }
 
   Widget _buildStatItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
@@ -155,10 +158,10 @@ class ChamcongStatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.backgroundSecondary,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
+          color: context.borderColor,
           width: 0.5,
         ),
       ),
@@ -175,7 +178,6 @@ class ChamcongStatsCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
               letterSpacing: -0.5,
             ),
           ),
@@ -185,7 +187,7 @@ class ChamcongStatsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary.withValues(alpha: 0.8),
+              color: context.textSecondary.withValues(alpha: 0.8),
             ),
             textAlign: TextAlign.center,
           ),

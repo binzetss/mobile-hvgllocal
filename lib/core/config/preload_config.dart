@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../providers/chamcong_provider.dart';
+import '../../providers/dangky_com_provider.dart';
 import '../../providers/vanban_provider.dart';
 import '../../providers/lichkham_provider.dart';
 import '../../providers/thongbao_provider.dart';
@@ -16,6 +18,18 @@ class PreloadProviderConfig {
   });
 }
 final List<PreloadProviderConfig> preloadProviders = [
+  PreloadProviderConfig(
+    name: 'Chấm công',
+    preload: (context) => context.read<ChamcongProvider>().init(),
+    clearCache: (context) {},
+  ),
+
+  PreloadProviderConfig(
+    name: 'Đăng ký cơm',
+    preload: (context) => context.read<DangkyComProvider>().loadTodayRegistrations(),
+    clearCache: (context) {},
+  ),
+
   PreloadProviderConfig(
     name: 'Thông báo',
     preload: (context) => context.read<ThongBaoProvider>().init(),

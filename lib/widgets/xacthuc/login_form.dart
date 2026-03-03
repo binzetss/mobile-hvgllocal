@@ -52,7 +52,6 @@ class LoginForm extends StatelessWidget {
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w800,
-        color: AppColors.textPrimary,
         letterSpacing: -0.5,
       ),
     );

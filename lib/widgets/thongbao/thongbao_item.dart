@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/thongbao_model.dart';
 
 class ThongBaoItem extends StatelessWidget {
@@ -41,20 +42,20 @@ class ThongBaoItem extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: thongBao.isRead
-                ? AppColors.backgroundSecondary.withValues(alpha: 0.5)
-                : Colors.white,
+                ? context.surfaceColor
+                : context.cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: thongBao.isRead
                   ? Colors.transparent
-                  : AppColors.primary.withValues(alpha: 0.2),
+                  : context.primaryColor.withValues(alpha: 0.2),
               width: 1,
             ),
             boxShadow: thongBao.isRead
                 ? []
                 : [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
+                      color: context.primaryColor.withValues(alpha: 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -63,7 +64,7 @@ class ThongBaoItem extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildIcon(),
+              _buildIcon(context),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -80,8 +81,8 @@ class ThongBaoItem extends StatelessWidget {
                                   ? FontWeight.w500
                                   : FontWeight.w600,
                               color: thongBao.isRead
-                                  ? AppColors.textSecondary
-                                  : AppColors.textPrimary,
+                                  ? context.textSecondary
+                                  : context.textPrimary,
                               letterSpacing: -0.2,
                             ),
                             maxLines: 1,
@@ -115,7 +116,7 @@ class ThongBaoItem extends StatelessWidget {
                             height: 8,
                             margin: const EdgeInsets.only(left: 8),
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: context.primaryColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -127,8 +128,8 @@ class ThongBaoItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         color: thongBao.isRead
-                            ? AppColors.textSecondary.withValues(alpha: 0.7)
-                            : AppColors.textSecondary,
+                            ? context.textSecondary.withValues(alpha: 0.7)
+                            : context.textSecondary,
                         height: 1.4,
                       ),
                       maxLines: 2,
@@ -139,7 +140,7 @@ class ThongBaoItem extends StatelessWidget {
                       _formatTime(thongBao.time),
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary.withValues(alpha: 0.6),
+                        color: context.textSecondary.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -153,8 +154,8 @@ class ThongBaoItem extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon() {
-    final config = _getIconConfig();
+  Widget _buildIcon(BuildContext context) {
+    final config = _getIconConfig(context);
     return Container(
       width: 44,
       height: 44,
@@ -183,7 +184,7 @@ class ThongBaoItem extends StatelessWidget {
     );
   }
 
-  _IconConfig _getIconConfig() {
+  _IconConfig _getIconConfig(BuildContext context) {
     switch (thongBao.type) {
       case 'chamcong':
         return _IconConfig(
@@ -213,7 +214,7 @@ class ThongBaoItem extends StatelessWidget {
       default:
         return _IconConfig(
           icon: FontAwesomeIcons.bell,
-          color: AppColors.primary,
+          color: context.primaryColor,
         );
     }
   }

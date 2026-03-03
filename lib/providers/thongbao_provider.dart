@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../data/models/thongbao_model.dart';
 import '../data/services/thongbao_service.dart';
 import '../data/models/vanban_model.dart';
 import './vanban_provider.dart';
 
 class ThongBaoProvider extends ChangeNotifier {
+  static ThongBaoProvider? _globalInstance;
+
+  static void addChamcongStatic({
+    required DateTime time,
+    String loai = 'Chấm công',
+  }) {
+    _globalInstance?.addChamcongNotification(time: time, loai: loai);
+  }
+
+  ThongBaoProvider() {
+    _globalInstance = this;
+  }
+
   final ThongBaoService _service = ThongBaoService();
 
   List<ThongBao> _notifications = [];
@@ -23,14 +37,12 @@ class ThongBaoProvider extends ChangeNotifier {
 
   int get unreadCount => _notifications.where((tb) => !tb.isRead && tb.isNew).length;
 
-  /// Helper để gọi notifyListeners an toàn
   void _safeNotifyListeners() {
     if (!_isDisposed) {
       notifyListeners();
     }
   }
 
-  /// Khởi tạo - chỉ load nếu chưa có data
   Future<void> init() async {
     if (_isInitialized && _notifications.isNotEmpty) {
       return;
@@ -97,6 +109,23 @@ class ThongBaoProvider extends ChangeNotifier {
     _safeNotifyListeners();
     await _service.delete(id);
   }
+  Future<void> addChamcongNotification({
+    required DateTime time,
+    String loai = 'Chấm công',
+  }) async {
+    final timeStr = DateFormat('HH:mm').format(time);
+    final notification = ThongBao(
+      id: 'cc_${time.millisecondsSinceEpoch}',
+      title: '$loai thành công',
+      content: 'Bạn đã $loai lúc $timeStr',
+      type: 'chamcong',
+      time: time,
+      isRead: false,
+    );
+    await _service.addNotification(notification);
+    _notifications.insert(0, notification);
+    _safeNotifyListeners();
+  }
 
   void clearCache() {
     _notifications = [];
@@ -108,29 +137,23 @@ class ThongBaoProvider extends ChangeNotifier {
     _service.clearAll();
   }
 
-  /// Navigate to document detail from notification
+  
   Future<VanbanModel?> navigateToDocument(
     String notificationId,
     VanbanProvider vanbanProvider,
   ) async {
-    // Find notification
+   
     final notification = _notifications.firstWhere(
       (n) => n.id == notificationId,
       orElse: () => throw Exception('Notification not found'),
     );
-
-    // Get documentId from extraData
     final documentId = notification.extraData?['documentId'] as String?;
     if (documentId == null) {
       throw Exception('Document ID not found in notification');
     }
-
-    // Mark as read
     if (!notification.isRead) {
       await markAsRead(notificationId);
     }
-
-    // Fetch document
     final document = await vanbanProvider.getDocumentById(int.parse(documentId));
 
     if (document == null) {
@@ -142,6 +165,7 @@ class ThongBaoProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    if (_globalInstance == this) _globalInstance = null;
     _isDisposed = true;
     super.dispose();
   }

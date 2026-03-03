@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class ThongBaoHeader extends StatelessWidget {
   final int unreadCount;
@@ -19,7 +19,7 @@ class ThongBaoHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -37,13 +37,13 @@ class ThongBaoHeader extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.backgroundSecondary.withValues(alpha: 0.6),
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: FaIcon(
                   FontAwesomeIcons.arrowLeft,
                   size: 18,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
             ),
@@ -57,7 +57,6 @@ class ThongBaoHeader extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -66,7 +65,7 @@ class ThongBaoHeader extends StatelessWidget {
                       '$unreadCount thông báo chưa đọc',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        color: context.textSecondary.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -79,7 +78,7 @@ class ThongBaoHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: context.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -88,7 +87,7 @@ class ThongBaoHeader extends StatelessWidget {
                       FaIcon(
                         FontAwesomeIcons.checkDouble,
                         size: 14,
-                        color: AppColors.primary,
+                        color: context.primaryColor,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -96,7 +95,7 @@ class ThongBaoHeader extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
+                          color: context.primaryColor,
                         ),
                       ),
                     ],

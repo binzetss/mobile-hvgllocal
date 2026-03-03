@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../../core/utils/token_manager.dart';
 
 class ApiService {
@@ -9,6 +12,11 @@ class ApiService {
 
   final TokenManager _tokenManager = TokenManager();
 
+  /// Parse body an toàn — trả về {'success': true} nếu body rỗng
+  Map<String, dynamic> _decode(String body) {
+    if (body.trim().isEmpty) return {'success': true};
+    return jsonDecode(body) as Map<String, dynamic>;
+  }
 
   Future<Map<String, String>> _getHeaders({bool includeToken = true}) async {
     final headers = {
@@ -25,8 +33,6 @@ class ApiService {
 
     return headers;
   }
-
-  /// POST request với tự động thêm Bearer token
   Future<Map<String, dynamic>> post(
     String url,
     Map<String, dynamic> body, {
@@ -42,20 +48,39 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
-        // Token hết hạn hoặc không hợp lệ
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
-        throw Exception('Server error: ${response.statusCode}');
+
+        try {
+          final body = jsonDecode(response.body);
+          final msg = body['message']?.toString();
+          if (msg != null && msg.isNotEmpty) throw Exception(msg);
+        } catch (jsonErr) {
+          if (jsonErr is Exception) rethrow;
+        }
+        throw Exception('Lỗi máy chủ (${response.statusCode})');
       }
     } catch (e) {
-      throw Exception('Network error: $e');
+      if (e is Exception) rethrow;
+      throw Exception('Lỗi kết nối: $e');
     }
   }
+  /// Web: dùng POST (browser không cho GET+body).
+  /// Mobile: dùng GET+body (server dùng [FromBody]).
+  Future<Map<String, dynamic>> fetchData(
+    String url,
+    Map<String, dynamic> body, {
+    bool requiresAuth = true,
+  }) async {
+    if (kIsWeb) {
+      return post(url, body, requiresAuth: requiresAuth);
+    }
+    return getWithBody(url, body, requiresAuth: requiresAuth);
+  }
 
-  /// GET request với body và tự động thêm Bearer token
   Future<Map<String, dynamic>> getWithBody(
     String url,
     Map<String, dynamic> body, {
@@ -72,7 +97,7 @@ class ApiService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -83,8 +108,6 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-  /// GET request với tự động thêm Bearer token
   Future<Map<String, dynamic>> get(
     String url, {
     bool requiresAuth = true,
@@ -98,9 +121,8 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
-        // Token hết hạn hoặc không hợp lệ
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
@@ -110,8 +132,6 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-  /// GET request trả về List với tự động thêm Bearer token
   Future<List<dynamic>> getList(
     String url, {
     bool requiresAuth = true,
@@ -132,7 +152,6 @@ class ApiService {
           throw Exception('Expected List but got ${decoded.runtimeType}');
         }
       } else if (response.statusCode == 401) {
-        // Token hết hạn hoặc không hợp lệ
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
@@ -142,8 +161,6 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-  /// PUT request với tự động thêm Bearer token
   Future<Map<String, dynamic>> put(
     String url,
     Map<String, dynamic> body, {
@@ -159,7 +176,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -170,8 +187,6 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-  /// DELETE request với tự động thêm Bearer token
   Future<Map<String, dynamic>> delete(
     String url, {
     bool requiresAuth = true,
@@ -185,7 +200,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -196,8 +211,6 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-  /// DELETE request với body và tự động thêm Bearer token
   Future<Map<String, dynamic>> deleteWithBody(
     String url,
     Map<String, dynamic> body, {
@@ -214,7 +227,7 @@ class ApiService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return _decode(response.body);
       } else if (response.statusCode == 401) {
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -223,6 +236,59 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Network error: $e');
+    }
+  }
+  Future<Map<String, dynamic>> postMultipart(
+    String url,
+    Map<String, String> fields,
+    File file,
+    String fileFieldName, {
+    String? filename,
+    String? mimeType,
+  }) async {
+    try {
+      final token = await _tokenManager.getToken();
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      request.fields.addAll(fields);
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          fileFieldName,
+          file.path,
+          filename: filename,
+          contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      // ignore: avoid_print
+      print('[UPLOAD] status=${response.statusCode} body=${response.body}');
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (response.body.isEmpty) return {'success': true};
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 401) {
+        await _tokenManager.clearToken();
+        throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      } else {
+        try {
+          final body = jsonDecode(response.body);
+          final msg = body['message']?.toString();
+          if (msg != null && msg.isNotEmpty) throw Exception(msg);
+        } catch (jsonErr) {
+          if (jsonErr is Exception) rethrow;
+        }
+        throw Exception('Lỗi máy chủ (${response.statusCode})');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Lỗi kết nối: $e');
     }
   }
 }

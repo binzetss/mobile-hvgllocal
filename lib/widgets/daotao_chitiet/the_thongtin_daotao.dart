@@ -106,7 +106,6 @@ class TheThongTinDaoTao extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
                       letterSpacing: -0.2,
                     ),
                   ),

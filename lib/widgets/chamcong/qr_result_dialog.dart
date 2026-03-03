@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class QrResultDialog extends StatelessWidget {
   final bool isSuccess;
@@ -24,7 +25,7 @@ class QrResultDialog extends StatelessWidget {
           margin: const EdgeInsets.all(32),
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
@@ -105,10 +106,10 @@ class QrResultDialog extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   height: 1.5,
                 ),
               )
@@ -126,7 +127,7 @@ class QrResultDialog extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         isSuccess ? AppColors.success : AppColors.error,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).cardColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
