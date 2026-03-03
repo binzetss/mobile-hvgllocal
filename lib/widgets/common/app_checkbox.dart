@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class AppCheckbox extends StatelessWidget {
   final bool value;
@@ -31,13 +31,13 @@ class AppCheckbox extends StatelessWidget {
             child: Checkbox(
               value: value,
               onChanged: onChanged,
-              activeColor: activeColor ?? AppColors.primary,
-              checkColor: checkColor ?? AppColors.textWhite,
+              activeColor: activeColor ?? context.primaryColor,
+              checkColor: checkColor ?? Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              side: const BorderSide(
-                color: AppColors.border,
+              side: BorderSide(
+                color: context.borderColor,
                 width: 1.5,
               ),
             ),
@@ -46,9 +46,9 @@ class AppCheckbox extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
               ),
             ),
           ],

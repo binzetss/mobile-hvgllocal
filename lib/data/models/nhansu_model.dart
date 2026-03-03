@@ -4,13 +4,15 @@ class NhansuModel {
   final String hoVaTen;
   final String? soDienThoai;
   final String chucVu;
+  final String tenChucVu;
   final String khoaPhongId;
   final String khoaPhongTen;
-  final String? hinhAnh;
+  final String? anhDaiDienUrl;
   final String? gioiTinh;
   final String? namSinh;
   final String? diaChi;
   final bool isHead;
+  final bool doiMatKhau;
 
   NhansuModel({
     required this.id,
@@ -18,13 +20,15 @@ class NhansuModel {
     required this.hoVaTen,
     this.soDienThoai,
     required this.chucVu,
+    required this.tenChucVu,
     required this.khoaPhongId,
     required this.khoaPhongTen,
-    this.hinhAnh,
+    this.anhDaiDienUrl,
     this.gioiTinh,
     this.namSinh,
     this.diaChi,
     this.isHead = false,
+    this.doiMatKhau = false,
   });
 
   factory NhansuModel.fromJson(Map<String, dynamic> json) {
@@ -39,25 +43,27 @@ class NhansuModel {
       hoVaTen: json['hoVaTen']?.toString() ?? '',
       soDienThoai: json['soDienThoai']?.toString(),
       chucVu: chucVu,
+      tenChucVu: tenChucVu,
       khoaPhongId: '',
       khoaPhongTen: json['tenKhoaPhong']?.toString() ?? '',
-      hinhAnh: null,
+      anhDaiDienUrl: json['anhDaiDienUrl']?.toString(),
       gioiTinh: json['gioiTinh']?.toString(),
-      namSinh: json['namSinh']?.toString(),
+      namSinh: json['namSinh']?.toString() ?? json['ngaySinh']?.toString(),
       diaChi: json['noiOHienTai']?.toString(),
       isHead: tenChucVu.toLowerCase().contains('trưởng'),
+      doiMatKhau: json['doiMatKhau'] == true,
     );
   }
 
-  Map<String, dynamic> toJson({bool excludeImage = false}) {
+  Map<String, dynamic> toJson() {
     return {
       'maSo': maSo,
       'hoVaTen': hoVaTen,
       'soDienThoai': soDienThoai,
       'tenChucDanh': chucVu,
-      'tenChucVu': isHead ? 'Trưởng' : '',
+      'tenChucVu': tenChucVu,
       'tenKhoaPhong': khoaPhongTen,
-      if (!excludeImage) 'hinhAnh': hinhAnh,
+      'anhDaiDienUrl': anhDaiDienUrl,
       'gioiTinh': gioiTinh,
       'namSinh': namSinh,
       'noiOHienTai': diaChi,

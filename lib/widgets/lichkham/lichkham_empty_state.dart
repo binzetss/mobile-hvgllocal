@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class LichkhamEmptyState extends StatelessWidget {
   const LichkhamEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -27,12 +29,12 @@ class LichkhamEmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Không có lịch khám',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1A1A1A),
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
           ),
           const SizedBox(height: 8),
@@ -41,7 +43,7 @@ class LichkhamEmptyState extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Colors.grey[600],
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
             ),
           ),
         ],

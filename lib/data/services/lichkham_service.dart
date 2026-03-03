@@ -83,8 +83,6 @@ class LichkhamService {
   Future<List<LichkhamModel>> getTodaySchedules() async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final tomorrow = today.add(const Duration(days: 1));
-
     return await getSchedulesByDateRange(
       startDate: today,
       endDate: today,

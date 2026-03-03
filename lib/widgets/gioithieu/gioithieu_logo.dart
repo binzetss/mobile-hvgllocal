@@ -4,8 +4,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/api_endpoints.dart';
 
-class GioithieuLogo extends StatelessWidget {
+class GioithieuLogo extends StatefulWidget {
   const GioithieuLogo({super.key});
+
+  @override
+  State<GioithieuLogo> createState() => _GioithieuLogoState();
+}
+
+class _GioithieuLogoState extends State<GioithieuLogo> {
+  bool _imageReady = false;
+
+  void _markReady() {
+    if (!_imageReady) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _imageReady = true);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +43,42 @@ class GioithieuLogo extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              child: CachedNetworkImage(
-                imageUrl: ApiEndpoints.logoHeader,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => _buildPlaceholder(),
-                errorWidget: (context, url, error) => _buildPlaceholder(),
+              child: AnimatedOpacity(
+                opacity: _imageReady ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeIn,
+                child: CachedNetworkImage(
+                  imageUrl: ApiEndpoints.logoHeader,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                  imageBuilder: (context, imageProvider) {
+                    _markReady();
+                    return Image(image: imageProvider, fit: BoxFit.cover);
+                  },
+                  placeholder: (context, url) => const SizedBox.shrink(),
+                  errorWidget: (context, url, error) {
+                    _markReady();
+                    return Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: AppColors.primaryGradient,
+                        ),
+                      ),
+                      child: const Center(
+                        child: FaIcon(
+                          FontAwesomeIcons.hospital,
+                          size: 46,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -44,7 +88,6 @@ class GioithieuLogo extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
               letterSpacing: -0.3,
             ),
             textAlign: TextAlign.center,
@@ -66,26 +109,6 @@ class GioithieuLogo extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: AppColors.primaryGradient,
-        ),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: const FaIcon(
-        FontAwesomeIcons.hospital,
-        size: 46,
-        color: Colors.white,
       ),
     );
   }

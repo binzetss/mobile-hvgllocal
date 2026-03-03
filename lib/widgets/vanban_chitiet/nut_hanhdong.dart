@@ -62,7 +62,7 @@ class ActionButtons extends StatelessWidget {
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).cardColor,
               shadowColor: Colors.transparent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -75,7 +75,7 @@ class ActionButtons extends StatelessWidget {
           width: double.infinity,
           height: 52,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: AppColors.primary.withValues(alpha: 0.3),

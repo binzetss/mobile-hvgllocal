@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class GopyKienFormCard extends StatelessWidget {
   final String selectedCategory;
@@ -17,14 +18,17 @@ class GopyKienFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowLight,
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : AppColors.shadowLight,
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -33,19 +37,19 @@ class GopyKienFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Loại góp ý',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.backgroundSecondary,
+              color: isDark ? const Color(0xFF3A3A3C) : AppColors.backgroundSecondary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: DropdownButtonHideUnderline(
@@ -55,7 +59,12 @@ class GopyKienFormCard extends StatelessWidget {
                 items: categories.map((category) {
                   return DropdownMenuItem(
                     value: category,
-                    child: Text(category),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                      ),
+                    ),
                   );
                 }).toList(),
                 onChanged: onCategoryChanged,
@@ -63,22 +72,28 @@ class GopyKienFormCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Nội dung góp ý',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: feedbackController,
+            style: TextStyle(
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+            ),
             maxLines: 6,
             decoration: InputDecoration(
               hintText: 'Chia sẻ ý kiến của bạn...',
+              hintStyle: TextStyle(
+                color: isDark ? Colors.grey[500] : Colors.grey[400],
+              ),
               filled: true,
-              fillColor: AppColors.backgroundSecondary,
+              fillColor: isDark ? const Color(0xFF3A3A3C) : AppColors.backgroundSecondary,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,

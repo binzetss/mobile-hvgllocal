@@ -66,7 +66,6 @@ class HeaderDaoTao extends StatelessWidget {
             child: Icon(
               Icons.arrow_back_ios_new,
               size: 16,
-              color: AppColors.textPrimary,
             ),
           ),
         ),

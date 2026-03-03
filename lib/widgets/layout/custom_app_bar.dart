@@ -1,9 +1,13 @@
 ﻿import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/utils/token_manager.dart';
+import '../../providers/nhansu_provider.dart';
 import '../../providers/xacthuc_provider.dart';
 import '../../pages/hoso/hoso_page.dart';
 import '../../pages/luong/luong_page.dart';
@@ -17,12 +21,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
   final VoidCallback? onMenuPressed;
   final int notificationCount;
+  final List<Widget>? extraActions;
 
   const CustomAppBar({
     super.key,
     this.showBackButton = false,
     this.onMenuPressed,
     this.notificationCount = 0,
+    this.extraActions,
   });
 
   @override
@@ -39,6 +45,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
       child: BackdropFilter(
@@ -48,7 +55,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: AppColors.primaryGradient,
+              colors: isDark
+                  ? const [Color(0xFF1C1C1E), Color(0xFF2C2C2E)]
+                  : AppColors.primaryGradient,
             ),
             borderRadius: const BorderRadius.vertical(
               bottom: Radius.circular(24),
@@ -103,7 +112,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     color: AppColors.notificationBadge,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white,
+                                      color: Theme.of(context).cardColor,
                                       width: 1.5,
                                     ),
                                   ),
@@ -118,13 +127,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Expanded(
                     child: Consumer<XacthucProvider>(
                       builder: (context, authProvider, child) {
-                        final rawName =
-                            authProvider.user?.hoVaTen?.trim() ?? '';
-                        final userName = rawName.isEmpty
-                            ? 'Người dùng'
-                            : rawName;
-                        final initials = _buildInitials(userName);
-                        return Row(
+                        final maSo = authProvider.user?.maSo ?? '';
+                        final localFile = authProvider.localAvatarFile;
+                        final hinhAnh = authProvider.user?.hinhAnh;
+                        final avatarUrl = hinhAnh?.isNotEmpty == true ? hinhAnh : null;
+                        final token = TokenManager().getCachedToken();
+                        return Selector<NhansuProvider, String?>(
+                          selector: (_, nhansu) {
+                            if (maSo.isEmpty) return null;
+                            final matches = nhansu.allStaff
+                                .where((s) => s.maSo == maSo)
+                                .toList();
+                            return matches.isNotEmpty
+                                ? matches.first.hoVaTen
+                                : null;
+                          },
+                          builder: (context, staffName, _) {
+                            final rawName = staffName?.trim() ??
+                                authProvider.user?.hoVaTen?.trim() ??
+                                '';
+                            final userName =
+                                rawName.isEmpty ? 'Người dùng' : rawName;
+                            final initials = _buildInitials(userName);
+                            return Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Flexible(
@@ -160,6 +185,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 ],
                               ),
                             ),
+                            if (extraActions != null) ...extraActions!,
                             const SizedBox(width: 12),
                             Stack(
                               alignment: Alignment.center,
@@ -199,7 +225,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: Theme.of(context).cardColor,
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
@@ -209,22 +235,35 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                         ),
                                       ],
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        initials,
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppColors.primary,
-                                          letterSpacing: -0.3,
-                                        ),
-                                      ),
+                                    child: ClipOval(
+                                      child: localFile != null
+                                          ? Image.file(
+                                              localFile,
+                                              width: 48,
+                                              height: 48,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : avatarUrl != null
+                                              ? CachedNetworkImage(
+                                                  imageUrl: avatarUrl,
+                                                  httpHeaders: token != null
+                                                      ? {'Authorization': 'Bearer $token'}
+                                                      : {},
+                                                  width: 48,
+                                                  height: 48,
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (ctx, url) => _buildInitialsWidget(initials, ctx),
+                                                  errorWidget: (ctx, url, error) => _buildInitialsWidget(initials, ctx),
+                                                )
+                                              : _buildInitialsWidget(initials, context),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                           ],
+                            );
+                          },
                         );
                       },
                     ),
@@ -233,6 +272,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInitialsWidget(String initials, BuildContext context) {
+    return Center(
+      child: Text(
+        initials,
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: context.primaryColor,
+          letterSpacing: -0.3,
         ),
       ),
     );

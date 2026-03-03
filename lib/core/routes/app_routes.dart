@@ -8,9 +8,12 @@ import '../../pages/nhansu/nhansu_page.dart';
 import '../../pages/gioithieu/gioithieu_page.dart';
 import '../../pages/hotro/hotro_page.dart';
 import '../../pages/caidat/doimatkhau_page.dart';
+import '../../pages/doimatkhau_landau/doimatkhau_landau_page.dart';
 import '../../pages/lichkham/lichkham_page.dart';
 import '../../pages/gopykien/gopykien_page.dart';
 import '../../pages/daotao/daotao_page.dart';
+import '../../pages/xemdanhgia/xemdanhgia_page.dart';
+import '../../pages/caidat/caidat_canhan_page.dart';
 import '../animations/page_transitions.dart';
 
 class AppRoutes {
@@ -25,9 +28,12 @@ class AppRoutes {
   static const String about = '/about';
   static const String support = '/support';
   static const String changePassword = '/change-password';
+  static const String firstLoginChangePassword = '/first-login-change-password';
   static const String clinicSchedule = '/clinic-schedule';
   static const String gopykien = '/gopykien';
   static const String daotao = '/daotao';
+  static const String xemdanhgia = '/xemdanhgia';
+  static const String caidatCanhan = '/caidat-ca-nhan';
 
   static Map<String, WidgetBuilder> get routes => {
         splash: (context) => const SplashPage(),
@@ -39,9 +45,12 @@ class AppRoutes {
         about: (context) => const GioithieuPage(),
         support: (context) => const HotroPage(),
         changePassword: (context) => const DoimatkhauPage(),
+        firstLoginChangePassword: (context) => const DoimatkhauLandauPage(),
         clinicSchedule: (context) => const LichkhamPage(),
         gopykien: (context) => const GopyKienPage(),
         daotao: (context) => const DaotaoPage(),
+        xemdanhgia: (context) => const XemDanhGiaPage(),
+        caidatCanhan: (context) => const CaidatCanhanPage(),
       };
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -64,12 +73,18 @@ class AppRoutes {
         return AppPageTransitions.slideRightTransition(const HotroPage());
       case changePassword:
         return AppPageTransitions.slideRightTransition(const DoimatkhauPage());
+      case firstLoginChangePassword:
+        return AppPageTransitions.fadeTransition(const DoimatkhauLandauPage());
       case clinicSchedule:
         return AppPageTransitions.slideRightTransition(const LichkhamPage());
       case gopykien:
         return AppPageTransitions.slideRightTransition(const GopyKienPage());
       case daotao:
         return AppPageTransitions.slideRightTransition(const DaotaoPage());
+      case xemdanhgia:
+        return AppPageTransitions.slideRightTransition(const XemDanhGiaPage());
+      case caidatCanhan:
+        return AppPageTransitions.slideRightTransition(const CaidatCanhanPage());
       default:
         return AppPageTransitions.fadeTransition(const DangnhapPage());
     }

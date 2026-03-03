@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Diamond outline -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:pathData="M12,2 L22,12 L12,22 L2,12 Z" />
+    <!-- Medical cross inside diamond -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,9.5 L14,7 L10,7 L10,9.5 L7.5,9.5 L7.5,13.5 L10,13.5 L10,16 L14,16 L14,13.5 L16.5,13.5 L16.5,9.5 Z" />
+</vector>

@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../providers/xacthuc_provider.dart';
 import '../common/common.dart';
 
@@ -32,10 +32,10 @@ class DangnhapLoginCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.95),
+              color: context.cardColor,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.6),
+                color: context.borderColor,
                 width: 1.5,
               ),
               boxShadow: [
@@ -57,13 +57,13 @@ class DangnhapLoginCard extends StatelessWidget {
                   key: formKey,
                   child: Column(
                     children: [
-        
-                      const Text(
+
+                      Text(
                         AppStrings.loginTitle,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF1976D2),
+                          color: context.primaryColor,
                           letterSpacing: 0.3,
                           height: 1.3,
                         ),
@@ -73,13 +73,13 @@ class DangnhapLoginCard extends StatelessWidget {
                           .fadeIn(delay: 600.ms, duration: 500.ms)
                           .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
                       const SizedBox(height: 10),
-    
-                      const Text(
+
+                      Text(
                         AppStrings.loginSubtitle,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF607D8B),
+                          color: context.textSecondary,
                           letterSpacing: 0.1,
                           height: 1.4,
                         ),

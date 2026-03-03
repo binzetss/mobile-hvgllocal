@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class HotroInfoCard extends StatelessWidget {
   final IconData icon;
@@ -19,12 +20,16 @@ class HotroInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(
+          color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -61,10 +66,10 @@ class HotroInfoCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A),
+                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -74,7 +79,7 @@ class HotroInfoCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Colors.grey[700],
+                    color: isDark ? Colors.grey[400] : Colors.grey[700],
                     height: 1.5,
                     letterSpacing: 0.1,
                   ),

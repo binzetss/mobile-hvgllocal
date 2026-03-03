@@ -106,6 +106,10 @@ class VanbanChitietProvider extends ChangeNotifier {
     }
   }
 
+  Future<String> getAuthenticatedUrl(String url) {
+    return _fileService.getAuthenticatedUrl(url);
+  }
+
   void clearError() {
     _errorMessage = null;
     _safeNotifyListeners();

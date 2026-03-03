@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class HeaderVanban extends StatelessWidget {
   const HeaderVanban({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
@@ -13,14 +15,18 @@ class HeaderVanban extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary.withValues(alpha: 0.95),
-            AppColors.primary,
-          ],
+          colors: isDark
+              ? [AppColors.primaryDark, AppColors.primaryLight]
+              : [
+                  AppColors.primary.withValues(alpha: 0.95),
+                  AppColors.primary,
+                ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

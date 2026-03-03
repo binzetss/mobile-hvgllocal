@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class LuongRow extends StatelessWidget {
   final String label;
@@ -23,7 +24,8 @@ class LuongRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color valueColor = AppColors.textPrimary;
+    final isDark = context.isDark;
+    Color valueColor = isDark ? Colors.white : AppColors.textPrimary;
     if (isPositive && value > 0) {
       valueColor = AppColors.success;
     } else if (isNegative && value < 0) {
@@ -48,8 +50,10 @@ class LuongRow extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: isHighlight ? FontWeight.w600 : FontWeight.w400,
                     color: isHighlight
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary,
+                        ? (isDark ? Colors.white : AppColors.textPrimary)
+                        : (isDark
+                            ? Colors.grey[400]
+                            : AppColors.textSecondary),
                   ),
                 ),
                 if (subtitle != null)
@@ -57,7 +61,9 @@ class LuongRow extends StatelessWidget {
                     subtitle!,
                     style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textSecondary.withValues(alpha: 0.7),
+                      color: isDark
+                          ? Colors.grey[600]
+                          : AppColors.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
               ],

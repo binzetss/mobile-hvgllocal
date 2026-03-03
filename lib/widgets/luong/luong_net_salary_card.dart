@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class LuongNetSalaryCard extends StatelessWidget {
   final double thucNhan;
@@ -14,13 +15,18 @@ class LuongNetSalaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.1),
+        color: isDark
+            ? AppColors.success.withValues(alpha: 0.15)
+            : AppColors.success.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.success.withValues(alpha: 0.3),
+          color: AppColors.success.withValues(
+            alpha: isDark ? 0.4 : 0.3,
+          ),
           width: 1.5,
         ),
       ),

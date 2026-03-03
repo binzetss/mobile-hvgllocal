@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/vanban_provider.dart';
+import '../../providers/navigation_provider.dart';
 import '../../data/models/vanban_model.dart';
-import '../../core/constants/app_colors.dart';
 import '../../widgets/common/common_search_bar.dart';
 import '../../widgets/vanban/vanban_loc_danhmuc.dart';
 import '../../widgets/vanban/vanban_danh_sach.dart';
@@ -40,7 +41,6 @@ class _VanbanPageState extends State<VanbanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Consumer<VanbanProvider>(
         builder: (context, provider, _) {
           return CustomScrollView(
@@ -69,6 +69,11 @@ class _VanbanPageState extends State<VanbanPage> {
   }
 
   void _navigateToDetail(VanbanModel document) {
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+    if (isDesktop) {
+      context.read<NavigationProvider>().setWebVanbanDetail(document);
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(

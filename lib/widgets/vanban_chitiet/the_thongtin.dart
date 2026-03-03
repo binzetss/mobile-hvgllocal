@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class InfoCard extends StatelessWidget {
   final IconData icon;
@@ -19,10 +19,10 @@ class InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.1),
+          color: context.borderColor,
           width: 1,
         ),
         boxShadow: [
@@ -32,7 +32,7 @@ class InfoCard extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.06),
+            color: context.primaryColor.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -47,8 +47,8 @@ class InfoCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.12),
-                  AppColors.primary.withValues(alpha: 0.08),
+                  context.primaryColor.withValues(alpha: 0.12),
+                  context.primaryColor.withValues(alpha: 0.08),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
@@ -56,7 +56,7 @@ class InfoCard extends StatelessWidget {
             child: FaIcon(
               icon,
               size: 18,
-              color: AppColors.primary,
+              color: context.primaryColor,
             ),
           ),
           const SizedBox(width: 16),
@@ -69,7 +69,7 @@ class InfoCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary.withValues(alpha: 0.65),
+                    color: context.textSecondary.withValues(alpha: 0.65),
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -79,7 +79,6 @@ class InfoCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
                     height: 1.3,
                   ),
                   maxLines: 3,

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../data/models/lichkham_model.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import 'lichkham_schedule_item.dart';
 
 class LichkhamRoomCard extends StatelessWidget {
@@ -16,12 +17,18 @@ class LichkhamRoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFF38383A)
+              : const Color(0xFFE8EAF0),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -32,7 +39,7 @@ class LichkhamRoomCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -46,17 +53,23 @@ class LichkhamRoomCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary.withValues(alpha: 0.1),
-            AppColors.primaryLight.withValues(alpha: 0.05),
-          ],
+          colors: isDark
+              ? [
+                  AppColors.primaryDark.withValues(alpha: 0.2),
+                  AppColors.primaryLight.withValues(alpha: 0.1),
+                ]
+              : [
+                  AppColors.primary.withValues(alpha: 0.1),
+                  AppColors.primaryLight.withValues(alpha: 0.05),
+                ],
         ),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
@@ -68,11 +81,13 @@ class LichkhamRoomCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: AppColors.primaryGradient,
+                colors: isDark
+                    ? [AppColors.primaryDark, AppColors.primaryLight]
+                    : AppColors.primaryGradient,
               ),
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
@@ -91,10 +106,10 @@ class LichkhamRoomCard extends StatelessWidget {
               children: [
                 Text(
                   roomName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -103,7 +118,7 @@ class LichkhamRoomCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
                   ),
                 ),
               ],

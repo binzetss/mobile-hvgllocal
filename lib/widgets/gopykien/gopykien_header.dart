@@ -1,17 +1,21 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class GopyKienHeader extends StatelessWidget {
   const GopyKienHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: isDark
+              ? [AppColors.primaryDark, AppColors.primaryLight]
+              : AppColors.primaryGradient,
         ),
         borderRadius: BorderRadius.circular(16),
       ),

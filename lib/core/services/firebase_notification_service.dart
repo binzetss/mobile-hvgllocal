@@ -1,6 +1,12 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/material.dart' show Color;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../constants/api_endpoints.dart';
+import '../utils/token_manager.dart';
 
 /// Handler cho background messages
 @pragma('vm:entry-point')
@@ -22,13 +28,16 @@ class FirebaseNotificationService {
   String? _fcmToken;
 
   String? get fcmToken => _fcmToken;
-
-  /// Khởi tạo Firebase Messaging
   Future<void> initialize() async {
     if (_initialized) return;
+    if (kIsWeb) {
+      _initialized = true;
+      return;
+    }
 
     try {
-      // Request permission (iOS)
+      await _initializeLocalNotifications();
+      _initialized = true;
       final settings = await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
@@ -36,19 +45,13 @@ class FirebaseNotificationService {
         provisional: false,
       );
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print(' User granted permission');
-      } else {
-        print(' User declined permission');
-        return;
+      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+        return; 
       }
-      await _initializeLocalNotifications();
       _fcmToken = await _firebaseMessaging.getToken();
-      print(' FCM Token: $_fcmToken');
 
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         _fcmToken = newToken;
-        print(' Token refreshed: $newToken');
       });
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
@@ -58,9 +61,6 @@ class FirebaseNotificationService {
       if (initialMessage != null) {
         _handleNotificationTap(initialMessage);
       }
-
-      _initialized = true;
-      print('✅ Firebase Messaging initialized');
     } catch (e) {
       print('❌ Firebase init error: $e');
     }
@@ -70,9 +70,9 @@ class FirebaseNotificationService {
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
     );
 
     const initSettings = InitializationSettings(
@@ -85,18 +85,24 @@ class FirebaseNotificationService {
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
 
-    if (Platform.isAndroid) {
-      const channel = AndroidNotificationChannel(
-        'high_importance_channel',
-        'Thông báo quan trọng',
-        description: 'Kênh thông báo cho các thông báo quan trọng',
-        importance: Importance.high,
-      );
-
-      await _localNotifications
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      final androidPlugin = _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(channel);
+              AndroidFlutterLocalNotificationsPlugin>();
+
+      // Android 13+ (API 33+): bắt buộc xin quyền POST_NOTIFICATIONS runtime
+      await androidPlugin?.requestNotificationsPermission();
+
+      // Tạo notification channel riêng cho chấm công
+      const channel = AndroidNotificationChannel(
+        'chamcong_channel',
+        'Chấm công',
+        description: 'Thông báo chấm công và hoạt động nội bộ',
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+      );
+      await androidPlugin?.createNotificationChannel(channel);
     }
   }
 
@@ -118,14 +124,21 @@ class FirebaseNotificationService {
     required String title,
     required String body,
     String? payload,
+    String channelId = 'chamcong_channel',
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'high_importance_channel',
-      'Thông báo quan trọng',
-      channelDescription: 'Kênh thông báo cho các thông báo quan trọng',
-      importance: Importance.high,
-      priority: Priority.high,
+    const largeIcon = DrawableResourceAndroidBitmap('@mipmap/ic_launcher');
+    final androidDetails = AndroidNotificationDetails(
+      channelId,
+      channelId == 'chamcong_channel' ? 'Chấm công' : 'Thông báo quan trọng',
+      channelDescription: 'Thông báo chấm công và hoạt động nội bộ',
+      importance: Importance.max,
+      priority: Priority.max,
       showWhen: true,
+      playSound: true,
+      enableVibration: true,
+      icon: '@drawable/ic_notification',
+      largeIcon: largeIcon,
+      color: const Color(0xFF1877F2),
     );
 
     const iosDetails = DarwinNotificationDetails(
@@ -134,18 +147,15 @@ class FirebaseNotificationService {
       presentSound: true,
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
-    await _localNotifications.show(
-      DateTime.now().millisecond,
-      title,
-      body,
-      details,
-      payload: payload,
-    );
+    // ID duy nhất dựa trên timestamp để không bị overwrite
+    final id = DateTime.now().millisecondsSinceEpoch % 100000;
+
+    await _localNotifications.show(id, title, body, details, payload: payload);
   }
 
   void _handleNotificationTap(RemoteMessage message) {
@@ -158,6 +168,24 @@ class FirebaseNotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     print('👆 Local notification tapped: ${response.payload}');
 
+  }
+
+  /// Bắn local notification khi chấm công thành công
+  Future<void> showChamcongNotification({
+    required DateTime time,
+    String loai = 'Chấm công',
+  }) async {
+    if (kIsWeb) return;
+    try {
+      final timeStr = DateFormat('HH:mm').format(time);
+      final dateStr = DateFormat('dd/MM/yyyy').format(time);
+      await _showLocalNotification(
+        title: '$loai thành công',
+        body: 'Bạn đã $loai lúc $timeStr ngày $dateStr',
+      );
+    } catch (e) {
+      print('❌ showChamcongNotification error: $e');
+    }
   }
 
   Future<void> subscribeToTopic(String topic) async {
@@ -178,13 +206,34 @@ class FirebaseNotificationService {
     }
   }
 
-  Future<void> sendTokenToServer() async {
-    if (_fcmToken == null) return;
-
+  /// Đăng ký FCM token với server — gọi sau khi đăng nhập thành công
+  /// Server dùng token này để push notification khi tắt app (e.g. chấm vân tay máy vật lý)
+  Future<void> sendTokenToServer({required String maSo}) async {
+    if (_fcmToken == null || maSo.isEmpty) return;
     try {
-      print(' Sending token to server: $_fcmToken');
+      final tokenManager = TokenManager();
+      final authToken = await tokenManager.getToken();
+      final response = await http.post(
+        Uri.parse(ApiEndpoints.fcmToken),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (authToken != null && authToken.isNotEmpty)
+            'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode({
+          'maSo': maSo,
+          'fcmToken': _fcmToken,
+          'platform': defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('✅ FCM token registered: $_fcmToken');
+      } else {
+        print('⚠️ FCM token register failed: ${response.statusCode}');
+      }
     } catch (e) {
-      print('❌ Failed to send token to server: $e');
+      print('❌ sendTokenToServer error: $e');
     }
   }
 }

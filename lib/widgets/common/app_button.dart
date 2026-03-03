@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class AppButton extends StatefulWidget {
   final String text;
@@ -38,7 +38,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = widget.backgroundColor ?? AppColors.primary;
+    final bgColor = widget.backgroundColor ?? context.primaryColor;
 
     return GestureDetector(
       onTapDown: widget.isLoading ? null : (_) => setState(() => _isPressed = true),
@@ -85,7 +85,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      widget.isOutlined ? AppColors.primary : AppColors.textWhite,
+                      widget.isOutlined ? context.primaryColor : Colors.white,
                     ),
                   ),
                 )
@@ -97,7 +97,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
                     letterSpacing: -0.4,
                     color: widget.isOutlined
                         ? bgColor
-                        : (widget.textColor ?? AppColors.textWhite),
+                        : (widget.textColor ?? Colors.white),
                   ),
                 ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/chamcong_model.dart';
 
 class ChamcongHistoryCard extends StatelessWidget {
@@ -17,10 +18,10 @@ class ChamcongHistoryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.1),
+          color: context.borderColor,
           width: 0.5,
         ),
         boxShadow: [
@@ -44,12 +45,12 @@ class ChamcongHistoryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: context.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.history_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 24,
                 ),
               ),
@@ -63,7 +64,6 @@ class ChamcongHistoryCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -73,7 +73,7 @@ class ChamcongHistoryCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        color: context.textSecondary.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -83,23 +83,23 @@ class ChamcongHistoryCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           if (attendance == null || attendance!.id.isEmpty)
-            _buildEmptyState()
+            _buildEmptyState(context)
           else
-            _buildAttendanceDetails(),
+            _buildAttendanceDetails(context),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     final isFuture = selectedDate.isAfter(DateTime.now());
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.backgroundSecondary,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
+          color: context.borderColor,
           width: 0.5,
         ),
       ),
@@ -109,7 +109,7 @@ class ChamcongHistoryCard extends StatelessWidget {
             Icon(
               isFuture ? Icons.event_busy_rounded : Icons.info_outline_rounded,
               size: 48,
-              color: AppColors.textSecondary.withValues(alpha: 0.4),
+              color: context.textSecondary.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 12),
             Text(
@@ -117,7 +117,7 @@ class ChamcongHistoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary.withValues(alpha: 0.6),
+                color: context.textSecondary.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 4),
@@ -128,7 +128,7 @@ class ChamcongHistoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                color: context.textSecondary.withValues(alpha: 0.5),
               ),
               textAlign: TextAlign.center,
             ),
@@ -138,9 +138,13 @@ class ChamcongHistoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceDetails() {
+  Widget _buildAttendanceDetails(BuildContext context) {
+    final punches = attendance!.punches;
+    final groups = _groupByLoai(punches);
+
     return Column(
       children: [
+        // Status badge
         Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -174,78 +178,26 @@ class ChamcongHistoryCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),
 
-        if (attendance!.hasAllChecks ||
-            attendance!.checkInMorning != null ||
-            attendance!.checkOutMorning != null ||
-            attendance!.checkInAfternoon != null ||
-            attendance!.checkOutAfternoon != null)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundSecondary,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.2),
-                width: 0.5,
-              ),
-            ),
-            child: Column(
+        if (punches.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          // Từng nhóm loại chấm
+          ...groups.entries.toList().asMap().entries.map((mapEntry) {
+            final idx = mapEntry.key;
+            final entry = mapEntry.value;
+            return Column(
               children: [
-                if (attendance!.checkInMorning != null)
-                  _buildTimeRow(
-                    icon: Icons.wb_sunny_outlined,
-                    label: 'Sáng - Vào',
-                    time: _formatTime(attendance!.checkInMorning!),
-                    color: const Color(0xFFFFA726),
-                  ),
-                if (attendance!.checkInMorning != null &&
-                    attendance!.checkOutMorning != null)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1),
-                  ),
-                if (attendance!.checkOutMorning != null)
-                  _buildTimeRow(
-                    icon: Icons.wb_sunny_rounded,
-                    label: 'Sáng - Ra',
-                    time: _formatTime(attendance!.checkOutMorning!),
-                    color: const Color(0xFFFF7043),
-                  ),
-                if (attendance!.checkOutMorning != null &&
-                    attendance!.checkInAfternoon != null)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1),
-                  ),
-                if (attendance!.checkInAfternoon != null)
-                  _buildTimeRow(
-                    icon: Icons.brightness_3_outlined,
-                    label: 'Chiều - Vào',
-                    time: _formatTime(attendance!.checkInAfternoon!),
-                    color: const Color(0xFF42A5F5),
-                  ),
-                if (attendance!.checkInAfternoon != null &&
-                    attendance!.checkOutAfternoon != null)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1),
-                  ),
-                if (attendance!.checkOutAfternoon != null)
-                  _buildTimeRow(
-                    icon: Icons.brightness_3_rounded,
-                    label: 'Chiều - Ra',
-                    time: _formatTime(attendance!.checkOutAfternoon!),
-                    color: const Color(0xFF1E88E5),
-                  ),
+                if (idx > 0) const SizedBox(height: 12),
+                _buildGroupSection(context, entry.key, entry.value),
               ],
-            ),
-          ),
+            );
+          }),
+        ],
 
         if (attendance!.location != null) ...[
           const SizedBox(height: 12),
           _buildInfoRow(
+            context: context,
             icon: Icons.location_on_rounded,
             label: 'Địa điểm',
             value: attendance!.location!,
@@ -255,6 +207,7 @@ class ChamcongHistoryCard extends StatelessWidget {
         if (attendance!.notes != null && attendance!.notes!.isNotEmpty) ...[
           const SizedBox(height: 12),
           _buildInfoRow(
+            context: context,
             icon: Icons.note_rounded,
             label: 'Ghi chú',
             value: attendance!.notes!,
@@ -264,44 +217,173 @@ class ChamcongHistoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeRow({
-    required IconData icon,
-    required String label,
-    required String time,
-    required Color color,
-  }) {
+  /// Gom nhóm punches theo loại, giữ thứ tự xuất hiện đầu tiên
+  Map<String, List<ChamcongPunch>> _groupByLoai(List<ChamcongPunch> punches) {
+    final map = <String, List<ChamcongPunch>>{};
+    for (final p in punches) {
+      map.putIfAbsent(p.loaiChamCong, () => []).add(p);
+    }
+    return map;
+  }
+
+  Widget _buildGroupSection(
+    BuildContext context,
+    String loai,
+    List<ChamcongPunch> items,
+  ) {
+    final color = _punchColor(loai);
+    final icon = _punchIcon(loai);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
+      ),
+      child: Column(
+        children: [
+          // Section header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [color, color.withValues(alpha: 0.75)],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(child: Icon(icon, size: 16, color: Colors.white)),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  loai,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${items.length} lần',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Divider
+          Divider(
+            height: 1,
+            thickness: 1,
+            indent: 14,
+            endIndent: 14,
+            color: color.withValues(alpha: 0.15),
+          ),
+          // Danh sách giờ chấm
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+            child: Column(
+              children: items.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final punch = entry.value;
+                return Column(
+                  children: [
+                    if (idx > 0)
+                      Divider(
+                        height: 18,
+                        thickness: 0.5,
+                        color: context.borderColor,
+                      ),
+                    _buildPunchRow(context, punch, color, idx + 1),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPunchRow(
+    BuildContext context,
+    ChamcongPunch punch,
+    Color color,
+    int index,
+  ) {
     return Row(
       children: [
+        // Số thứ tự
         Container(
-          padding: const EdgeInsets.all(8),
+          width: 24,
+          height: 24,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: color.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          child: Center(
+            child: Text(
+              '$index',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ),
         ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Row(
+            children: [
+              Icon(
+                Icons.access_time_rounded,
+                size: 13,
+                color: context.textSecondary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Lần $index',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: context.textSecondary.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
         Text(
-          time,
-          style: const TextStyle(
-            fontSize: 16,
+          _formatTime(punch.time),
+          style: TextStyle(
+            fontSize: 17,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.3,
+            color: color,
+            letterSpacing: 0.5,
           ),
         ),
       ],
@@ -309,6 +391,7 @@ class ChamcongHistoryCard extends StatelessWidget {
   }
 
   Widget _buildInfoRow({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
@@ -316,10 +399,10 @@ class ChamcongHistoryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.backgroundSecondary,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
+          color: context.borderColor,
           width: 0.5,
         ),
       ),
@@ -328,7 +411,7 @@ class ChamcongHistoryCard extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: AppColors.primary,
+            color: context.primaryColor,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -341,7 +424,7 @@ class ChamcongHistoryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary.withValues(alpha: 0.8),
+                    color: context.textSecondary.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -350,7 +433,6 @@ class ChamcongHistoryCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
                     height: 1.4,
                   ),
                 ),
@@ -360,6 +442,32 @@ class ChamcongHistoryCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static Color _punchColor(String loai) {
+    switch (loai) {
+      case 'Chấm cơm':
+        return const Color(0xFFFF9800);
+      case 'Chấm đào tạo':
+        return const Color(0xFF673AB7);
+      case 'Chấm thư viện':
+        return const Color(0xFF009688);
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  static IconData _punchIcon(String loai) {
+    switch (loai) {
+      case 'Chấm cơm':
+        return Icons.restaurant_rounded;
+      case 'Chấm đào tạo':
+        return Icons.school_rounded;
+      case 'Chấm thư viện':
+        return Icons.menu_book_rounded;
+      default:
+        return Icons.fingerprint_rounded;
+    }
   }
 
   Color _getStatusColor() {

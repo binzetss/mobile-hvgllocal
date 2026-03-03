@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/vanban_model.dart';
 import '../../providers/vanban_chitiet_provider.dart';
 import '../../widgets/common/app_dialogs.dart';
@@ -56,6 +58,18 @@ class VanbanChitietActions {
         Provider.of<VanbanChitietProvider>(context, listen: false);
     final filePath = document.allFiles[index];
 
+    if (kIsWeb) {
+      try {
+        final url = await provider.getAuthenticatedUrl(filePath);
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      } catch (e) {
+        if (context.mounted) {
+          showErrorDialog(context, message: 'Không thể mở tài liệu: $e');
+        }
+      }
+      return;
+    }
+
     final modifiedDoc = document.copyWith(filePath: filePath);
     final success = await provider.downloadAndOpenPdf(modifiedDoc);
 
@@ -93,6 +107,25 @@ class VanbanChitietActions {
     final provider =
         Provider.of<VanbanChitietProvider>(context, listen: false);
     final filePath = document.allFiles[index];
+
+    if (kIsWeb) {
+      try {
+        final url = await provider.getAuthenticatedUrl(filePath);
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        if (context.mounted) {
+          showSuccessDialog(
+            context,
+            title: 'Thành công!',
+            message: 'Tài liệu đang được tải xuống trong trình duyệt',
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          showErrorDialog(context, message: 'Không thể tải tài liệu: $e');
+        }
+      }
+      return;
+    }
 
     final modifiedDoc = document.copyWith(filePath: filePath);
     final success = await provider.downloadPdfToDownloads(modifiedDoc);

@@ -46,7 +46,6 @@ class CommonSearchBar extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
           ),
           decoration: InputDecoration(
             hintText: hintText,

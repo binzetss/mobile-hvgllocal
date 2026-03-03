@@ -23,7 +23,6 @@ class DanhSachThongTinDaoTao extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
             letterSpacing: -0.2,
           ),
         ),

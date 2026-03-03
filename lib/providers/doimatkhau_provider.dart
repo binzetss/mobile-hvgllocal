@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/services/xacthuc_service.dart';
 
 class DoimatkhauProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -6,15 +7,19 @@ class DoimatkhauProvider extends ChangeNotifier {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  final XacthucService _xacthucService = XacthucService();
+
   bool _isOldPasswordVisible = false;
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
+  String? _errorMessage;
 
   bool get isOldPasswordVisible => _isOldPasswordVisible;
   bool get isNewPasswordVisible => _isNewPasswordVisible;
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   void toggleOldPasswordVisibility() {
     _isOldPasswordVisible = !_isOldPasswordVisible;
@@ -42,9 +47,6 @@ class DoimatkhauProvider extends ChangeNotifier {
     if (value == null || value.isEmpty) {
       return 'Vui lòng nhập mật khẩu mới';
     }
-    if (value.length < 6) {
-      return 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
     if (value == oldPasswordController.text) {
       return 'Mật khẩu mới phải khác mật khẩu cũ';
     }
@@ -61,21 +63,32 @@ class DoimatkhauProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<bool> changePassword() async {
+  Future<bool> changePassword(String maSo) async {
     if (!formKey.currentState!.validate()) {
       return false;
     }
 
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    // TODO: Implement actual password change logic here
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      await _xacthucService.doiMatKhau(
+        maSo: maSo,
+        matKhauCu: oldPasswordController.text.trim(),
+        matKhauMoi: newPasswordController.text.trim(),
+        xacNhanMatKhauMoi: confirmPasswordController.text.trim(),
+      );
 
-    _isLoading = false;
-    notifyListeners();
-
-    return true;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return false;
+    }
   }
 
   @override

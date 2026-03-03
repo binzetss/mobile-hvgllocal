@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
@@ -184,7 +185,7 @@ class AnimatedLogo extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -221,17 +222,22 @@ class AnimatedLogo extends StatelessWidget {
             height: size,
             child: Padding(
               padding: EdgeInsets.all(size * 0.15),
-              child: Image.network(
-                ApiEndpoints.logoHeader,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.local_hospital,
-                    size: size * 0.5,
-                    color: AppColors.primary,
-                  );
-                },
-              ),
+              child: kIsWeb
+                  ? Image.asset(
+                      'assets/images/logo_splash.png',
+                      fit: BoxFit.contain,
+                    )
+                  : Image.network(
+                      ApiEndpoints.logoHeader,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.local_hospital,
+                          size: size * 0.5,
+                          color: AppColors.primary,
+                        );
+                      },
+                    ),
             ),
           )
               .animate()

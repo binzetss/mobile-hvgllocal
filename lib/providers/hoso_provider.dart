@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../data/models/hoso_model.dart';
 
 class HosoProvider extends ChangeNotifier {
@@ -75,5 +77,41 @@ class HosoProvider extends ChangeNotifier {
     continuousTrainingHours: '120 giờ',
   );
 
+  File? _localAvatar;
+  bool _isUploadingAvatar = false;
+
   HosoData get profile => _profile;
+  File? get localAvatar => _localAvatar;
+  bool get isUploadingAvatar => _isUploadingAvatar;
+
+  Future<void> pickAvatar(ImageSource source) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: source,
+      imageQuality: 85,
+      maxWidth: 800,
+    );
+    if (picked == null) return;
+
+    _localAvatar = File(picked.path);
+    notifyListeners();
+
+    // TODO: Gắn API upload ảnh đại diện ở đây
+    // _isUploadingAvatar = true;
+    // notifyListeners();
+    // try {
+    //   final token = TokenManager().getCachedToken();
+    //   await ApiService().uploadAvatar(token: token, file: _localAvatar!);
+    // } catch (e) {
+    //   _localAvatar = null; // rollback nếu upload thất bại
+    // } finally {
+    //   _isUploadingAvatar = false;
+    //   notifyListeners();
+    // }
+  }
+
+  void removeLocalAvatar() {
+    _localAvatar = null;
+    notifyListeners();
+  }
 }

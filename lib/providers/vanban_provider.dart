@@ -34,13 +34,6 @@ class VanbanProvider extends ChangeNotifier {
     }
   }
 
-  /// Kiểm tra văn bản có phải của hôm nay không
-  bool _isToday(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final compareDate = DateTime(date.year, date.month, date.day);
-    return today == compareDate;
-  }
 
   /// TEMP: Kiểm tra văn bản trong vòng 10 ngày gần nhất (để test)
   bool _isRecent(DateTime date) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class HosoSection extends StatelessWidget {
   final String title;
@@ -18,16 +18,16 @@ class HosoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveIconColor = iconColor ?? AppColors.primary;
+    final effectiveIconColor = iconColor ?? context.primaryColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.15),
+          color: context.borderColor,
           width: 1,
         ),
         boxShadow: [
@@ -76,7 +76,6 @@ class HosoSection extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
                     letterSpacing: -0.3,
                   ),
                 ),

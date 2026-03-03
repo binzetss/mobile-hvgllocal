@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class DoimatkhauPasswordField extends StatelessWidget {
   final TextEditingController controller;
@@ -22,6 +23,11 @@ class DoimatkhauPasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final fillColor = isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF8F9FA);
+    final borderColor = isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -42,10 +48,10 @@ class DoimatkhauPasswordField extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
+                color: textColor,
                 letterSpacing: -0.2,
               ),
             ),
@@ -56,31 +62,31 @@ class DoimatkhauPasswordField extends StatelessWidget {
           controller: controller,
           obscureText: !isVisible,
           validator: validator,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF1A1A1A),
+            color: textColor,
           ),
           decoration: InputDecoration(
             hintText: 'Nhập $label',
             hintStyle: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
-              color: Colors.grey[400],
+              color: isDark ? Colors.grey[500] : Colors.grey[400],
             ),
             filled: true,
-            fillColor: const Color(0xFFF8F9FA),
+            fillColor: fillColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFE8EAF0),
+              borderSide: BorderSide(
+                color: borderColor,
                 width: 1.5,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFE8EAF0),
+              borderSide: BorderSide(
+                color: borderColor,
                 width: 1.5,
               ),
             ),

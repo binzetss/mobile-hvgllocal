@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/bosung_chamcong_model.dart';
 
 class BosungcongListItem extends StatelessWidget {
@@ -19,10 +20,10 @@ class BosungcongListItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.15),
+          color: context.borderColor,
           width: 0.5,
         ),
         boxShadow: [
@@ -70,7 +71,6 @@ class BosungcongListItem extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                         letterSpacing: -0.2,
                       ),
                     ),
@@ -79,7 +79,7 @@ class BosungcongListItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary.withValues(alpha: 0.7),
+                        color: context.textSecondary.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -150,7 +150,7 @@ class _InfoRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary.withValues(alpha: 0.7),
+              color: context.textSecondary.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -160,7 +160,6 @@ class _InfoRow extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
               letterSpacing: -0.2,
             ),
           ),

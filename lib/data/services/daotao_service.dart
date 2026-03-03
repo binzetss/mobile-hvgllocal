@@ -18,7 +18,7 @@ class DaotaoService {
       final maSo = await _getMaSo();
       debugPrint('Lấy danh sách đào tạo: maSo=$maSo');
 
-      final response = await _apiService.getWithBody(
+      final response = await _apiService.fetchData(
         ApiEndpoints.lopDaoTao,
         {'maSo': maSo},
         requiresAuth: true,
@@ -51,12 +51,9 @@ class DaotaoService {
       final maSo = await _getMaSo();
       debugPrint('Đăng ký: idLopDaoTao=$idLopDaoTao, maSo=$maSo');
 
-      final response = await _apiService.getWithBody(
+      final response = await _apiService.fetchData(
         ApiEndpoints.dangKyDaoTao,
-        {
-          'idLopDaoTao': idLopDaoTao,
-          'maSo': maSo,
-        },
+        {'idLopDaoTao': idLopDaoTao, 'maSo': maSo},
         requiresAuth: true,
       );
 

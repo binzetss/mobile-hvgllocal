@@ -4,13 +4,13 @@ class AppColors {
   AppColors._();
 
 
-  static const Color primary = Color(0xFF42A5F5);
-  static const Color primaryLight = Color(0xFF5AC8FA);
-  static const Color primaryDark = Color(0xFF0051D5);
-  static const Color primaryUltraLight = Color(0xFFE3F2FD);
+  static const Color primary = Color(0xFF1877F2);
+  static const Color primaryLight = Color(0xFF4599FF);
+  static const Color primaryDark = Color(0xFF0D5BC7);
+  static const Color primaryUltraLight = Color(0xFFE7F3FF);
 
 
-  static const Color background = Color(0xFFF2F2F7);
+  static const Color background = Color(0xFFF0F2F5);
   static const Color backgroundLight = Color(0xFFFFFFFF);
   static const Color backgroundSecondary = Color(0xFFFAFAFC);
   static const Color backgroundBlur = Color(0xF0F9F9F9);
@@ -42,8 +42,8 @@ class AppColors {
 
 
   static const List<Color> primaryGradient = [
-    Color(0xFF42A5F5),
-    Color(0xFF1E88E5),
+    Color(0xFF1877F2),
+    Color(0xFF0D5BC7),
   ];
 
   static const List<Color> backgroundGradient = [

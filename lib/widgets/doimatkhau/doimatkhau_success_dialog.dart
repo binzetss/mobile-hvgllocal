@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class DoimatkhauSuccessDialog extends StatelessWidget {
-  const DoimatkhauSuccessDialog({super.key});
+  final VoidCallback? _onClose;
+  const DoimatkhauSuccessDialog({super.key, VoidCallback? onClose})
+      : _onClose = onClose;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return AlertDialog(
+      backgroundColor: isDark ? const Color(0xFF1C1C1E) : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -31,12 +36,12 @@ class DoimatkhauSuccessDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Đổi mật khẩu thành công!',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1A1A1A),
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
             textAlign: TextAlign.center,
           ),
@@ -46,7 +51,7 @@ class DoimatkhauSuccessDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Colors.grey[600],
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),
@@ -55,8 +60,8 @@ class DoimatkhauSuccessDialog extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pop(); // Go back to previous page
+                Navigator.of(context).pop();
+                _onClose?.call();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -81,11 +86,11 @@ class DoimatkhauSuccessDialog extends StatelessWidget {
     );
   }
 
-  static void show(BuildContext context) {
+  static void show(BuildContext context, {VoidCallback? onClose}) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const DoimatkhauSuccessDialog(),
+      builder: (context) => DoimatkhauSuccessDialog(onClose: onClose),
     );
   }
 }

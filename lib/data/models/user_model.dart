@@ -20,7 +20,10 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       maSo: json['maSo']?.toString(),
-      hoVaTen: json['hoVaTen']?.toString(),
+      hoVaTen: json['hoVaTen']?.toString() ??
+          json['hoTen']?.toString() ??
+          json['tenNV']?.toString() ??
+          json['fullName']?.toString(),
       email: json['email']?.toString(),
       soDienThoai: json['soDienThoai']?.toString(),
       chucVu: json['chucVu']?.toString(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/vanban_model.dart';
 
 class VanbanCard extends StatelessWidget {
@@ -24,10 +25,10 @@ class VanbanCard extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 14),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.border.withValues(alpha: 0.1),
+              color: context.borderColor,
               width: 1,
             ),
             boxShadow: [
@@ -118,23 +119,23 @@ class VanbanCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
+                        color: context.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           FaIcon(
                             FontAwesomeIcons.filePdf,
                             size: 12,
-                            color: AppColors.primary,
+                            color: context.primaryColor,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             'PDF',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
+                              color: context.primaryColor,
                             ),
                           ),
                         ],
@@ -148,7 +149,6 @@ class VanbanCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
                   height: 1.4,
                   letterSpacing: -0.2,
                 ),
@@ -159,19 +159,19 @@ class VanbanCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const FaIcon(
+                    FaIcon(
                       FontAwesomeIcons.hashtag,
                       size: 11,
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         document.soKiHieu,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                           height: 1.4,
                           letterSpacing: -0.1,
                         ),
@@ -185,10 +185,10 @@ class VanbanCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const FaIcon(
+                  FaIcon(
                     FontAwesomeIcons.calendar,
                     size: 12,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -196,7 +196,7 @@ class VanbanCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary.withValues(alpha: 0.8),
+                      color: context.textSecondary.withValues(alpha: 0.8),
                       letterSpacing: -0.1,
                     ),
                   ),

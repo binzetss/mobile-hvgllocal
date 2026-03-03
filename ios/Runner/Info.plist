@@ -59,6 +59,15 @@
 		<key>CFBundleIconName</key>
 		<string>AppIcon</string>
 		<key>NSCameraUsageDescription</key>
-		<string>Ứng dụng cần truy cập camera để quét mã QR chấm công.</string>
+		<string>Ứng dụng cần truy cập camera để quét mã QR chấm công và chụp ảnh đại diện.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Ứng dụng cần truy cập thư viện ảnh để cập nhật ảnh đại diện.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Ứng dụng cần quyền lưu ảnh vào thư viện.</string>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+		</dict>
 	</dict>
 </plist>

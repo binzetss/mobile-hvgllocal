@@ -42,7 +42,6 @@ class FileSelectionDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -100,7 +99,6 @@ class FileSelectionDialog extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),

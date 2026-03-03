@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:hvgl/core/utils/local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/api_endpoints.dart';
@@ -17,6 +18,7 @@ class XacthucService {
   static const String _userKey = 'user_data';
   static const String _credentialsKey = 'saved_credentials';
   static const String _rememberMeKey = 'remember_me';
+  static const String _firstLoginPrefix = 'first_login_done_';
 
   Future<void> saveCredentials(String maSo, String matKhau) async {
     final prefs = await SharedPreferences.getInstance();
@@ -114,5 +116,151 @@ class XacthucService {
 
   Future<bool> isLoggedIn() async {
     return await _tokenManager.hasToken();
+  }
+
+  /// Lấy họ và tên từ API DanhSachNhanVien (dùng khi login không trả về tên)
+  Future<String?> fetchHoVaTen(String maSo) async {
+    if (maSo.isEmpty) return null;
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.danhSachNhanVien,
+        {'maSo': maSo},
+      );
+      final data = response['data'] as List?;
+      if (data != null && data.isNotEmpty) {
+        return data.first['hoVaTen']?.toString();
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Kiểm tra người dùng có cần đổi mật khẩu không (từ API DanhSachNhanVien)
+  Future<bool> checkDoiMatKhau(String maSo) async {
+    if (maSo.isEmpty) return false;
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.danhSachNhanVien,
+        {'maSo': maSo},
+      );
+      final data = response['data'] as List?;
+      if (data != null && data.isNotEmpty) {
+        return data.first['doiMatKhau'] == true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Giữ lại để tương thích cũ, dùng checkDoiMatKhau thay thế
+  Future<bool> isFirstLogin(String maSo) async {
+    if (maSo.isEmpty) return false;
+    final prefs = await SharedPreferences.getInstance();
+    final done = prefs.getBool('$_firstLoginPrefix$maSo') ?? false;
+    return !done;
+  }
+
+  /// Đánh dấu người dùng đã hoàn thành đổi mật khẩu lần đầu
+  Future<void> markFirstLoginDone(String maSo) async {
+    if (maSo.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('$_firstLoginPrefix$maSo', true);
+  }
+
+  /// Đổi mật khẩu người dùng
+  /// Trả về message thành công hoặc throw Exception nếu thất bại
+  Future<String> doiMatKhau({
+    required String maSo,
+    required String matKhauCu,
+    required String matKhauMoi,
+    required String xacNhanMatKhauMoi,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.doiMatKhau,
+        {
+          'maSo': maSo,
+          'matKhauCu': matKhauCu,
+          'matKhauMoi': matKhauMoi,
+          'xacNhanMatKhauMoi': xacNhanMatKhauMoi,
+        },
+      );
+
+      if (response['success'] == true) {
+        return response['message']?.toString() ?? 'Đổi mật khẩu thành công';
+      } else {
+        throw Exception(response['message']?.toString() ?? 'Đổi mật khẩu thất bại');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// URL GET ảnh đại diện theo maSo
+  String buildAvatarUrl(String maSo) => '${ApiEndpoints.anhDaiDien}/$maSo';
+
+  /// Đọc magic bytes để xác định định dạng ảnh thực sự
+  Future<String> _detectImageExt(File file) async {
+    final bytes = await file.openRead(0, 12).fold<List<int>>(
+      [],
+      (acc, chunk) => acc..addAll(chunk),
+    );
+    if (bytes.length >= 3 &&
+        bytes[0] == 0xFF &&
+        bytes[1] == 0xD8 &&
+        bytes[2] == 0xFF) {
+      return 'jpg';
+    }
+    if (bytes.length >= 4 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      return 'png';
+    }
+    if (bytes.length >= 12 &&
+        bytes[0] == 0x52 &&
+        bytes[1] == 0x49 &&
+        bytes[2] == 0x46 &&
+        bytes[3] == 0x46 &&
+        bytes[8] == 0x57 &&
+        bytes[9] == 0x45 &&
+        bytes[10] == 0x42 &&
+        bytes[11] == 0x50) {
+      return 'webp';
+    }
+    return 'jpg'; // fallback
+  }
+
+  /// Upload ảnh đại diện — trả về anhDaiDienUrl nếu thành công
+  Future<String?> uploadAnhDaiDien({
+    required String maSo,
+    required File file,
+  }) async {
+    final sizeInBytes = await file.length();
+    if (sizeInBytes > 5 * 1024 * 1024) {
+      throw Exception('Ảnh vượt quá 5MB. Vui lòng chọn ảnh nhỏ hơn.');
+    }
+
+    final ext = await _detectImageExt(file);
+    final mimeMap = {'jpg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp'};
+
+    final response = await _apiService.postMultipart(
+      ApiEndpoints.anhDaiDien,
+      {'maSo': maSo},
+      file,
+      'anhDaiDien',
+      filename: 'photo.$ext',
+      mimeType: mimeMap[ext] ?? 'image/jpeg',
+    );
+
+    if (response['success'] != true) {
+      throw Exception(response['message']?.toString() ?? 'Cập nhật ảnh thất bại');
+    }
+
+    // Server trả về URL thực của ảnh vừa upload
+    return response['anhDaiDienUrl']?.toString();
   }
 }

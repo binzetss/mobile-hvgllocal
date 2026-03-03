@@ -29,7 +29,6 @@ class AppTheme {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 22),
         titleTextStyle: const TextStyle(
-          color: AppColors.textPrimary,
           fontSize: 34,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
@@ -105,7 +104,6 @@ class AppTheme {
         displayLarge: TextStyle(
           fontSize: 34,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
           letterSpacing: -0.5,
           height: 1.2,
         ),
@@ -113,7 +111,6 @@ class AppTheme {
         displayMedium: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
           letterSpacing: -0.4,
           height: 1.2,
         ),
@@ -121,7 +118,6 @@ class AppTheme {
         displaySmall: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
           letterSpacing: -0.3,
           height: 1.3,
         ),
@@ -129,7 +125,6 @@ class AppTheme {
         headlineMedium: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
           letterSpacing: -0.3,
           height: 1.3,
         ),
@@ -137,7 +132,6 @@ class AppTheme {
         headlineSmall: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
           letterSpacing: -0.4,
           height: 1.35,
         ),
@@ -145,7 +139,6 @@ class AppTheme {
         bodyLarge: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.w400,
-          color: AppColors.textPrimary,
           letterSpacing: -0.4,
           height: 1.35,
         ),
@@ -153,7 +146,6 @@ class AppTheme {
         bodyMedium: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: AppColors.textPrimary,
           letterSpacing: -0.3,
           height: 1.35,
         ),
@@ -188,6 +180,110 @@ class AppTheme {
           letterSpacing: 0.1,
           height: 1.35,
         ),
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+      primaryColor: const Color(0xFF4599FF),
+      scaffoldBackgroundColor: Colors.black,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.dark,
+        primary: const Color(0xFF4599FF),
+        onPrimary: Colors.white,
+        secondary: const Color(0xFF4599FF),
+        surface: const Color(0xFF1C1C1E),
+        onSurface: Colors.white,
+        error: AppColors.error,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        iconTheme: IconThemeData(color: Colors.white, size: 22),
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 34,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+          height: 1.2,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF4599FF),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.4,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF2C2C2E),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF38383A), width: 0.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF38383A), width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF4599FF), width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        hintStyle: const TextStyle(
+          color: Color(0xFF8E8E93),
+          fontSize: 17,
+          fontWeight: FontWeight.w400,
+          letterSpacing: -0.4,
+        ),
+      ),
+      cardTheme: const CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        color: Color(0xFF1C1C1E),
+        margin: EdgeInsets.zero,
+      ),
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFF38383A),
+        thickness: 0.5,
+        space: 1,
+      ),
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.5, height: 1.2),
+        displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.4, height: 1.2),
+        displaySmall: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.3, height: 1.3),
+        headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: -0.3, height: 1.3),
+        headlineSmall: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: -0.4, height: 1.35),
+        bodyLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: Colors.white, letterSpacing: -0.4, height: 1.35),
+        bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white, letterSpacing: -0.3, height: 1.35),
+        bodySmall: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color(0xFF8E8E93), letterSpacing: -0.2, height: 1.35),
+        labelLarge: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: Color(0xFF8E8E93), letterSpacing: -0.1, height: 1.35),
+        labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color(0xFF8E8E93), letterSpacing: 0, height: 1.35),
+        labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: Color(0xFF8E8E93), letterSpacing: 0.1, height: 1.35),
       ),
     );
   }

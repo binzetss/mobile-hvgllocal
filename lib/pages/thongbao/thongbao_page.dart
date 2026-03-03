@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class _ThongBaoContent extends StatelessWidget {
     return Consumer<ThongBaoProvider>(
       builder: (context, provider, _) {
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: kIsWeb ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
           appBar: CommonAppBar(
             title: 'Thông báo',
             actions: provider.unreadCount > 0

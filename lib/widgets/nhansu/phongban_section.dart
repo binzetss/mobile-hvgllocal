@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hvgl/data/models/phongban_model.dart';
+import '../../core/extensions/theme_extensions.dart';
 import 'package:hvgl/providers/nhansu_provider.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/nhansu_model.dart';
@@ -116,7 +117,7 @@ class _PhongbanSectionState extends State<PhongbanSection> {
       builder: (context, isExpanded, child) => Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: color.withValues(alpha: 0.1),
@@ -186,10 +187,10 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                         children: [
                           Text(
                             widget.department.tenKhoa,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: context.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -199,7 +200,7 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                                 Flexible(
                                   child: _buildInfoChip(
                                     icon: FontAwesomeIcons.crown,
-                                    text: headStaff.hoVaTen.split(' ').last,
+                                    text: 'Trưởng khoa/Phòng: ${headStaff.hoVaTen}',
                                     color: const Color(0xFFFF9800),
                                   ),
                                 ),
@@ -216,7 +217,7 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                       curve: Curves.easeInOutCubic,
                       child: FaIcon(
                         FontAwesomeIcons.chevronDown,
-                        color: Colors.grey[600],
+                        color: context.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -234,13 +235,13 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                     List<NhansuModel> staffList = value.staffByDepartment[widget.department.tenKhoa] ?? [];
 
                     return Container(
-                      color: Colors.grey[50],
+                      color: context.surfaceColor,
                       child: Column(
                         children: [
                           Divider(
                             height: 1,
                             thickness: 1,
-                            color: Colors.grey[200],
+                            color: context.borderColor,
                           ),
                           if (isLoading)
                             ListView.separated(
@@ -263,7 +264,7 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                                 children: [
                                   FaIcon(
                                     FontAwesomeIcons.userSlash,
-                                    color: Colors.grey[400],
+                                    color: context.textSecondary,
                                     size: 28,
                                   ),
                                   const SizedBox(height: 8),
@@ -271,7 +272,7 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                                     'Chưa có nhân viên',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: Colors.grey[600],
+                                      color: context.textSecondary,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

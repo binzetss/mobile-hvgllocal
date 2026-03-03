@@ -9,23 +9,23 @@ class LichkhamShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // Header Shimmer
+   
         SliverToBoxAdapter(
-          child: _buildHeaderShimmer(),
+          child: _buildHeaderShimmer(context),
         ),
 
-        // Filters Shimmer
+
         SliverToBoxAdapter(
-          child: _buildFiltersShimmer(),
+          child: _buildFiltersShimmer(context),
         ),
 
-        // Room Cards Shimmer
+
         SliverPadding(
           padding: const EdgeInsets.all(16),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildRoomCardShimmer(),
-              childCount: 3, // Show 3 skeleton cards
+              (context, index) => _buildRoomCardShimmer(context),
+              childCount: 3,
             ),
           ),
         ),
@@ -33,7 +33,7 @@ class LichkhamShimmer extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderShimmer() {
+  Widget _buildHeaderShimmer(BuildContext context) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -58,7 +58,7 @@ class LichkhamShimmer extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
@@ -71,7 +71,7 @@ class LichkhamShimmer extends StatelessWidget {
                     width: 150,
                     height: 20,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -80,7 +80,7 @@ class LichkhamShimmer extends StatelessWidget {
                     width: 100,
                     height: 14,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -93,30 +93,30 @@ class LichkhamShimmer extends StatelessWidget {
     );
   }
 
-  Widget _buildFiltersShimmer() {
+  Widget _buildFiltersShimmer(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildFilterBoxShimmer(),
+          _buildFilterBoxShimmer(context),
           const SizedBox(height: 12),
-          _buildFilterBoxShimmer(),
+          _buildFilterBoxShimmer(context),
         ],
       ),
     );
   }
 
-  Widget _buildFilterBoxShimmer() {
+  Widget _buildFilterBoxShimmer(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
       ),
       child: Shimmer.fromColors(
-        baseColor: AppColors.background,
-        highlightColor: Colors.white,
+        baseColor: Theme.of(context).scaffoldBackgroundColor,
+        highlightColor: Theme.of(context).cardColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -126,7 +126,7 @@ class LichkhamShimmer extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
@@ -135,7 +135,7 @@ class LichkhamShimmer extends StatelessWidget {
                   width: 120,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -148,7 +148,7 @@ class LichkhamShimmer extends StatelessWidget {
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -158,7 +158,7 @@ class LichkhamShimmer extends StatelessWidget {
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -168,7 +168,7 @@ class LichkhamShimmer extends StatelessWidget {
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -181,11 +181,11 @@ class LichkhamShimmer extends StatelessWidget {
     );
   }
 
-  Widget _buildRoomCardShimmer() {
+  Widget _buildRoomCardShimmer(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
       ),
@@ -209,15 +209,15 @@ class LichkhamShimmer extends StatelessWidget {
               ),
             ),
             child: Shimmer.fromColors(
-              baseColor: AppColors.background,
-              highlightColor: Colors.white,
+              baseColor: Theme.of(context).scaffoldBackgroundColor,
+              highlightColor: Theme.of(context).cardColor,
               child: Row(
                 children: [
                   Container(
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
@@ -230,7 +230,7 @@ class LichkhamShimmer extends StatelessWidget {
                           width: double.infinity,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: AppColors.background,
+                            color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -239,7 +239,7 @@ class LichkhamShimmer extends StatelessWidget {
                           width: 80,
                           height: 12,
                           decoration: BoxDecoration(
-                            color: AppColors.background,
+                            color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -256,9 +256,9 @@ class LichkhamShimmer extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildScheduleItemShimmer(),
+                _buildScheduleItemShimmer(context),
                 const SizedBox(height: 12),
-                _buildScheduleItemShimmer(),
+                _buildScheduleItemShimmer(context),
               ],
             ),
           ),
@@ -267,7 +267,7 @@ class LichkhamShimmer extends StatelessWidget {
     );
   }
 
-  Widget _buildScheduleItemShimmer() {
+  Widget _buildScheduleItemShimmer(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -276,15 +276,15 @@ class LichkhamShimmer extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE8EAF0), width: 1),
       ),
       child: Shimmer.fromColors(
-        baseColor: AppColors.background,
-        highlightColor: Colors.white,
+        baseColor: Theme.of(context).scaffoldBackgroundColor,
+        highlightColor: Theme.of(context).cardColor,
         child: Row(
           children: [
             Container(
               width: 52,
               height: 60,
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -297,7 +297,7 @@ class LichkhamShimmer extends StatelessWidget {
                     width: 100,
                     height: 14,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -306,7 +306,7 @@ class LichkhamShimmer extends StatelessWidget {
                     width: double.infinity,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -315,7 +315,7 @@ class LichkhamShimmer extends StatelessWidget {
                     width: double.infinity,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
