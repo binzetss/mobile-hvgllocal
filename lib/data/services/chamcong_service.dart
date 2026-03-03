@@ -78,17 +78,35 @@ class ChamcongService {
         if (date.isAfter(today)) continue;
 
         final weekday = date.weekday;
+        final key = '$year-${_pad(month)}-${_pad(day)}';
+
         if (weekday == DateTime.saturday || weekday == DateTime.sunday) {
-          result.add(ChamcongModel(
-            id: 'weekend_${year}_${_pad(month)}_${_pad(day)}',
-            userId: maSo,
-            date: date,
-            status: ChamcongStatus.weekend,
-          ));
+          // Vẫn kiểm tra có chấm công cuối tuần không
+          if (byDate.containsKey(key)) {
+            final punches = byDate[key]!;
+            result.add(ChamcongModel(
+              id: '${maSo}_$key',
+              userId: maSo,
+              date: date,
+              status: ChamcongStatus.present,
+              punches: punches,
+              checkInMorning: punches.isNotEmpty ? punches[0].time : null,
+              checkOutMorning: punches.length >= 2 ? punches[1].time : null,
+              checkInAfternoon: punches.length >= 3 ? punches[2].time : null,
+              checkOutAfternoon: punches.length >= 4 ? punches[3].time : null,
+              notes: punches.map((p) => p.loaiChamCong).toSet().join(' • '),
+            ));
+          } else {
+            result.add(ChamcongModel(
+              id: 'absent_${year}_${_pad(month)}_${_pad(day)}',
+              userId: maSo,
+              date: date,
+              status: ChamcongStatus.absent,
+            ));
+          }
           continue;
         }
 
-        final key = '$year-${_pad(month)}-${_pad(day)}';
         if (byDate.containsKey(key)) {
           final punches = byDate[key]!;
           result.add(ChamcongModel(
