@@ -514,7 +514,6 @@ class _WeekdayHeader extends StatelessWidget {
       ),
       child: Row(
         children: days.asMap().entries.map((e) {
-          final isWeekend = e.key == 0 || e.key == 6;
           return Expanded(
             child: Center(
               child: Text(
@@ -523,9 +522,7 @@ class _WeekdayHeader extends StatelessWidget {
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
-                  color: isWeekend
-                      ? context.textSecondary.withValues(alpha: 0.45)
-                      : context.textSecondary.withValues(alpha: 0.8),
+                  color: context.textSecondary.withValues(alpha: 0.8),
                 ),
               ),
             ),
@@ -567,14 +564,9 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWeekend = col == 0 || col == 6;
     final borderColor = context.borderColor.withValues(alpha: 0.3);
 
-    final cellBg = isWeekend
-        ? (isDark
-            ? Colors.white.withValues(alpha: 0.025)
-            : Colors.grey.withValues(alpha: 0.04))
-        : Colors.transparent;
+    const cellBg = Colors.transparent;
 
     if (date == null) {
       return Container(
@@ -648,9 +640,7 @@ class _DayCell extends StatelessWidget {
                               ? Colors.white
                               : isFuture
                                   ? context.textSecondary.withValues(alpha: 0.3)
-                                  : isWeekend
-                                      ? context.textSecondary.withValues(alpha: 0.65)
-                                      : context.textPrimary,
+                                  : context.textPrimary,
                         ),
                       ),
                     ),
