@@ -62,8 +62,6 @@ class _GopyKienPageState extends State<GopyKienPage> {
     return _buildMobileLayout();
   }
 
-  // ── Mobile layout (giữ nguyên) ─────────────────────────────────────────────
-
   Widget _buildMobileLayout() {
     return Scaffold(
       backgroundColor: context.bgColor,
@@ -127,8 +125,6 @@ class _GopyKienPageState extends State<GopyKienPage> {
     );
   }
 
-  // ── Desktop layout ─────────────────────────────────────────────────────────
-
   Widget _buildDesktopLayout() {
     final userMaSo =
         context.read<XacthucProvider>().user?.maSo ?? '';
@@ -152,8 +148,6 @@ class _GopyKienPageState extends State<GopyKienPage> {
       ),
     );
   }
-
-  // ── Tab 0: Gửi góp ý ──────────────────────────────────────────────────────
 
   Widget _buildWebFormTab() {
     return Consumer<GopyKienProvider>(
@@ -191,10 +185,10 @@ class _GopyKienPageState extends State<GopyKienPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Left: motivation panel
+
                     const Expanded(child: _WebMotivationPanel()),
                     const SizedBox(width: 24),
-                    // Right: form + submit
+
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -226,8 +220,6 @@ class _GopyKienPageState extends State<GopyKienPage> {
       },
     );
   }
-
-  // ── Tab 1: Xem đánh giá ───────────────────────────────────────────────────
 
   Widget _buildWebReviewTab() {
     return FutureBuilder<List<XemDanhGiaModel>>(
@@ -311,8 +303,6 @@ class _GopyKienPageState extends State<GopyKienPage> {
     );
   }
 }
-
-// ── Web top bar ────────────────────────────────────────────────────────────────
 
 class _WebTopBar extends StatelessWidget {
   final int tab;
@@ -442,8 +432,6 @@ class _TabBtn extends StatelessWidget {
   }
 }
 
-// ── Tab 0: Motivation panel (left column) ─────────────────────────────────────
-
 class _WebMotivationPanel extends StatelessWidget {
   const _WebMotivationPanel();
 
@@ -572,8 +560,6 @@ class _PointRow extends StatelessWidget {
     );
   }
 }
-
-// ── Tab 1: Review sidebar ──────────────────────────────────────────────────────
 
 class _WebReviewSidebar extends StatelessWidget {
   final List<(String, int)> categories;
@@ -779,8 +765,6 @@ class _StatRow extends StatelessWidget {
     );
   }
 }
-
-// ── Tab 1: Review content ──────────────────────────────────────────────────────
 
 class _WebReviewContent extends StatelessWidget {
   final List<XemDanhGiaModel> all;

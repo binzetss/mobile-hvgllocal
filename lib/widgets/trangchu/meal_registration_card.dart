@@ -27,7 +27,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DangkyComProvider>().loadTodayRegistrations();
     });
-    // Đồng bộ mỗi 30s để cập nhật khi đăng ký từ thiết bị khác
+
     _syncTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (mounted) {
         context.read<DangkyComProvider>().loadTodayRegistrations();
@@ -106,7 +106,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Header
+
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: const BoxDecoration(
@@ -170,7 +170,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
                       ],
                     ),
                   ),
-                  // Content
+
                   if (menuProvider.isLoading)
                     const _MealMenuShimmer()
                   else if (menuProvider.hasError)
@@ -201,7 +201,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      
+
                           _buildMealSection(
                             title: 'Trưa',
                             icon: FontAwesomeIcons.cloudSun,
@@ -209,7 +209,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
                             session: menuProvider.currentMenu!.lunch,
                           ),
                           const SizedBox(height: 20),
-                  
+
                           _buildMealSection(
                             title: 'Tối',
                             icon: FontAwesomeIcons.moon,
@@ -460,7 +460,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
           const SizedBox(height: 16),
 
           if (!isPastDeadline) ...[
-           
+
             Row(
               children: [
                 Expanded(
@@ -491,7 +491,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
               _buildRegisteredSummary(isLunch, isDinner),
             ],
           ] else ...[
-            // Sau 8h: chỉ hiện bữa đã đăng ký, ẩn bữa chưa đăng ký
+
             if (!isLunch && !isDinner)
               _buildNotRegisteredInfo()
             else
@@ -512,7 +512,7 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
                         FontAwesomeIcons.moon,
                       ),
                     ),
-                  // Giữ layout cân bằng khi chỉ 1 bữa
+
                   if (isLunch && !isDinner || !isLunch && isDinner)
                     const Expanded(child: SizedBox()),
                 ],

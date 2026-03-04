@@ -65,13 +65,11 @@ class MenuProvider extends ChangeNotifier {
         Navigator.of(context).pushNamed(AppRoutes.support);
         break;
       case HvglMenuAction.logout:
-        // Clear cache của tất cả providers theo config
+
         DataPreloadService().clearAllCache(context);
 
-        // Logout
         context.read<XacthucProvider>().logout();
 
-        // Điều hướng về màn hình đăng nhập và xóa tất cả màn hình trước đó
         Navigator.of(context).pushNamedAndRemoveUntil(
           AppRoutes.login,
           (route) => false,

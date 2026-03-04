@@ -105,7 +105,7 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
           time: punch.time,
           loai: punch.loaiChamCong,
         );
-        // Chấm cơm / Chấm thư viện → reload ngay card đăng ký suất ăn (mobile + web)
+
         if (punch.loaiChamCong == 'Chấm cơm' ||
             punch.loaiChamCong == 'Chấm thư viện') {
           DangkyComProvider.reloadStatic();
@@ -117,11 +117,11 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> init() async {
     if (_monthlyAttendances.isNotEmpty && _error == null) {
-      // Dữ liệu đã có, chỉ cần silent refresh
+
       refresh();
       return;
     }
-    // Chưa có dữ liệu hoặc có lỗi trước đó → tải lại từ đầu
+
     _isLoading = true;
     _error = null;
     notifyListeners();

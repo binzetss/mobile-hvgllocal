@@ -70,11 +70,11 @@ class _DanhsachBosungcongPageState extends State<DanhsachBosungcongPage> {
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          // Breadcrumb
+
           _DanhsachBreadcrumb(
             onBack: () => context.read<NavigationProvider>().setIndex(3),
           ),
-          // Content
+
           Expanded(
             child: Consumer<BosungChamcongProvider>(
               builder: (context, provider, _) {
@@ -86,10 +86,10 @@ class _DanhsachBosungcongPageState extends State<DanhsachBosungcongPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Stats row
+
                       _WebStatsRow(list: provider.supplementaryList),
                       const SizedBox(height: 24),
-                      // List card
+
                       if (provider.supplementaryList.isEmpty)
                         const BosungcongEmptyState()
                       else
@@ -138,8 +138,6 @@ class _DanhsachBosungcongPageState extends State<DanhsachBosungcongPage> {
     );
   }
 }
-
-// ── Web helpers ───────────────────────────────────────────────────────────────
 
 class _DanhsachBreadcrumb extends StatelessWidget {
   final VoidCallback onBack;
@@ -300,7 +298,7 @@ class _WebListCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
             child: Row(
@@ -338,10 +336,10 @@ class _WebListCard extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: context.borderColor.withValues(alpha: 0.5)),
-          // Table header
+
           _TableHeader(),
           Divider(height: 1, color: context.borderColor.withValues(alpha: 0.4)),
-          // Rows
+
           ...list.asMap().entries.map((e) => Column(
                 children: [
                   _TableRow(stt: e.key + 1, item: e.value),

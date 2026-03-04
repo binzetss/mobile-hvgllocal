@@ -27,7 +27,7 @@ class DoimatkhauPasswordField extends StatelessWidget {
     final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
     final fillColor = isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF8F9FA);
     final borderColor = isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

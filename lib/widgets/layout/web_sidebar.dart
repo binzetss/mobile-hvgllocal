@@ -131,8 +131,6 @@ class WebSidebar extends StatelessWidget {
   }
 }
 
-// ── Header ────────────────────────────────────────────────────────────────────
-
 class _SidebarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -181,8 +179,6 @@ class _SidebarHeader extends StatelessWidget {
     );
   }
 }
-
-// ── User Card ─────────────────────────────────────────────────────────────────
 
 class _UserCard extends StatelessWidget {
   String _buildInitials(String name) {
@@ -288,8 +284,6 @@ class _UserCard extends StatelessWidget {
   }
 }
 
-// ── Section label ─────────────────────────────────────────────────────────────
-
 class _SectionLabel extends StatelessWidget {
   final String text;
   const _SectionLabel(this.text);
@@ -310,8 +304,6 @@ class _SectionLabel extends StatelessWidget {
     );
   }
 }
-
-// ── Main nav item (tab switching) ─────────────────────────────────────────────
 
 class _MainNavItem extends StatelessWidget {
   final int index;
@@ -372,8 +364,6 @@ class _MainNavItem extends StatelessWidget {
   }
 }
 
-// ── Push nav item (web shell navigation) ─────────────────────────────────────
-
 class _PushNavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -431,8 +421,6 @@ class _PushNavItem extends StatelessWidget {
     );
   }
 }
-
-// ── Logout ────────────────────────────────────────────────────────────────────
 
 class _LogoutButton extends StatelessWidget {
   @override

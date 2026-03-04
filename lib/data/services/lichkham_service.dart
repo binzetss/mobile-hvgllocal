@@ -11,7 +11,7 @@ class LichkhamService {
 
   Future<List<LichkhamModel>> fetchSchedules() async {
     try {
-      // Dùng ApiService.getList() để tự động thêm Bearer token
+
       final response = await _apiService.getList(ApiEndpoints.lichLamViec);
 
       return response

@@ -40,8 +40,6 @@ class LuongPage extends StatelessWidget {
     );
   }
 
-  // ── Mobile ──────────────────────────────────────────────────────────────────
-
   Widget _buildMobileBody(
       BuildContext context, LuongProvider provider, LuongInfo data) {
     return SingleChildScrollView(
@@ -169,23 +167,21 @@ class LuongPage extends StatelessWidget {
     );
   }
 
-  // ── Web ─────────────────────────────────────────────────────────────────────
-
   Widget _buildWebLayout(
       BuildContext context, LuongProvider provider, LuongInfo data) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          // ── Top bar ──
+
           _WebTopBar(provider: provider),
-          // ── Scrollable content ──
+
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
               child: Column(
                 children: [
-                  // Summary card — full width
+
                   LuongSummaryCard(
                     thucNhan: data.thucNhan,
                     tienNhanDot1: data.tienNhanDot1,
@@ -193,11 +189,11 @@ class LuongPage extends StatelessWidget {
                     formatCurrency: provider.formatCurrency,
                   ),
                   const SizedBox(height: 20),
-                  // 2-column sections
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Left column
+
                       Expanded(
                         child: Column(
                           children: [
@@ -247,7 +243,7 @@ class LuongPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // Right column
+
                       Expanded(
                         child: Column(
                           children: [
@@ -308,7 +304,7 @@ class LuongPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Net salary — full width
+
                   LuongNetSalaryCard(
                     thucNhan: data.thucNhan,
                     formatCurrency: provider.formatCurrency,
@@ -321,8 +317,6 @@ class LuongPage extends StatelessWidget {
       ),
     );
   }
-
-  // ── Shared helper ────────────────────────────────────────────────────────────
 
   Widget _buildRow(
     LuongProvider provider,
@@ -351,8 +345,6 @@ class LuongPage extends StatelessWidget {
   }
 }
 
-// ── Web helpers ────────────────────────────────────────────────────────────────
-
 class _WebTopBar extends StatelessWidget {
   final LuongProvider provider;
   const _WebTopBar({required this.provider});
@@ -371,7 +363,7 @@ class _WebTopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Title
+
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -392,7 +384,7 @@ class _WebTopBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // Month selector (compact)
+
           _WebMonthPicker(provider: provider),
         ],
       ),

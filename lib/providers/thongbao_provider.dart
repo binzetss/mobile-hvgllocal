@@ -137,12 +137,11 @@ class ThongBaoProvider extends ChangeNotifier {
     _service.clearAll();
   }
 
-  
   Future<VanbanModel?> navigateToDocument(
     String notificationId,
     VanbanProvider vanbanProvider,
   ) async {
-   
+
     final notification = _notifications.firstWhere(
       (n) => n.id == notificationId,
       orElse: () => throw Exception('Notification not found'),

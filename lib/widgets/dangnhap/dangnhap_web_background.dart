@@ -10,7 +10,7 @@ class DangnhapWebBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Nền gradient xanh nhạt
+
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -26,7 +26,6 @@ class DangnhapWebBackground extends StatelessWidget {
           ),
         ),
 
-        // Blob circles
         AnimatedBuilder(
           animation: controller,
           builder: (ctx, _) => CustomPaint(
@@ -35,7 +34,6 @@ class DangnhapWebBackground extends StatelessWidget {
           ),
         ),
 
-        // Wave bottom
         Positioned(
           bottom: 0,
           left: 0,
@@ -52,8 +50,6 @@ class DangnhapWebBackground extends StatelessWidget {
     );
   }
 }
-
-// ── Blobs ─────────────────────────────────────────────────────────────────────
 
 class _BlobPainter extends CustomPainter {
   final double t;
@@ -72,20 +68,19 @@ class _BlobPainter extends CustomPainter {
     final s = math.sin(t * math.pi * 2);
     final c = math.cos(t * math.pi * 2);
 
-    // Top-left
     _blob(canvas, Offset(-90 + s * 18, -90 + c * 12), 240, 0.22);
-    // Top-right
+
     _blob(canvas, Offset(size.width + 70 + c * 16, -70 + s * 10), 200, 0.18);
-    // Bottom-right
+
     _blob(canvas, Offset(size.width + 50, size.height + 50 - s * 18), 190, 0.20);
-    // Mid-left
+
     _blob(
       canvas,
       Offset(-55, size.height * 0.45 + math.sin(t * math.pi * 2 + 1.2) * 14),
       130,
       0.13,
     );
-    // Bottom-center-left
+
     _blob(
       canvas,
       Offset(size.width * 0.18 + c * 10, size.height + 35),
@@ -98,8 +93,6 @@ class _BlobPainter extends CustomPainter {
   bool shouldRepaint(_BlobPainter old) => old.t != t;
 }
 
-// ── Wave ──────────────────────────────────────────────────────────────────────
-
 class _WavePainter extends CustomPainter {
   final double t;
   _WavePainter(this.t);
@@ -108,7 +101,6 @@ class _WavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final shift = math.sin(t * math.pi * 2) * 12;
 
-    // Wave 1 (back)
     final p1 = Path()
       ..moveTo(0, size.height * 0.45 + shift)
       ..cubicTo(
@@ -130,7 +122,6 @@ class _WavePainter extends CustomPainter {
       Paint()..color = const Color(0xFF5598C8).withValues(alpha: 0.28),
     );
 
-    // Wave 2 (front)
     final shift2 = math.cos(t * math.pi * 2) * 10;
     final p2 = Path()
       ..moveTo(0, size.height * 0.65 + shift2)

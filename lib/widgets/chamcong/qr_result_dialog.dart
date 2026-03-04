@@ -38,7 +38,7 @@ class QrResultDialog extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon
+
               Container(
                 width: 80,
                 height: 80,
@@ -87,7 +87,6 @@ class QrResultDialog extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Title
               Text(
                 isSuccess ? 'Thành công!' : 'Thất bại',
                 style: TextStyle(
@@ -102,7 +101,6 @@ class QrResultDialog extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Message
               Text(
                 message,
                 textAlign: TextAlign.center,
@@ -119,7 +117,6 @@ class QrResultDialog extends StatelessWidget {
 
               const SizedBox(height: 28),
 
-              // Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

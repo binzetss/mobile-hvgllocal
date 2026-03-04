@@ -27,7 +27,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     final backBtnBg = isDark
         ? const Color(0xFF1C1C1E)
         : Colors.white.withValues(alpha: 0.2);
-    // If caller didn't request the special home-style appbar, keep original behaviour
+
     if (!showAvatar) {
       return AppBar(
         backgroundColor: bgColor,
@@ -64,7 +64,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
-    // Home-style rounded gradient app bar with optional avatar
     final canPop = Navigator.canPop(context);
     final leadingIcon = canPop ? FontAwesomeIcons.chevronLeft : FontAwesomeIcons.bars;
 
@@ -137,7 +136,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             if (actions != null) ...actions!,
             const SizedBox(width: 8),
-            // Avatar circle
+
             Container(
               width: 44,
               height: 44,

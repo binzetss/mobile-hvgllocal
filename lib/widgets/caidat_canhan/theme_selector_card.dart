@@ -50,7 +50,7 @@ class ThemeSelectorCard extends StatelessWidget {
             description: 'Nền trắng, chữ đen',
             mode: ThemeMode.light,
             iconColor: const Color(0xFFF59E0B),
-            // light mode: pastel giữ nguyên / dark mode: tối
+
             iconBgLight: const Color(0xFFFFF8E1),
             iconBgDark: const Color(0xFF3A2E00),
             textColor: textColor,

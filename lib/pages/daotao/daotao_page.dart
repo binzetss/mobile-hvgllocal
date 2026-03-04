@@ -60,7 +60,6 @@ class _DaotaoPageState extends State<DaotaoPage> {
     );
   }
 
-  // ── Mobile layout (unchanged) ──────────────────────────────────────────────
   Widget _buildMobileLayout(
       BuildContext context, DaotaoProvider provider) {
     return CustomScrollView(
@@ -93,7 +92,6 @@ class _DaotaoPageState extends State<DaotaoPage> {
     );
   }
 
-  // ── Web layout ─────────────────────────────────────────────────────────────
   Widget _buildWebLayout(
       BuildContext context, DaotaoProvider provider) {
     return Column(
@@ -122,7 +120,6 @@ class _DaotaoPageState extends State<DaotaoPage> {
   }
 }
 
-// ── Web Top Bar ───────────────────────────────────────────────────────────────
 class _WebTopBar extends StatelessWidget {
   final DaotaoProvider provider;
   final TextEditingController searchController;
@@ -165,7 +162,7 @@ class _WebTopBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 24),
-          // Search box
+
           Expanded(
             child: Container(
               height: 38,
@@ -261,7 +258,6 @@ class _WebTopBar extends StatelessWidget {
   }
 }
 
-// ── Web Sidebar ───────────────────────────────────────────────────────────────
 class _WebSidebar extends StatelessWidget {
   final DaotaoProvider provider;
   const _WebSidebar({required this.provider});
@@ -562,7 +558,6 @@ class _StatRow extends StatelessWidget {
   }
 }
 
-// ── Web Content ───────────────────────────────────────────────────────────────
 class _WebContent extends StatelessWidget {
   final DaotaoProvider provider;
   const _WebContent({required this.provider});
@@ -614,7 +609,7 @@ class _WebContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Stats mini cards
+
           Row(
             children: [
               _MiniStat(
@@ -733,7 +728,6 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-// ── Web Grid ──────────────────────────────────────────────────────────────────
 class _WebGrid extends StatelessWidget {
   final List<DaotaoModel> courses;
   final bool isDark;
@@ -829,7 +823,7 @@ class _WebCourseCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header stripe
+
           Container(
             padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
             decoration: BoxDecoration(
@@ -845,7 +839,7 @@ class _WebCourseCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Status badge
+
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
@@ -921,7 +915,7 @@ class _WebCourseCard extends StatelessWidget {
               ],
             ),
           ),
-          // Body
+
           Padding(
             padding: const EdgeInsets.all(14),
             child: Column(

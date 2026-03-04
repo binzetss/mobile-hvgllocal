@@ -19,7 +19,7 @@ class FacebookPostCard extends StatefulWidget {
 
 class _FacebookPostCardState extends State<FacebookPostCard> {
   int _currentPostIndex = 0;
-  int _slideDirection = 1; // 1 = next, -1 = prev
+  int _slideDirection = 1;
   final Map<int, bool> _expandedMap = {};
   double _dragStartX = 0;
 
@@ -50,8 +50,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       }
     }
   }
-
-  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -97,15 +95,15 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Card-level header ─────────────────────────────────────────
+
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Row(
               children: [
-                // Avatar
+
                 _buildAvatar(post.pageAvatar),
                 const SizedBox(width: 12),
-                // Title
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,13 +148,12 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
                     ],
                   ),
                 ),
-                // Post navigation dots
+
                 if (posts.length > 1) _buildPostDots(posts.length, postIndex),
               ],
             ),
           ),
 
-          // ── Swipeable post content ────────────────────────────────────
           GestureDetector(
             onHorizontalDragStart: (d) => _dragStartX = d.globalPosition.dx,
             onHorizontalDragEnd: (d) {
@@ -195,8 +192,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       ),
     );
   }
-
-  // ── Avatar ─────────────────────────────────────────────────────────────────
 
   Widget _buildAvatar(String? avatarUrl) {
     return Stack(
@@ -257,8 +252,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     );
   }
 
-  // ── Post navigation dots ───────────────────────────────────────────────────
-
   Widget _buildPostDots(int count, int currentIndex) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -283,8 +276,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     );
   }
 
-  // ── Post body ──────────────────────────────────────────────────────────────
-
   Widget _buildPostBody(FacebookPostModel post, int postIndex) {
     final isDark = context.isDark;
     final isExpanded = _expandedMap[postIndex] ?? false;
@@ -292,7 +283,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Images
+
         if (post.images.isNotEmpty) ...[
           const SizedBox(height: 14),
           Padding(
@@ -301,7 +292,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
           ),
         ],
 
-        // Message
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
           child: Container(
@@ -360,7 +350,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
           ),
         ),
 
-        // Stats
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           child: Row(
@@ -377,7 +366,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
           ),
         ),
 
-        // Open button
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
           child: Material(
@@ -425,8 +413,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     );
   }
 
-  // ── Image grid (Facebook style) ────────────────────────────────────────────
-
   Widget _buildImageGrid(List<String> images) {
     const radius = Radius.circular(12);
 
@@ -470,7 +456,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
         height: 240,
         child: Row(
           children: [
-            // Left: large
+
             Expanded(
               flex: 2,
               child: ClipRRect(
@@ -480,7 +466,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
               ),
             ),
             const SizedBox(width: 2),
-            // Right: two stacked
+
             Expanded(
               flex: 1,
               child: Column(
@@ -508,7 +494,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       );
     }
 
-    // 4+ images: 2×2 grid, last cell shows "+N more" if > 4
     final extra = images.length - 4;
     return SizedBox(
       height: 240,
@@ -596,8 +581,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     );
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
   Widget _buildStat(IconData icon, int count, Color color) {
     return Row(
       children: [
@@ -611,8 +594,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       ],
     );
   }
-
-  // ── Loading skeleton ───────────────────────────────────────────────────────
 
   Widget _buildLoadingCard() {
     final isDark = context.isDark;
@@ -716,8 +697,6 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
       ),
     );
   }
-
-  // ── Error card ─────────────────────────────────────────────────────────────
 
   Widget _buildErrorCard(String? msg) {
     final isDark = context.isDark;

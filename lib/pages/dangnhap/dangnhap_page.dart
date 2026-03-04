@@ -26,7 +26,6 @@ class DangnhapPage extends StatefulWidget {
 
 class _DangnhapPageState extends State<DangnhapPage>
     with TickerProviderStateMixin {
-  // ── State ──────────────────────────────────────────────────────────────────
 
   final _formKey = GlobalKey<FormState>();
   final _maSoController = TextEditingController();
@@ -35,8 +34,6 @@ class _DangnhapPageState extends State<DangnhapPage>
   late AnimationController _gradientController;
   late AnimationController _particleController;
   late XacthucProvider _authProviderRef;
-
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   @override
   void initState() {
@@ -54,8 +51,6 @@ class _DangnhapPageState extends State<DangnhapPage>
     _matKhauController.dispose();
     super.dispose();
   }
-
-  // ── Init helpers ───────────────────────────────────────────────────────────
 
   void _initAnimations() {
     _gradientController = AnimationController(
@@ -95,8 +90,6 @@ class _DangnhapPageState extends State<DangnhapPage>
     _matKhauController.text = authProvider.savedPassword;
   }
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
-
   Future<void> _handleLogin() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -115,7 +108,7 @@ class _DangnhapPageState extends State<DangnhapPage>
       if (authProvider.isFirstLogin) {
         _navigateToFirstLogin();
       } else {
-        // Reset để buộc tải lại dữ liệu mới sau mỗi lần đăng nhập
+
         DataPreloadService().reset();
         DataPreloadService().preloadAllData(context);
         if (!mounted) return;
@@ -164,16 +157,12 @@ class _DangnhapPageState extends State<DangnhapPage>
     );
   }
 
-  // ── Build ──────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
     if (isDesktop) return _buildWebLayout(context);
     return _buildMobileLayout(context);
   }
-
-  // ── Mobile layout ──────────────────────────────────────────────────────────
 
   Widget _buildMobileLayout(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -221,7 +210,7 @@ class _DangnhapPageState extends State<DangnhapPage>
     return Scaffold(
       body: Stack(
         children: [
-          // Nền web: xanh nhạt + blobs + sóng
+
           DangnhapWebBackground(controller: _gradientController),
 
           Column(
@@ -232,7 +221,7 @@ class _DangnhapPageState extends State<DangnhapPage>
                       horizontal: 48, vertical: 32),
                   child: Row(
                     children: [
-                      // Cột trái: form đăng nhập
+
                       Expanded(
                         child: Center(
                           child: ConstrainedBox(
@@ -253,7 +242,6 @@ class _DangnhapPageState extends State<DangnhapPage>
                         color: Colors.white.withValues(alpha: 0.25),
                       ),
 
-                      // Cột phải: logo + QR tải app
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

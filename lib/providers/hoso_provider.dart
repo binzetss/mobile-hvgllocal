@@ -96,18 +96,6 @@ class HosoProvider extends ChangeNotifier {
     _localAvatar = File(picked.path);
     notifyListeners();
 
-    // TODO: Gắn API upload ảnh đại diện ở đây
-    // _isUploadingAvatar = true;
-    // notifyListeners();
-    // try {
-    //   final token = TokenManager().getCachedToken();
-    //   await ApiService().uploadAvatar(token: token, file: _localAvatar!);
-    // } catch (e) {
-    //   _localAvatar = null; // rollback nếu upload thất bại
-    // } finally {
-    //   _isUploadingAvatar = false;
-    //   notifyListeners();
-    // }
   }
 
   void removeLocalAvatar() {

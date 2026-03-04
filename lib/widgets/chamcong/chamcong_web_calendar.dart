@@ -3,8 +3,6 @@ import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/chamcong_model.dart';
 import 'chamcong_history_card.dart';
 
-// ── Event data ────────────────────────────────────────────────────────────────
-
 class _Event {
   final String time;
   final String label;
@@ -18,8 +16,6 @@ class _Event {
     required this.sortTime,
   });
 }
-
-// ── Main widget ───────────────────────────────────────────────────────────────
 
 class ChamcongWebCalendar extends StatefulWidget {
   final DateTime currentMonth;
@@ -67,8 +63,6 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
     }
   }
 
-  // ── Navigation ──────────────────────────────────────────────────────────────
-
   void _prevMonth() {
     final m = DateTime(_currentMonth.year, _currentMonth.month - 1);
     setState(() => _currentMonth = m);
@@ -89,13 +83,11 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
     widget.onDateSelected(now);
   }
 
-  // ── Week grid builder ────────────────────────────────────────────────────────
-
   List<List<DateTime?>> _buildWeeks() {
     final daysInMonth =
         DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day;
     final firstDay = DateTime(_currentMonth.year, _currentMonth.month, 1);
-    final startOffset = firstDay.weekday % 7; // 0=Sun … 6=Sat
+    final startOffset = firstDay.weekday % 7;
 
     final allDays = <DateTime?>[];
     for (int i = 0; i < startOffset; i++) { allDays.add(null); }
@@ -110,8 +102,6 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
     }
     return weeks;
   }
-
-  // ── Event helpers ────────────────────────────────────────────────────────────
 
   List<_Event> _getEvents(DateTime date) {
     ChamcongModel? a;
@@ -133,17 +123,16 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
     Color colorFor(String loai) {
       switch (loai) {
         case 'Chấm cơm':
-          return const Color(0xFF22C55E); // green
+          return const Color(0xFF22C55E);
         case 'Chấm thư viện':
-          return const Color(0xFF8B5CF6); // purple
+          return const Color(0xFF8B5CF6);
         case 'Chấm đào tạo':
-          return const Color(0xFFF97316); // orange
+          return const Color(0xFFF97316);
         default:
-          return const Color(0xFF1877F2); // blue (Chấm công)
+          return const Color(0xFF1877F2);
       }
     }
 
-    // punches already sorted ascending by service
     return a.punches
         .map((p) => _Event(
               time: fmt(p.time),
@@ -175,8 +164,6 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
     final n = DateTime.now();
     return d.year == n.year && d.month == n.month && d.day == n.day;
   }
-
-  // ── Day detail popup ─────────────────────────────────────────────────────────
 
   void _showDetail(BuildContext context, DateTime date) {
     widget.onDateSelected(date);
@@ -224,8 +211,6 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
       ),
     );
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -295,8 +280,6 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
   }
 }
 
-// ── Top bar ───────────────────────────────────────────────────────────────────
-
 class _TopBar extends StatelessWidget {
   final DateTime currentMonth;
   final bool isDark;
@@ -332,14 +315,14 @@ class _TopBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // ← Navigation buttons
+
           _NavBtn(label: 'Tháng trước', icon: Icons.chevron_left_rounded, iconFirst: true, onTap: onPrev),
           const SizedBox(width: 4),
           _NavBtn(label: 'Tháng kế', icon: Icons.chevron_right_rounded, iconFirst: false, onTap: onNext),
           const SizedBox(width: 8),
           _NavBtn(label: 'Hôm nay', onTap: onToday),
           const Spacer(),
-          // ── Month/year display
+
           Text(
             '$mm/$yyyy',
             style: TextStyle(
@@ -350,7 +333,7 @@ class _TopBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // → Action buttons
+
           if (onBosungCong != null)
             _ActionBtn(
               icon: Icons.add_rounded,
@@ -492,8 +475,6 @@ class _ActionBtn extends StatelessWidget {
   }
 }
 
-// ── Weekday header ────────────────────────────────────────────────────────────
-
 class _WeekdayHeader extends StatelessWidget {
   final bool isDark;
   const _WeekdayHeader({required this.isDark});
@@ -532,8 +513,6 @@ class _WeekdayHeader extends StatelessWidget {
     );
   }
 }
-
-// ── Day cell ──────────────────────────────────────────────────────────────────
 
 class _DayCell extends StatelessWidget {
   final DateTime? date;
@@ -601,12 +580,12 @@ class _DayCell extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Day number row
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Status dot
+
                   Padding(
                     padding: const EdgeInsets.only(left: 5, top: 5),
                     child: hasData && !isFuture
@@ -620,7 +599,7 @@ class _DayCell extends StatelessWidget {
                           )
                         : const SizedBox(width: 6, height: 6),
                   ),
-                  // Day number
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(2, 5, 6, 2),
                     child: Container(
@@ -647,7 +626,7 @@ class _DayCell extends StatelessWidget {
                   ),
                 ],
               ),
-              // Event chips
+
               ...events.take(5).map((e) => _EventChip(event: e, isFuture: isFuture)),
               if (events.length > 5)
                 Padding(
@@ -668,8 +647,6 @@ class _DayCell extends StatelessWidget {
     );
   }
 }
-
-// ── Event chip ────────────────────────────────────────────────────────────────
 
 class _EventChip extends StatelessWidget {
   final _Event event;

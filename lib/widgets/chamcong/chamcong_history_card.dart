@@ -144,7 +144,7 @@ class ChamcongHistoryCard extends StatelessWidget {
 
     return Column(
       children: [
-        // Status badge
+
         Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -181,7 +181,7 @@ class ChamcongHistoryCard extends StatelessWidget {
 
         if (punches.isNotEmpty) ...[
           const SizedBox(height: 20),
-          // Từng nhóm loại chấm
+
           ...groups.entries.toList().asMap().entries.map((mapEntry) {
             final idx = mapEntry.key;
             final entry = mapEntry.value;
@@ -217,7 +217,6 @@ class ChamcongHistoryCard extends StatelessWidget {
     );
   }
 
-  /// Gom nhóm punches theo loại, giữ thứ tự xuất hiện đầu tiên
   Map<String, List<ChamcongPunch>> _groupByLoai(List<ChamcongPunch> punches) {
     final map = <String, List<ChamcongPunch>>{};
     for (final p in punches) {
@@ -242,7 +241,7 @@ class ChamcongHistoryCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Section header
+
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
             child: Row(
@@ -295,7 +294,7 @@ class ChamcongHistoryCard extends StatelessWidget {
               ],
             ),
           ),
-          // Divider
+
           Divider(
             height: 1,
             thickness: 1,
@@ -303,7 +302,7 @@ class ChamcongHistoryCard extends StatelessWidget {
             endIndent: 14,
             color: color.withValues(alpha: 0.15),
           ),
-          // Danh sách giờ chấm
+
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
             child: Column(
@@ -337,7 +336,7 @@ class ChamcongHistoryCard extends StatelessWidget {
   ) {
     return Row(
       children: [
-        // Số thứ tự
+
         Container(
           width: 24,
           height: 24,

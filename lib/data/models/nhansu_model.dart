@@ -34,7 +34,7 @@ class NhansuModel {
   factory NhansuModel.fromJson(Map<String, dynamic> json) {
     final tenChucVu = json['tenChucVu']?.toString() ?? '';
     final tenChucDanh = json['tenChucDanh']?.toString() ?? '';
-    // Hiển thị chức danh chuyên môn (Bác sĩ, Điều dưỡng...) ưu tiên hơn chức vụ hành chính
+
     final chucVu = tenChucDanh.isNotEmpty ? tenChucDanh : tenChucVu;
 
     return NhansuModel(
@@ -70,7 +70,6 @@ class NhansuModel {
     };
   }
 }
-
 
 class KhoaPhongModel {
   final String id;

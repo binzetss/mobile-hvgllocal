@@ -210,7 +210,7 @@ class VanbanCard extends StatelessWidget {
   }
 
   Color _getCategoryColor() {
-    // Màu mặc định dựa trên categoryId
+
     final colors = [
       AppColors.primary,
       const Color(0xFF8E44AD),

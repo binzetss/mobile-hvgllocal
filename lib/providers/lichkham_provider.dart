@@ -14,7 +14,7 @@ class LichkhamProvider extends ChangeNotifier {
   late DateTime _endDate;
   bool _isLoading = false;
   String? _error;
-  bool _isInitialized = false; // Đánh dấu đã load data chưa
+  bool _isInitialized = false;
   bool _isDisposed = false;
 
   LichkhamProvider() {
@@ -34,17 +34,15 @@ class LichkhamProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isInitialized => _isInitialized;
 
-  /// Helper để gọi notifyListeners an toàn
   void _safeNotifyListeners() {
     if (!_isDisposed) {
       notifyListeners();
     }
   }
 
-  /// Khởi tạo - chỉ load nếu chưa có data
   Future<void> init() async {
     if (_isInitialized && _allSchedules.isNotEmpty) {
-      // Đã có data rồi, không cần load lại
+
       return;
     }
     await loadSchedules();
@@ -63,7 +61,7 @@ class LichkhamProvider extends ChangeNotifier {
       _rooms = roomNames;
       _applyFilters();
 
-      _isInitialized = true; // Đánh dấu đã load thành công
+      _isInitialized = true;
       _isLoading = false;
       _safeNotifyListeners();
     } catch (e) {
@@ -161,7 +159,6 @@ class LichkhamProvider extends ChangeNotifier {
     return counts;
   }
 
-  /// Xóa cache (dùng khi logout)
   void clearCache() {
     _allSchedules = [];
     _filteredSchedules = [];

@@ -12,16 +12,14 @@ import 'skeleton_nhansu_card.dart';
 class PhongbanSection extends StatefulWidget {
   final PhongbanModel department;
   final List<NhansuModel> staffList;
-  // final bool isExpanded;
-  // final VoidCallback onToggle;
+
   final int index;
 
   const PhongbanSection({
     super.key,
     required this.department,
      this.staffList = const [],
-    // required this.isExpanded,
-    // required this.onToggle,
+
     this.index = 0,
   });
 
@@ -104,7 +102,6 @@ class _PhongbanSectionState extends State<PhongbanSection> {
     if (name.contains('tài chính')) return const Color(0xFF009688);
     return const Color(0xFF2196F3);
   }
-
 
   @override
   Widget build(BuildContext context) {

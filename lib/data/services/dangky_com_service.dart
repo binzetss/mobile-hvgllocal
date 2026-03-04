@@ -12,7 +12,6 @@ class DangkyComService {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  /// Lấy danh sách buổi đã đăng ký theo ngày (trả về list buoi: 1=Trưa, 2=Tối)
   Future<List<int>> getDangKyTheoNgay(DateTime date) async {
     try {
       final response = await _apiService.fetchData(
@@ -29,7 +28,6 @@ class DangkyComService {
     }
   }
 
-  /// Đăng ký cơm (buoi: 1=Trưa, 2=Tối)
   Future<void> dangKy(DateTime date, int buoi) async {
     final response = await _apiService.post(
       ApiEndpoints.dangKyCom,
@@ -40,7 +38,6 @@ class DangkyComService {
     }
   }
 
-  /// Hủy đăng ký cơm (buoi: 1=Trưa, 2=Tối)
   Future<void> huyDangKy(DateTime date, int buoi) async {
     final response = await _apiService.deleteWithBody(
       ApiEndpoints.huyDangKyCom,

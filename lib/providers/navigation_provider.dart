@@ -3,7 +3,7 @@ import '../data/models/vanban_model.dart';
 
 class NavigationProvider extends ChangeNotifier {
   int _currentIndex = 0;
-  String? _webCurrentPage; // null = main nav by index
+  String? _webCurrentPage;
   VanbanModel? _webDetailDoc;
 
   int get currentIndex => _currentIndex;

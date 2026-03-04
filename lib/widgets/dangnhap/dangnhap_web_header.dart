@@ -8,7 +8,7 @@ class DangnhapWebHeader extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Logo tròn
+
         Container(
           width: 88,
           height: 88,
@@ -67,7 +67,6 @@ class DangnhapWebHeader extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // Separator
         Container(
           width: 48,
           height: 2,
@@ -79,7 +78,6 @@ class DangnhapWebHeader extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // Feature list
         _FeatureRow(
           icon: Icons.badge_outlined,
           text: 'Quản lý hồ sơ nhân viên',

@@ -12,7 +12,6 @@ class ApiService {
 
   final TokenManager _tokenManager = TokenManager();
 
-  /// Parse body an toàn — trả về {'success': true} nếu body rỗng
   Map<String, dynamic> _decode(String body) {
     if (body.trim().isEmpty) return {'success': true};
     return jsonDecode(body) as Map<String, dynamic>;
@@ -68,8 +67,7 @@ class ApiService {
       throw Exception('Lỗi kết nối: $e');
     }
   }
-  /// Web: dùng POST (browser không cho GET+body).
-  /// Mobile: dùng GET+body (server dùng [FromBody]).
+
   Future<Map<String, dynamic>> fetchData(
     String url,
     Map<String, dynamic> body, {

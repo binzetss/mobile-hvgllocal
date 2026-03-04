@@ -40,7 +40,6 @@ class TrangchuPage extends StatelessWidget {
   }
 }
 
-
 class _MobileTrangchuPage extends StatelessWidget {
   const _MobileTrangchuPage();
 
@@ -64,8 +63,6 @@ class _MobileTrangchuPage extends StatelessWidget {
   }
 }
 
-// ── Web layout (sidebar + content) ───────────────────────────────────────────
-
 class _WebTrangchuPage extends StatelessWidget {
   const _WebTrangchuPage();
 
@@ -77,9 +74,9 @@ class _WebTrangchuPage extends StatelessWidget {
           backgroundColor: Colors.transparent,
           body: Stack(
             children: [
-              // Animated gradient background
+
               const WebAppBackground(),
-              // Main layout (sidebar + content)
+
               Row(
                 children: [
                   const WebSidebar(),
@@ -115,7 +112,6 @@ class _WebTrangchuPage extends StatelessWidget {
   }
 }
 
-
 Widget _buildWebSecondaryPage(String pageKey, {VanbanModel? detail}) {
   switch (pageKey) {
     case 'luong':          return const LuongPage();
@@ -139,14 +135,10 @@ Widget _buildWebSecondaryPage(String pageKey, {VanbanModel? detail}) {
   }
 }
 
-// ── Web nav body builder (index 0 dùng dashboard riêng) ──────────────────────
-
 Widget _buildWebBody(int currentIndex) {
   if (currentIndex == 0) return const TrangchuWebContent();
   return _buildBody(currentIndex);
 }
-
-// ── Main nav body builder ─────────────────────────────────────────────────────
 
 Widget _buildBody(int currentIndex) {
   switch (currentIndex) {

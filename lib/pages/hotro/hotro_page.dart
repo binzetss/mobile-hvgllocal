@@ -127,11 +127,10 @@ class HotroPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Hero banner ──────────────────────────────────────────
+
                 _WebHeroBanner(),
                 const SizedBox(height: 28),
 
-                // ── Lãnh đạo (centered, half-width) ─────────────────────
                 _buildSectionTitle(
                   context,
                   'Lãnh đạo',
@@ -148,7 +147,6 @@ class HotroPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // ── Phần mềm & Phần cứng side by side ───────────────────
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -189,7 +187,6 @@ class HotroPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // ── Info row ─────────────────────────────────────────────
                 const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -252,8 +249,6 @@ class HotroPage extends StatelessWidget {
   }
 }
 
-// ── Web Hero Banner ───────────────────────────────────────────────────────────
-
 class _WebHeroBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -282,7 +277,7 @@ class _WebHeroBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Icon circle
+
           Container(
             width: 80,
             height: 80,
@@ -299,7 +294,6 @@ class _WebHeroBanner extends StatelessWidget {
           ),
           const SizedBox(width: 24),
 
-          // Text info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,7 +361,6 @@ class _WebHeroBanner extends StatelessWidget {
           ),
           const SizedBox(width: 28),
 
-          // Quick action buttons
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -389,8 +382,6 @@ class _WebHeroBanner extends StatelessWidget {
     );
   }
 }
-
-// ── Hero action button ────────────────────────────────────────────────────────
 
 class _HeroBtn extends StatefulWidget {
   final IconData icon;

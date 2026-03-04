@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/extensions/theme_extensions.dart';
 
-/// Thẻ chính sách bảo mật — dùng trong cả mobile lẫn web.
 class GioithieuBaomat extends StatelessWidget {
   const GioithieuBaomat({super.key});
 
@@ -26,7 +25,7 @@ class GioithieuBaomat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header strip ──────────────────────────────────────────────────
+
           Container(
             width: double.infinity,
             padding:
@@ -76,7 +75,6 @@ class GioithieuBaomat extends StatelessWidget {
             ),
           ),
 
-          // ── Body ─────────────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -112,7 +110,6 @@ class GioithieuBaomat extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Warning box ───────────────────────────────────────────
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -157,8 +154,6 @@ class GioithieuBaomat extends StatelessWidget {
   }
 }
 
-// ── Private helpers ─────────────────────────────────────────────────────────────
-
 class _BaomatSection extends StatelessWidget {
   final String number;
   final String title;
@@ -177,7 +172,7 @@ class _BaomatSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title row
+
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

@@ -14,7 +14,6 @@ class GopyKienProvider extends ChangeNotifier {
   bool get hasError => _errorMessage != null;
   bool get isSuccess => _isSuccess;
 
-  
   Future<bool> submitFeedback(GopyKienModel feedback) async {
     _isSubmitting = true;
     _errorMessage = null;
@@ -35,7 +34,6 @@ class GopyKienProvider extends ChangeNotifier {
       return false;
     }
   }
-
 
   void clearError() {
     _errorMessage = null;

@@ -2,7 +2,7 @@ class ThongBao {
   final String id;
   final String title;
   final String content;
-  final String type; // 'chamcong', 'luong', 'vanban', 'hethong', 'sukien'
+  final String type;
   final DateTime time;
   final bool isRead;
   final String? avatar;

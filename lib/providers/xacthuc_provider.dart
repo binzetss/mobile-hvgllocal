@@ -69,13 +69,12 @@ class XacthucProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      
+
       final Map mapUser = await _authService.login(maSo, matKhau);
 
       if (mapUser["token"] != "") {
         _user = mapUser["user"];
 
-        // Nếu API login không trả về hinhAnh → luôn dùng URL server lấy từ database
         final maSoStr = _user?.maSo ?? '';
         if ((_user?.hinhAnh == null || _user!.hinhAnh!.isEmpty) &&
             maSoStr.isNotEmpty) {
@@ -102,10 +101,8 @@ class XacthucProvider extends ChangeNotifier {
         }
         _isFirstLogin = await _authService.checkDoiMatKhau(maSo);
 
-        // Nếu login API không trả về tên, lấy từ DanhSachNhanVien
         await refreshUserNameIfNeeded();
 
-        // Đăng ký FCM token với server để nhận notification khi tắt app
         FirebaseNotificationService().sendTokenToServer(maSo: maSo);
 
         notifyListeners();
@@ -123,7 +120,7 @@ class XacthucProvider extends ChangeNotifier {
       return false;
     }
   }
-  /// Nếu hoVaTen rỗng, lấy từ DanhSachNhanVien và cập nhật
+
   Future<void> refreshUserNameIfNeeded() async {
     final maSo = _user?.maSo ?? '';
     if (maSo.isEmpty) return;
@@ -160,13 +157,12 @@ class XacthucProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Upload ảnh đại diện — trả về null nếu thành công, error message nếu thất bại
   Future<String?> uploadAnhDaiDien(File file) async {
     final maSo = _user?.maSo ?? '';
     if (maSo.isEmpty) return 'Không tìm thấy thông tin người dùng';
 
     _isUploadingAvatar = true;
-    _localAvatarFile = file; // optimistic preview
+    _localAvatarFile = file;
     notifyListeners();
 
     try {

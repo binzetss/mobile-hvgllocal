@@ -14,7 +14,6 @@ class MealMenuProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
 
-  /// Fetch meal menu for a specific date
   Future<void> fetchMealMenu(DateTime date) async {
     _isLoading = true;
     _errorMessage = null;
@@ -31,18 +30,15 @@ class MealMenuProvider extends ChangeNotifier {
     }
   }
 
-  /// Fetch today's meal menu
   Future<void> fetchTodayMenu() async {
     await fetchMealMenu(DateTime.now());
   }
 
-  /// Clear error message
   void clearError() {
     _errorMessage = null;
     notifyListeners();
   }
 
-  /// Reset state
   void reset() {
     _currentMenu = null;
     _isLoading = false;

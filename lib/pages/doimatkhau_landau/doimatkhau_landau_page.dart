@@ -46,8 +46,6 @@ class DoimatkhauLandauPage extends StatelessWidget {
   }
 }
 
-// ── Mobile layout (giữ nguyên) ────────────────────────────────────────────────
-
 class _MobileLandauPage extends StatelessWidget {
   final String hoVaTen;
   final VoidCallback onSuccess;
@@ -72,8 +70,6 @@ class _MobileLandauPage extends StatelessWidget {
   }
 }
 
-// ── Web layout ────────────────────────────────────────────────────────────────
-
 class _WebLandauPage extends StatelessWidget {
   final String hoVaTen;
   final VoidCallback onSuccess;
@@ -95,7 +91,7 @@ class _WebLandauPage extends StatelessWidget {
       backgroundColor: context.bgColor,
       body: Row(
         children: [
-          // Left: gradient panel
+
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -204,7 +200,6 @@ class _WebLandauPage extends StatelessWidget {
             ),
           ),
 
-          // Right: form panel
           Container(
             width: 480,
             color: context.bgColor,

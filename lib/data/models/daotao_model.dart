@@ -26,26 +26,22 @@ class DaotaoModel {
         ngayBatDau.day == now.day;
   }
 
-  /// Kiểm tra đang trong thời gian đăng ký
   bool get dangMoDangKy {
     final now = DateTime.now();
     return now.isAfter(ngayBatDauDangKy) &&
         now.isBefore(ngayKetThucDangKy);
   }
 
-  /// Kiểm tra đã hết hạn đăng ký
   bool get hetHanDangKy {
     final now = DateTime.now();
     return now.isAfter(ngayKetThucDangKy);
   }
 
-  /// Kiểm tra chưa mở đăng ký
   bool get chuaMoDangKy {
     final now = DateTime.now();
     return now.isBefore(ngayBatDauDangKy);
   }
 
-  /// Trạng thái đăng ký dạng text
   String get trangThaiDangKy {
     if (dangMoDangKy) return 'Đang mở đăng ký';
     if (hetHanDangKy) return 'Đã hết hạn';

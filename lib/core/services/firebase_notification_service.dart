@@ -8,7 +8,6 @@ import 'dart:convert';
 import '../constants/api_endpoints.dart';
 import '../utils/token_manager.dart';
 
-/// Handler cho background messages
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('🔔 Background message: ${message.messageId}');
@@ -90,10 +89,8 @@ class FirebaseNotificationService {
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
 
-      // Android 13+ (API 33+): bắt buộc xin quyền POST_NOTIFICATIONS runtime
       await androidPlugin?.requestNotificationsPermission();
 
-      // Tạo notification channel riêng cho chấm công
       const channel = AndroidNotificationChannel(
         'chamcong_channel',
         'Chấm công',
@@ -105,7 +102,6 @@ class FirebaseNotificationService {
       await androidPlugin?.createNotificationChannel(channel);
     }
   }
-
 
   void _handleForegroundMessage(RemoteMessage message) {
     print(' Foreground message: ${message.messageId}');
@@ -152,7 +148,6 @@ class FirebaseNotificationService {
       iOS: iosDetails,
     );
 
-    // ID duy nhất dựa trên timestamp để không bị overwrite
     final id = DateTime.now().millisecondsSinceEpoch % 100000;
 
     await _localNotifications.show(id, title, body, details, payload: payload);
@@ -162,7 +157,6 @@ class FirebaseNotificationService {
     print('👆 Notification tapped: ${message.messageId}');
     print('📦 Data: ${message.data}');
 
-
   }
 
   void _onNotificationTapped(NotificationResponse response) {
@@ -170,7 +164,6 @@ class FirebaseNotificationService {
 
   }
 
-  /// Bắn local notification khi chấm công thành công
   Future<void> showChamcongNotification({
     required DateTime time,
     String loai = 'Chấm công',
@@ -206,8 +199,6 @@ class FirebaseNotificationService {
     }
   }
 
-  /// Đăng ký FCM token với server — gọi sau khi đăng nhập thành công
-  /// Server dùng token này để push notification khi tắt app (e.g. chấm vân tay máy vật lý)
   Future<void> sendTokenToServer({required String maSo}) async {
     if (_fcmToken == null || maSo.isEmpty) return;
     try {

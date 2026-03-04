@@ -1,5 +1,5 @@
-/// loaiMon: 1 = Món chính, 2 = Món kèm, 3 = Canh
-/// buoi:    1 = Trưa,      2 = Tối
+
+
 class MealMenuModel {
   final DateTime date;
   final MealSession lunch;
@@ -28,9 +28,9 @@ class MealMenuModel {
 }
 
 class MealSession {
-  final List<String> mainDishes; // loaiMon: 1 — Món chính
-  final List<String> sideDishes; // loaiMon: 2 — Món kèm
-  final List<String> soups;     // loaiMon: 3 — Canh
+  final List<String> mainDishes;
+  final List<String> sideDishes;
+  final List<String> soups;
 
   MealSession({
     required this.mainDishes,

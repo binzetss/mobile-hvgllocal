@@ -39,10 +39,9 @@ class _QrScannerFrameState extends State<QrScannerFrame>
           height: 280,
           child: Stack(
             children: [
-              // Corner Borders
+
               ..._buildCorners(),
 
-              // Scanning Line Animation
               if (provider.isScanning)
                 AnimatedBuilder(
                   animation: _scanLineController,
@@ -74,7 +73,6 @@ class _QrScannerFrameState extends State<QrScannerFrame>
                   },
                 ),
 
-              // Center dot
               Center(
                 child: Container(
                   width: 8,
@@ -108,7 +106,7 @@ class _QrScannerFrameState extends State<QrScannerFrame>
     const borderWidth = 4.0;
 
     return [
-      // Top Left
+
       Positioned(
         top: 0,
         left: 0,
@@ -132,7 +130,6 @@ class _QrScannerFrameState extends State<QrScannerFrame>
             .fade(begin: 0.7, duration: 1000.ms),
       ),
 
-      // Top Right
       Positioned(
         top: 0,
         right: 0,
@@ -156,7 +153,6 @@ class _QrScannerFrameState extends State<QrScannerFrame>
             .fade(begin: 0.7, duration: 1000.ms, delay: 100.ms),
       ),
 
-      // Bottom Left
       Positioned(
         bottom: 0,
         left: 0,
@@ -180,7 +176,6 @@ class _QrScannerFrameState extends State<QrScannerFrame>
             .fade(begin: 0.7, duration: 1000.ms, delay: 200.ms),
       ),
 
-      // Bottom Right
       Positioned(
         bottom: 0,
         right: 0,

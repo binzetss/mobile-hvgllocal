@@ -2,8 +2,8 @@ class FacebookPostModel {
   final String id;
   final String message;
   final String? fullPicture;
-  final List<String> images; // Multiple images for slider
-  final String? pageAvatar; // Avatar of the Facebook page
+  final List<String> images;
+  final String? pageAvatar;
   final DateTime createdTime;
   final String? link;
   final int? likesCount;

@@ -11,10 +11,9 @@ class HotroService {
     return [...getLeaderMembers(), ...getSoftwareMembers(), ...getHardwareMembers()];
   }
 
-  // Màu đồng nhất theo nhóm
-  static const Color _leaderColor = Color(0xFF6A1B9A); // Tím - lãnh đạo
-  static const Color _softwareColor = Color(0xFF1565C0); // Xanh dương - phần mềm
-  static const Color _hardwareColor = Color(0xFFE65100); // Cam - phần cứng
+  static const Color _leaderColor = Color(0xFF6A1B9A);
+  static const Color _softwareColor = Color(0xFF1565C0);
+  static const Color _hardwareColor = Color(0xFFE65100);
 
   List<SupportMember> getLeaderMembers() {
     return [

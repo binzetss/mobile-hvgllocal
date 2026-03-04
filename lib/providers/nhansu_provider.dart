@@ -36,14 +36,12 @@ class NhansuProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Show cached data immediately while API loads
     await _loadFromCache();
     if (_allStaff.isNotEmpty) {
       _isLoading = false;
       notifyListeners();
     }
 
-    // Load fresh data from API
     try {
       final staffList = await _staffService.getAllStaff();
       _buildFromStaffList(staffList);
@@ -81,7 +79,6 @@ class NhansuProvider extends ChangeNotifier {
 
   Future<void> refresh() => _init();
 
-  // Staff is pre-loaded at init; this is a no-op if data already exists
   Future<void> loadStaffByIdDept(String departmentId) async {
     if (_staffByDepartment.containsKey(departmentId)) return;
   }
@@ -209,7 +206,6 @@ class NhansuProvider extends ChangeNotifier {
     return results.isEmpty ? _allStaff : results;
   }
 
-  /// True khi search khớp tên NV/mã NV nhưng không khớp tên khoa phòng
   bool get isSearchByEmployee {
     if (_searchQuery.isEmpty) return false;
     final matchesDept = _departments.any(

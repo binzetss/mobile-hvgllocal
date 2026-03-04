@@ -229,7 +229,7 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
           dotColor = Colors.amber;
           break;
         case ChamcongStatus.weekend:
-          // Vẫn đi làm cuối tuần → hiển thị như ngày thường
+
           if (attendance.punches.isNotEmpty) {
             dotColor = Colors.green;
           }

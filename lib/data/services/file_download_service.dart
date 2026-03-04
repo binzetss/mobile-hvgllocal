@@ -11,16 +11,13 @@ class FileDownloadService {
 
   final TokenManager _tokenManager = TokenManager();
 
-  /// Download file với Bearer token vào thư mục temp
   Future<File> downloadFile(String url, String fileName) async {
     try {
       final response = await _downloadFileWithAuth(url);
 
-      // Lấy thư mục temp
       final directory = await getTemporaryDirectory();
       final filePath = '${directory.path}/$fileName';
 
-      // Lưu file
       final file = File(filePath);
       await file.writeAsBytes(response.bodyBytes);
 
@@ -34,7 +31,6 @@ class FileDownloadService {
     try {
       final response = await _downloadFileWithAuth(url);
 
-  
       Directory directory;
       if (!kIsWeb && Platform.isAndroid) {
         directory = Directory('/storage/emulated/0/Download');

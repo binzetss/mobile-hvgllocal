@@ -21,7 +21,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
   bool _isCropping = false;
   double? _selectedRatio = 1;
 
-  // Animation controllers cho AI overlay
   late AnimationController _pulseCtrl;
   late AnimationController _scanCtrl;
   late AnimationController _rotateCtrl;
@@ -98,7 +97,7 @@ class _CropAvatarPageState extends State<CropAvatarPage>
           children: [
             Column(
               children: [
-                // Thanh tiêu đề
+
                 Container(
                   color: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -146,7 +145,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
                   ),
                 ),
 
-                // Vùng crop
                 Expanded(
                   child: Crop(
                     controller: _controller,
@@ -161,7 +159,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
                   ),
                 ),
 
-                // Chọn tỉ lệ
                 Container(
                   color: const Color(0xFF1A1A1A),
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -178,7 +175,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
               ],
             ),
 
-            // AI Analyzing Overlay
             if (_isCropping) _buildAiOverlay(),
           ],
         ),
@@ -193,14 +189,14 @@ class _CropAvatarPageState extends State<CropAvatarPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Robot với scan line
+
             SizedBox(
               width: 120,
               height: 120,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Vòng xoay ngoài
+
                   AnimatedBuilder(
                     animation: _rotateCtrl,
                     builder: (_, _) => Transform.rotate(
@@ -212,7 +208,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
                     ),
                   ),
 
-                  // Vòng pulse
                   AnimatedBuilder(
                     animation: _pulseAnim,
                     builder: (_, child) => Transform.scale(
@@ -233,7 +228,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
                     ),
                   ),
 
-                  // Robot icon
                   AnimatedBuilder(
                     animation: _pulseAnim,
                     builder: (_, _) => Icon(
@@ -247,7 +241,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
                     ),
                   ),
 
-                  // Scan line
                   ClipOval(
                     child: SizedBox(
                       width: 80,
@@ -269,7 +262,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
 
             const SizedBox(height: 20),
 
-            // Chữ đang phân tích với dấu chấm động
             _AnimatedDotsText(color: Colors.white),
           ],
         ),
@@ -308,7 +300,6 @@ class _CropAvatarPageState extends State<CropAvatarPage>
   }
 }
 
-// Vòng cung xoay
 class _ArcPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -352,9 +343,8 @@ class _ArcPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// Scan line quét ngang
 class _ScanLinePainter extends CustomPainter {
-  final double progress; // -1.0 → 1.0
+  final double progress;
   final Color color;
 
   _ScanLinePainter({required this.progress, required this.color});
@@ -374,7 +364,6 @@ class _ScanLinePainter extends CustomPainter {
 
     canvas.drawRect(Rect.fromLTWH(0, y - 1, size.width, 2), paint);
 
-    // Glow phía dưới scan line
     final glowPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
@@ -392,7 +381,6 @@ class _ScanLinePainter extends CustomPainter {
   bool shouldRepaint(_ScanLinePainter old) => old.progress != progress;
 }
 
-// Text "Đang phân tích..." với dấu chấm nhảy
 class _AnimatedDotsText extends StatefulWidget {
   final Color color;
   const _AnimatedDotsText({required this.color});

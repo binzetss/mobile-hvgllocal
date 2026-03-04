@@ -28,8 +28,6 @@ class DoimatkhauPage extends StatelessWidget {
   }
 }
 
-// ── Mobile layout (giữ nguyên) ────────────────────────────────────────────────
-
 class _MobileDoimatkhauPage extends StatelessWidget {
   const _MobileDoimatkhauPage();
 
@@ -77,8 +75,6 @@ class _MobileDoimatkhauPage extends StatelessWidget {
   }
 }
 
-// ── Web layout ────────────────────────────────────────────────────────────────
-
 class _WebDoimatkhauPage extends StatelessWidget {
   const _WebDoimatkhauPage();
 
@@ -92,7 +88,7 @@ class _WebDoimatkhauPage extends StatelessWidget {
         builder: (context, provider, _) {
           return Column(
             children: [
-              // Top bar
+
               Container(
                 height: 64,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -131,7 +127,6 @@ class _WebDoimatkhauPage extends StatelessWidget {
                 ),
               ),
 
-              // Body
               Expanded(
                 child: Center(
                   child: ConstrainedBox(
@@ -142,7 +137,7 @@ class _WebDoimatkhauPage extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Left: info card + requirements
+
                             Expanded(
                               child: Column(
                                 crossAxisAlignment:
@@ -155,7 +150,7 @@ class _WebDoimatkhauPage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 24),
-                            // Right: form + error + submit
+
                             Expanded(
                               child: Column(
                                 crossAxisAlignment:
@@ -251,8 +246,6 @@ class _WebDoimatkhauPage extends StatelessWidget {
     );
   }
 }
-
-// ── Shared helpers ────────────────────────────────────────────────────────────
 
 Widget _buildPasswordForm(
     BuildContext context, DoimatkhauProvider provider) {

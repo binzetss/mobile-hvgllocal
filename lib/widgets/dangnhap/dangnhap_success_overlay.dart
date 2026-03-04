@@ -22,7 +22,6 @@ class _DangnhapSuccessOverlayState extends State<DangnhapSuccessOverlay>
       vsync: this,
     );
 
-
     _scaleAnimation = Tween<double>(begin: 0.0, end: 5.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -30,7 +29,6 @@ class _DangnhapSuccessOverlayState extends State<DangnhapSuccessOverlay>
       ),
     );
 
-  
     _opacityAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: 1.0)
@@ -74,7 +72,7 @@ class _DangnhapSuccessOverlayState extends State<DangnhapSuccessOverlay>
                   ),
                 ),
               ),
-    
+
               if (_scaleAnimation.value > 2.0)
                 Positioned.fill(
                   child: Container(

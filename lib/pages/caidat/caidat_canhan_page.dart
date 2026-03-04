@@ -20,8 +20,6 @@ class CaidatCanhanPage extends StatelessWidget {
   }
 }
 
-// ── Web layout (bỏ thông báo, chỉ giữ chủ đề) ───────────────────────────────
-
 class _WebCaidatPage extends StatelessWidget {
   const _WebCaidatPage();
 
@@ -35,7 +33,7 @@ class _WebCaidatPage extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          // Top bar
+
           Container(
             height: 64,
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -74,7 +72,6 @@ class _WebCaidatPage extends StatelessWidget {
             ),
           ),
 
-          // Centered content
           Expanded(
             child: Center(
               child: ConstrainedBox(
@@ -96,7 +93,7 @@ class _WebCaidatPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       const ThemeSelectorCard(),
                       const SizedBox(height: 32),
-                      // Ghi chú thông báo
+
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -137,8 +134,6 @@ class _WebCaidatPage extends StatelessWidget {
   }
 }
 
-// ── Light mode: giữ nguyên thiết kế cũ ──────────────────────────────────────
-
 class _LightPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -177,8 +172,6 @@ class _LightPage extends StatelessWidget {
     );
   }
 }
-
-// ── Dark mode: thiết kế mới nền đen ─────────────────────────────────────────
 
 class _DarkPage extends StatelessWidget {
   @override
