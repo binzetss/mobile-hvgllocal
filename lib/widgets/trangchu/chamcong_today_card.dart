@@ -54,7 +54,6 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
         final todayAttendance = provider.todayAttendance;
         final punches = todayAttendance?.punches ?? [];
 
-        // Ẩn hoàn toàn nếu hôm nay chưa chấm
         if (punches.isEmpty) return const SizedBox.shrink();
 
         final groups = _groupByLoai(punches);
@@ -86,12 +85,12 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
             ),
             child: Column(
               children: [
-                // ── Header ──────────────────────────────────────────
+
                 Padding(
                   padding: const EdgeInsets.all(14),
                   child: Row(
                     children: [
-                      // Icon
+
                       Container(
                         width: 44,
                         height: 44,
@@ -119,7 +118,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Title + date
+
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +153,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                           ],
                         ),
                       ),
-                      // Badge tổng
+
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
@@ -190,7 +189,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Chevron
+
                       RotationTransition(
                         turns: _chevronAnim,
                         child: Icon(
@@ -203,15 +202,13 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                   ),
                 ),
 
-                // ── Collapsed: mỗi loại 1 dòng, chỉ giờ cuối ───────
                 _buildCollapsedSummary(context, groups),
 
-                // ── Expanded: toàn bộ punches gom nhóm ─────────────
                 SizeTransition(
                   sizeFactor: _expandAnim,
                   child: Column(
                     children: [
-                      // Divider trước expanded
+
                       Container(
                         height: 1,
                         margin: const EdgeInsets.symmetric(horizontal: 14),
@@ -243,7 +240,6 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
     );
   }
 
-  // ── Tóm tắt thu gọn: 1 dòng/loại, hiện giờ chấm cuối ──────────────
   Widget _buildCollapsedSummary(
     BuildContext context,
     Map<String, List<ChamcongPunch>> groups,
@@ -265,7 +261,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
               if (idx > 0) const SizedBox(height: 8),
               Row(
                 children: [
-                  // Icon loại
+
                   Container(
                     width: 30,
                     height: 30,
@@ -276,7 +272,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                     child: Center(child: Icon(icon, size: 14, color: color)),
                   ),
                   const SizedBox(width: 10),
-                  // Tên loại
+
                   Expanded(
                     child: Text(
                       loai,
@@ -287,7 +283,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                       ),
                     ),
                   ),
-                  // Badge số lần (nếu > 1)
+
                   if (items.length > 1) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
@@ -306,7 +302,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
                     ),
                     const SizedBox(width: 8),
                   ],
-                  // Giờ chấm cuối
+
                   Text(
                     DateFormat('HH:mm').format(lastPunch.time),
                     style: TextStyle(
@@ -325,7 +321,6 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
     );
   }
 
-  // ── Nhóm loại đầy đủ (trong expanded) ──────────────────────────────
   Widget _buildGroupSection(
     BuildContext context,
     String loai,
@@ -342,7 +337,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
       ),
       child: Column(
         children: [
-          // Header nhóm
+
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
             child: Row(
@@ -388,7 +383,7 @@ class _ChamcongTodayCardState extends State<ChamcongTodayCard>
           ),
           Divider(height: 1, thickness: 1, indent: 12, endIndent: 12,
               color: color.withValues(alpha: 0.12)),
-          // Chips giờ
+
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
             child: Wrap(

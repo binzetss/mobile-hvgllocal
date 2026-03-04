@@ -47,7 +47,7 @@ class DaotaoProvider extends ChangeNotifier {
 
     try {
       _danhSach = await _service.getDanhSach();
-      // Sync trạng thái đăng ký từ API
+
       _daDangKyIds.clear();
       for (final lop in _danhSach) {
         if (lop.isTrangThai) _daDangKyIds.add(lop.idLopDaoTao);
@@ -78,7 +78,6 @@ class DaotaoProvider extends ChangeNotifier {
   void _applyFilters() {
     _danhSachLoc = _danhSach;
 
-   
     switch (_locTrangThai) {
       case 'dangMo':
         _danhSachLoc = _danhSachLoc
@@ -97,7 +96,6 @@ class DaotaoProvider extends ChangeNotifier {
         break;
     }
 
-  
     if (_tuKhoa.isNotEmpty) {
       _danhSachLoc = _danhSachLoc.where((lop) {
         return lop.tenLopDaoTao
@@ -106,7 +104,6 @@ class DaotaoProvider extends ChangeNotifier {
       }).toList();
     }
 
-  
     _danhSachLoc.sort((a, b) => b.ngayBatDau.compareTo(a.ngayBatDau));
   }
 

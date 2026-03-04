@@ -18,7 +18,6 @@ class VanbanChitietProvider extends ChangeNotifier {
   File? get downloadedFile => _downloadedFile;
   bool get hasError => _errorMessage != null;
 
-  /// Helper để gọi notifyListeners an toàn
   void _safeNotifyListeners() {
     if (!_isDisposed) {
       notifyListeners();

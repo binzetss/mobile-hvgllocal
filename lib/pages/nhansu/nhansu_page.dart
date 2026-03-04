@@ -19,7 +19,7 @@ class NhansuPage extends StatefulWidget {
 
 class _NhansuPageState extends State<NhansuPage> {
   final TextEditingController _searchController = TextEditingController();
-  String? _selectedDeptKey; // web only, null = tất cả
+  String? _selectedDeptKey;
 
   @override
   void initState() {
@@ -147,8 +147,6 @@ class _NhansuPageState extends State<NhansuPage> {
     );
   }
 
-  // ── Web layout ──────────────────────────────────────────────────────────────
-
   Widget _buildWebLayout(BuildContext context, NhansuProvider provider) {
     final List<NhansuModel> staffToShow;
     final String panelTitle;
@@ -201,8 +199,6 @@ class _NhansuPageState extends State<NhansuPage> {
       ),
     );
   }
-
-  // ── Mobile helpers ──────────────────────────────────────────────────────────
 
   Widget _buildStatsSection(BuildContext context, NhansuProvider provider) {
     return Column(
@@ -378,8 +374,6 @@ class _NhansuPageState extends State<NhansuPage> {
   }
 }
 
-// ── Web helpers ────────────────────────────────────────────────────────────────
-
 class _WebDeptSidebar extends StatelessWidget {
   final NhansuProvider provider;
   final TextEditingController searchController;
@@ -438,7 +432,7 @@ class _WebDeptSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ──
+
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
             child: Column(
@@ -475,7 +469,7 @@ class _WebDeptSidebar extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 14),
-                // ── Search ──
+
                 Container(
                   height: 36,
                   decoration: BoxDecoration(
@@ -510,7 +504,7 @@ class _WebDeptSidebar extends StatelessWidget {
               ],
             ),
           ),
-          // ── Stats chips ──
+
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: Row(
@@ -535,7 +529,7 @@ class _WebDeptSidebar extends StatelessWidget {
               height: 1,
               thickness: 1,
               color: context.borderColor.withValues(alpha: 0.5)),
-          // ── "Tất cả" option ──
+
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
             child: _buildDeptTile(
@@ -553,7 +547,7 @@ class _WebDeptSidebar extends StatelessWidget {
               indent: 12,
               endIndent: 12,
               color: context.borderColor.withValues(alpha: 0.35)),
-          // ── Department list ──
+
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
@@ -725,7 +719,7 @@ class _WebStaffPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Header ──
+
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
           child: Row(
@@ -764,7 +758,7 @@ class _WebStaffPanel extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        // ── Content ──
+
         Expanded(
           child: isLoading
               ? _buildLoading(context)

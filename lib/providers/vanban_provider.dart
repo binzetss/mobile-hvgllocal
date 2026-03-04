@@ -34,8 +34,6 @@ class VanbanProvider extends ChangeNotifier {
     }
   }
 
-
-  /// TEMP: Kiểm tra văn bản trong vòng 10 ngày gần nhất (để test)
   bool _isRecent(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
@@ -57,17 +55,12 @@ class VanbanProvider extends ChangeNotifier {
     try {
       final newDocuments = await _documentService.getDocuments();
 
-      // TEMP: Tạo thông báo cho văn bản trong 3 ngày gần nhất (để test)
-      // TODO: Đổi lại thành _isToday(doc.publishedDate) sau khi test xong
       if (newDocuments.isNotEmpty) {
-        // Lọc văn bản 3 ngày gần nhất
+
         final todayDocs = newDocuments.where((doc) => _isRecent(doc.publishedDate)).toList();
 
-        // Sắp xếp từ CŨ đến MỚI trước khi tạo thông báo
-        // Vì insert(0) sẽ đảo ngược thứ tự
         todayDocs.sort((a, b) => a.publishedDate.compareTo(b.publishedDate));
 
-        // Tạo thông báo theo thứ tự
         for (final doc in todayDocs) {
           await _thongBaoService.createVanbanNotification(
             documentId: doc.fileId.toString(),

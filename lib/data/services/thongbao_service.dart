@@ -41,21 +41,18 @@ class ThongBaoService {
   Future<List<ThongBao>> getAll() async {
     final notifications = await _loadNotifications();
 
-    // Lọc chỉ lấy thông báo trong 7 ngày gần nhất
     final now = DateTime.now();
     final sevenDaysAgo = now.subtract(const Duration(days: 7));
     final recentNotifications = notifications.where((notification) {
       return notification.time.isAfter(sevenDaysAgo);
     }).toList();
 
-    // Lưu lại danh sách đã lọc (xóa thông báo cũ)
     if (recentNotifications.length != notifications.length) {
       await _saveNotifications(recentNotifications);
     }
 
-    // Sắp xếp: MỚI NHẤT lên đầu (descending by time)
     recentNotifications.sort((a, b) {
-      // b sau a (b > a) => trả về dương => b lên trước a
+
       return b.time.compareTo(a.time);
     });
 
@@ -114,19 +111,17 @@ class ThongBaoService {
     required String category,
     required DateTime publishedDate,
   }) async {
-    // Kiểm tra đã thông báo chưa
+
     if (await isVanbanNotified(documentId)) {
       return false;
     }
 
-    // TEMP: Kiểm tra trong vòng 10 ngày gần nhất (để test)
-    // TODO: Đổi lại thành kiểm tra HÔM NAY sau khi test xong
     final now = DateTime.now();
     final difference = now.difference(publishedDate);
 
     if (difference.inDays > 10) {
       debugPrint('Skipping notification for old document: $documentName (date: $publishedDate)');
-      // Đánh dấu đã xem để không tạo thông báo lần sau
+
       await addNotifiedVanbanId(documentId);
       return false;
     }
@@ -201,7 +196,7 @@ class ThongBaoService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_storageKey);
-      await prefs.remove(_notifiedVanbanKey); // Xóa cả danh sách đã thông báo
+      await prefs.remove(_notifiedVanbanKey);
     } catch (e) {
       debugPrint('Error clearing notifications: $e');
     }

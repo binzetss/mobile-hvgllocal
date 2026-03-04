@@ -8,6 +8,7 @@ import '../../data/models/vanban_model.dart';
 import '../../providers/navigation_provider.dart';
 import '../../providers/vanban_chitiet_provider.dart';
 import '../../widgets/common/common_app_bar.dart';
+import '../../widgets/vanban/pdf_iframe_widget.dart';
 import '../../widgets/vanban_chitiet/vanban_header_card.dart';
 import '../../widgets/vanban_chitiet/the_thongtin.dart';
 import '../../widgets/vanban_chitiet/nut_hanhdong.dart';
@@ -29,8 +30,6 @@ class VanbanChitietPage extends StatelessWidget {
     );
   }
 }
-
-// ── Mobile (existing layout) ──────────────────────────────────────────────────
 
 class _MobileLayout extends StatelessWidget {
   final VanbanModel document;
@@ -122,64 +121,285 @@ class _MobileLayout extends StatelessWidget {
   }
 }
 
-// ── Web layout ────────────────────────────────────────────────────────────────
-
-class _WebLayout extends StatelessWidget {
+class _WebLayout extends StatefulWidget {
   final VanbanModel document;
   const _WebLayout({required this.document});
+
+  @override
+  State<_WebLayout> createState() => _WebLayoutState();
+}
+
+class _WebLayoutState extends State<_WebLayout> {
+  String? _pdfUrl;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadPdfUrl());
+  }
+
+  Future<void> _loadPdfUrl() async {
+    try {
+      final provider =
+          Provider.of<VanbanChitietProvider>(context, listen: false);
+      final filePath = widget.document.filePath;
+      final absoluteUrl = VanbanChitietActions.toAbsoluteUrl(filePath);
+      final uri = Uri.parse(absoluteUrl);
+      final inlineUri = uri.replace(queryParameters: {
+        ...uri.queryParameters,
+        'inline': 'true',
+      });
+      final url = await provider.getAuthenticatedUrl(inlineUri.toString());
+      if (mounted) setState(() { _pdfUrl = url; _isLoading = false; });
+    } catch (e) {
+      if (mounted) setState(() { _error = e.toString(); _isLoading = false; });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Breadcrumb bar
-          _Breadcrumb(document: document),
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(28, 20, 28, 28),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left column: header + metadata
-                  Expanded(
-                    flex: 6,
-                    child: Column(
-                      children: [
-                        VanbanHeaderCard(document: document),
-                        const SizedBox(height: 20),
-                        _WebMetaCard(document: document),
-                        if (document.hasMultipleFiles) ...[
-                          const SizedBox(height: 16),
-                          _WebFilesCard(document: document),
-                        ],
-                      ],
-                    ),
+          _Breadcrumb(
+            document: widget.document,
+            trailing: Tooltip(
+              message: 'Tải xuống',
+              child: InkWell(
+                onTap: () => VanbanChitietActions.handleDownloadPdf(
+                    context, widget.document),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: context.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 24),
-                  // Right column: action panel
-                  SizedBox(
-                    width: 300,
-                    child: _WebActionPanel(document: document),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.download_rounded,
+                          size: 16, color: context.primaryColor),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Tải xuống',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: context.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          _WebDocInfoBar(document: widget.document),
+          Expanded(child: _buildPdfArea(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPdfArea(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline_rounded,
+                size: 48, color: context.textSecondary),
+            const SizedBox(height: 12),
+            Text(
+              'Không thể tải tài liệu',
+              style: TextStyle(color: context.textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
+    return PdfIframeWidget(url: _pdfUrl!);
+  }
+}
+
+class _WebDocInfoBar extends StatelessWidget {
+  final VanbanModel document;
+  const _WebDocInfoBar({required this.document});
+
+  Color _categoryColor() {
+    const colors = [
+      AppColors.primary,
+      Color(0xFF8E44AD),
+      AppColors.warning,
+      AppColors.error,
+      Color(0xFF16A085),
+      AppColors.success,
+      Color(0xFFE67E22),
+      Color(0xFF3498DB),
+    ];
+    if (document.categoryId > 0 && document.categoryId <= colors.length) {
+      return colors[document.categoryId - 1];
+    }
+    return AppColors.primary;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _categoryColor();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color, color.withValues(alpha: 0.85)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Row(
+        children: [
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.22),
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.3), width: 1),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.folder_rounded,
+                    size: 12, color: Colors.white),
+                const SizedBox(width: 5),
+                Text(
+                  document.categoryName,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (document.isNew) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)]),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: const Text(
+                'MỚI',
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Text(
+              document.fileName,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: -0.2,
+                shadows: [
+                  Shadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(0, 1))
+                ],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          const SizedBox(width: 20),
+          Icon(Icons.calendar_today_rounded,
+              size: 13, color: Colors.white.withValues(alpha: 0.8)),
+          const SizedBox(width: 5),
+          Text(
+            VanbanChitietActions.formatDate(document.publishedDate),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          if (document.soKiHieu.isNotEmpty) ...[
+            const SizedBox(width: 16),
+            Icon(Icons.tag_rounded,
+                size: 13, color: Colors.white.withValues(alpha: 0.8)),
+            const SizedBox(width: 4),
+            Text(
+              document.soKiHieu,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
+            ),
+          ],
+          if (document.isPdfFile) ...[
+            const SizedBox(width: 16),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3), width: 1),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(FontAwesomeIcons.filePdf,
+                      size: 11, color: Colors.white),
+                  SizedBox(width: 5),
+                  Text(
+                    'PDF',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-// ── Breadcrumb ────────────────────────────────────────────────────────────────
-
 class _Breadcrumb extends StatelessWidget {
   final VanbanModel document;
-  const _Breadcrumb({required this.document});
+  final Widget? trailing;
+  const _Breadcrumb({required this.document, this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -234,412 +454,7 @@ class _Breadcrumb extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Web Meta Card ─────────────────────────────────────────────────────────────
-
-class _WebMetaCard extends StatelessWidget {
-  final VanbanModel document;
-  const _WebMetaCard({required this.document});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.4),
-          width: 0.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: context.primaryColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Icons.info_outline_rounded,
-                    size: 16, color: context.primaryColor),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Thông tin tài liệu',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: context.textPrimary,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _MetaRow(
-            icon: Icons.calendar_today_rounded,
-            label: 'Ngày đăng',
-            value: VanbanChitietActions.formatDate(document.uploadedAt),
-          ),
-          _divider(context),
-          _MetaRow(
-            icon: Icons.fingerprint_rounded,
-            label: 'Mã tài liệu',
-            value: 'ID ${document.fileId}',
-          ),
-          _divider(context),
-          _MetaRow(
-            icon: Icons.folder_rounded,
-            label: 'Danh mục',
-            value: document.categoryName,
-          ),
-          if (document.soKiHieu.isNotEmpty) ...[
-            _divider(context),
-            _MetaRow(
-              icon: Icons.tag_rounded,
-              label: 'Số ký hiệu',
-              value: document.soKiHieu,
-            ),
-          ],
-          _divider(context),
-          _MetaRow(
-            icon: Icons.insert_drive_file_rounded,
-            label: 'Loại file',
-            value: document.fileExtension.toUpperCase(),
-            valueIsChip: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _divider(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Divider(
-          height: 1,
-          color: context.borderColor.withValues(alpha: 0.5)),
-    );
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool valueIsChip;
-
-  const _MetaRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.valueIsChip = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon,
-            size: 16, color: context.textSecondary.withValues(alpha: 0.7)),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: context.textSecondary,
-          ),
-        ),
-        const Spacer(),
-        if (valueIsChip)
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: context.primaryColor,
-              ),
-            ),
-          )
-        else
-          Flexible(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: context.textPrimary,
-              ),
-              textAlign: TextAlign.right,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-// ── Web Additional Files Card ─────────────────────────────────────────────────
-
-class _WebFilesCard extends StatelessWidget {
-  final VanbanModel document;
-  const _WebFilesCard({required this.document});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    final files = document.additionalFiles!;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.4),
-          width: 0.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF16A085).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.attach_file_rounded,
-                    size: 16, color: Color(0xFF16A085)),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'File đính kèm (${files.length})',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: context.textPrimary,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...files.asMap().entries.map((e) {
-            final name = e.value.split('/').last;
-            final ext = name.contains('.')
-                ? name.split('.').last.toUpperCase()
-                : 'FILE';
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      ext,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: context.primaryColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      name,
-                      style: TextStyle(
-                          fontSize: 13, color: context.textPrimary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Web Action Panel ──────────────────────────────────────────────────────────
-
-class _WebActionPanel extends StatelessWidget {
-  final VanbanModel document;
-  const _WebActionPanel({required this.document});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.4),
-          width: 0.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Panel header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1877F2), Color(0xFF42A5F5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.description_rounded,
-                    size: 16, color: Colors.white),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Thao tác',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: context.textPrimary,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // File preview chip
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                  color: context.borderColor.withValues(alpha: 0.5)),
-            ),
-            child: Row(
-              children: [
-                FaIcon(FontAwesomeIcons.filePdf,
-                    size: 20, color: AppColors.error),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        document.fileName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: context.textPrimary,
-                          height: 1.3,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        document.fileExtension.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: context.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Action buttons
-          Consumer<VanbanChitietProvider>(
-            builder: (context, provider, _) {
-              return ActionButtons(
-                onOpenPdf: () =>
-                    VanbanChitietActions.handleOpenPdf(context, document),
-                onDownloadPdf: () =>
-                    VanbanChitietActions.handleDownloadPdf(context, document),
-                isLoadingView: provider.isLoadingView,
-                isLoadingDownload: provider.isLoadingDownload,
-              );
-            },
-          ),
-          if (document.hasMultipleFiles) ...[
-            const SizedBox(height: 16),
-            Divider(
-                color: context.borderColor.withValues(alpha: 0.5)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.attach_file_rounded,
-                    size: 14, color: context.textSecondary),
-                const SizedBox(width: 6),
-                Text(
-                  '${document.additionalFiles!.length + 1} file đính kèm',
-                  style: TextStyle(
-                      fontSize: 12, color: context.textSecondary),
-                ),
-              ],
-            ),
-          ],
+          if (trailing != null) trailing!,
         ],
       ),
     );

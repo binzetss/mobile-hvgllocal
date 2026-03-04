@@ -118,14 +118,11 @@ class VanbanModel {
           urlString = 'https://$filePath';
         }
 
-     
         final uri = Uri.parse(urlString);
 
-  
         final pathSegments = uri.pathSegments;
         final encodedPath = pathSegments.map((s) => Uri.encodeComponent(s)).join('/');
 
-    
         return Uri(
           scheme: uri.scheme,
           host: uri.host,
@@ -133,9 +130,7 @@ class VanbanModel {
         ).toString();
       }
 
- 
       final path = filePath.startsWith('/') ? filePath : '/$filePath';
-
 
       final pathSegments = path.split('/').where((s) => s.isNotEmpty).toList();
       final encodedPath = pathSegments.map((s) => Uri.encodeComponent(s)).join('/');

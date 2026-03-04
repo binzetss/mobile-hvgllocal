@@ -44,24 +44,22 @@ class _QrScannerPageState extends State<QrScannerPage> {
     super.dispose();
   }
 
-  /// Lắng nghe thay đổi state — bắn notification ngay khi scan thành công
   void _onScannerStateChanged() {
     if (!mounted) return;
 
     if (_scannerProvider.state == ScannerState.success && !_notificationFired) {
       _notificationFired = true;
       final time = DateTime.now();
-      // Dùng postFrameCallback để tránh setState/notifyListeners trong build cycle
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        // Bắn local push notification
+
         FirebaseNotificationService().showChamcongNotification(time: time);
-        // Ghi vào mục thông báo trong app
+
         context.read<ThongBaoProvider>().addChamcongNotification(time: time);
       });
     }
 
-    // Reset flag khi scanner quay về scanning (cho lần scan tiếp theo)
     if (_scannerProvider.state == ScannerState.scanning) {
       _notificationFired = false;
     }

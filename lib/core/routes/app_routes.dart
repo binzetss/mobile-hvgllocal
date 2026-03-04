@@ -14,6 +14,7 @@ import '../../pages/gopykien/gopykien_page.dart';
 import '../../pages/daotao/daotao_page.dart';
 import '../../pages/xemdanhgia/xemdanhgia_page.dart';
 import '../../pages/caidat/caidat_canhan_page.dart';
+import '../../pages/vanban/vanban_pdf_viewer_page.dart';
 import '../animations/page_transitions.dart';
 
 class AppRoutes {
@@ -34,6 +35,7 @@ class AppRoutes {
   static const String daotao = '/daotao';
   static const String xemdanhgia = '/xemdanhgia';
   static const String caidatCanhan = '/caidat-ca-nhan';
+  static const String pdfViewer = '/pdf-viewer';
 
   static Map<String, WidgetBuilder> get routes => {
         splash: (context) => const SplashPage(),
@@ -85,6 +87,11 @@ class AppRoutes {
         return AppPageTransitions.slideRightTransition(const XemDanhGiaPage());
       case caidatCanhan:
         return AppPageTransitions.slideRightTransition(const CaidatCanhanPage());
+      case pdfViewer:
+        final args = settings.arguments as Map<String, String>;
+        return AppPageTransitions.slideRightTransition(
+          VanbanPdfViewerPage(url: args['url']!, title: args['title']!),
+        );
       default:
         return AppPageTransitions.fadeTransition(const DangnhapPage());
     }

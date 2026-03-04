@@ -50,7 +50,7 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Accent bar gradient
+
           Container(
             height: 4,
             decoration: BoxDecoration(
@@ -66,7 +66,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
             ),
           ),
 
-          // Card body
           Padding(
             padding: const EdgeInsets.fromLTRB(36, 28, 36, 36),
             child: Consumer<XacthucProvider>(
@@ -76,7 +75,7 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Title
+
                       Text(
                         'Đăng nhập',
                         style: TextStyle(
@@ -99,7 +98,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 28),
 
-                      // Tên đăng nhập
                       _buildLabel(context, 'Tên đăng nhập'),
                       const SizedBox(height: 6),
                       _buildTextField(
@@ -115,7 +113,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 16),
 
-                      // Mật khẩu
                       _buildLabel(context, 'Mật khẩu'),
                       const SizedBox(height: 6),
                       _buildTextField(
@@ -131,7 +128,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 14),
 
-                      // Ghi nhớ đăng nhập
                       Row(
                         children: [
                           SizedBox(
@@ -158,7 +154,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 24),
 
-                      // Nút đăng nhập
                       SizedBox(
                         height: 52,
                         child: ElevatedButton(
@@ -202,7 +197,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 20),
 
-                      // Divider HOẶC
                       Row(
                         children: [
                           Expanded(
@@ -229,7 +223,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
 
                       const SizedBox(height: 16),
 
-                      // Link hỗ trợ
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -257,8 +250,6 @@ class _DangnhapWebCardState extends State<DangnhapWebCard> {
       ),
     );
   }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
 
   Widget _buildLabel(BuildContext context, String text) {
     return Text(

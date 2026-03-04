@@ -325,8 +325,6 @@ class HosoPage extends StatelessWidget {
   }
 }
 
-// ── Web layout ──────────────────────────────────────────────────────────────────
-
 class _WebHosoPage extends StatefulWidget {
   const _WebHosoPage();
 
@@ -661,8 +659,6 @@ class _WebHosoPageState extends State<_WebHosoPage> {
   }
 }
 
-// ── Sidebar profile card ────────────────────────────────────────────────────────
-
 class _WebProfileCard extends StatelessWidget {
   final String name;
   final String birthYear;
@@ -775,8 +771,6 @@ class _WebProfileCard extends StatelessWidget {
     );
   }
 }
-
-// ── Sidebar nav item ────────────────────────────────────────────────────────────
 
 class _WebNavItem extends StatelessWidget {
   final IconData icon;

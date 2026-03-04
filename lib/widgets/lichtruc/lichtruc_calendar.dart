@@ -106,7 +106,7 @@ class LichtructCalendar extends StatelessWidget {
 
     if (hasSchedule) {
       if (isPast || isToday) {
-        // Đã trực - màu xanh dương
+
         backgroundColor = const Color(0xFF2196F3).withValues(alpha: 0.15);
         borderColor = const Color(0xFF2196F3);
         textColor = isToday ? Colors.white : const Color(0xFF1976D2);
@@ -114,7 +114,7 @@ class LichtructCalendar extends StatelessWidget {
           backgroundColor = const Color(0xFF2196F3);
         }
       } else {
-        // Sẽ trực - màu đỏ
+
         backgroundColor = const Color(0xFFF44336).withValues(alpha: 0.15);
         borderColor = const Color(0xFFF44336);
         textColor = const Color(0xFFC62828);

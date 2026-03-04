@@ -5,8 +5,6 @@ const _kGreen = Color(0xFF34C759);
 const _kRed = Color(0xFFFF3B30);
 const _kBlue = Color(0xFF1877F2);
 
-// ─── Success: toast (bottom on mobile, top-right on web) ────────────────────
-
 void showSuccessDialog(
   BuildContext context, {
   required String title,
@@ -34,8 +32,6 @@ void showSuccessDialog(
     entry.remove();
   });
 }
-
-// ─── Error: modal (dark overlay, manual close) ──────────────────────────────
 
 void showErrorDialog(
   BuildContext context, {
@@ -100,8 +96,6 @@ void showInfoDialog(
   );
 }
 
-// ─── Animated toast ──────────────────────────────────────────────────────────
-
 class _AnimatedToast extends StatefulWidget {
   const _AnimatedToast({
     required this.icon,
@@ -135,7 +129,7 @@ class _AnimatedToastState extends State<_AnimatedToast>
       duration: const Duration(milliseconds: 380),
     );
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    // web: slide từ phải vào; mobile: slide từ dưới lên
+
     _slide = Tween<Offset>(
       begin: kIsWeb ? const Offset(1.0, 0.0) : const Offset(0.0, 1.0),
       end: Offset.zero,
@@ -246,8 +240,6 @@ class _AnimatedToastState extends State<_AnimatedToast>
     );
   }
 }
-
-// ─── Alert modal ─────────────────────────────────────────────────────────────
 
 class _AlertModal extends StatelessWidget {
   const _AlertModal({

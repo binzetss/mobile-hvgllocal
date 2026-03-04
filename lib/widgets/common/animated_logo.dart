@@ -24,7 +24,7 @@ class AnimatedLogo extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Vòng tròn ngoài - xoay chậm
+
           if (showBorderCircles)
             Container(
               width: size * 1.5,
@@ -42,7 +42,6 @@ class AnimatedLogo extends StatelessWidget {
                 )
                 .rotate(duration: 10000.ms, curve: Curves.linear),
 
-          // Vòng tròn giữa - xoay ngược
           if (showBorderCircles)
             Container(
               width: size * 1.25,
@@ -65,7 +64,6 @@ class AnimatedLogo extends StatelessWidget {
                   end: 0,
                 ),
 
-          // Vòng tròn trong
           if (showBorderCircles)
             Container(
               width: size * 1.1,
@@ -83,7 +81,6 @@ class AnimatedLogo extends StatelessWidget {
                 )
                 .rotate(duration: 5000.ms, curve: Curves.linear),
 
-          // Hiệu ứng glow
           if (showGlow)
             Container(
               width: size,
@@ -105,7 +102,6 @@ class AnimatedLogo extends StatelessWidget {
                 .fadeIn(duration: 2000.ms)
                 .fadeOut(delay: 2000.ms, duration: 2000.ms),
 
-          // Hiệu ứng sóng nước - Ripple 1
           if (showGlow)
             Container(
               width: size,
@@ -129,7 +125,6 @@ class AnimatedLogo extends StatelessWidget {
                   curve: Curves.easeOut,
                 ),
 
-          // Hiệu ứng sóng nước - Ripple 2
           if (showGlow)
             Container(
               width: size,
@@ -154,7 +149,6 @@ class AnimatedLogo extends StatelessWidget {
                   curve: Curves.easeOut,
                 ),
 
-          // Hiệu ứng sóng nước - Ripple 3
           if (showGlow)
             Container(
               width: size,
@@ -179,7 +173,6 @@ class AnimatedLogo extends StatelessWidget {
                   curve: Curves.easeOut,
                 ),
 
-          // Vòng tròn trắng nền
           Container(
             width: size,
             height: size,
@@ -216,7 +209,6 @@ class AnimatedLogo extends StatelessWidget {
                 curve: Curves.easeOutBack,
               ),
 
-          // Logo ở giữa
           SizedBox(
             width: size,
             height: size,

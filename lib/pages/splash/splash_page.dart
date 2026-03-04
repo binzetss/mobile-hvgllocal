@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/api_endpoints.dart';
 import '../../core/routes/app_routes.dart';
+import '../../providers/xacthuc_provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -21,14 +23,19 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _navigateToLogin() async {
     await Future.delayed(const Duration(milliseconds: 2000));
     if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+    final auth = context.read<XacthucProvider>();
+    final isLoggedIn = await auth.checkAuthStatus();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed(
+      isLoggedIn ? AppRoutes.home : AppRoutes.login,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
 
     final screenSize = MediaQuery.of(context).size;
-    // maxDimension đủ để vòng tròn trắng phủ kín toàn màn hình
+
     final maxDimension = screenSize.width > screenSize.height
         ? screenSize.width * 1.5
         : screenSize.height * 1.5;
@@ -54,7 +61,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Widget _buildContent(BuildContext context, double maxDimension) {
-    // Trên web rộng, constrain content để không bị quá nhỏ so với màn hình
+
     final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
 
     final content = Column(
@@ -63,7 +70,7 @@ class _SplashPageState extends State<SplashPage> {
         Stack(
           alignment: Alignment.center,
           children: [
-            // Vòng tròn trắng tỏa ra phủ kín màn hình khi chuyển trang
+
             Container(
               width: 200,
               height: 200,
@@ -95,7 +102,6 @@ class _SplashPageState extends State<SplashPage> {
                   curve: Curves.easeInCubic,
                 ),
 
-            // Logo — không phóng to theo vòng tròn
             SizedBox(
               width: 200,
               height: 200,
@@ -176,7 +182,6 @@ class _SplashPageState extends State<SplashPage> {
 
     if (!isDesktop) return content;
 
-    // Desktop: bọc trong SizedBox để content không bị kéo giãn quá rộng
     return SizedBox(
       width: 480,
       child: content,

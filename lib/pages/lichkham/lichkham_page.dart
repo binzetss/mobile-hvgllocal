@@ -26,7 +26,7 @@ class _LichkhamPageState extends State<LichkhamPage> {
   @override
   void initState() {
     super.initState();
-    // Data đã được preload sau login, chỉ init nếu chưa có data
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<LichkhamProvider>();
       if (!provider.isInitialized) {
@@ -57,7 +57,6 @@ class _LichkhamPageState extends State<LichkhamPage> {
     );
   }
 
-  // ── Mobile layout (unchanged) ──────────────────────────────────────────────
   Widget _buildMobileLayout(
       BuildContext context, LichkhamProvider provider) {
     final grouped = provider.getGroupedSchedules();
@@ -129,7 +128,6 @@ class _LichkhamPageState extends State<LichkhamPage> {
     );
   }
 
-  // ── Web layout ─────────────────────────────────────────────────────────────
   Widget _buildWebLayout(
       BuildContext context, LichkhamProvider provider) {
     return Column(
@@ -155,7 +153,6 @@ class _LichkhamPageState extends State<LichkhamPage> {
   }
 }
 
-// ── Web Top Bar ───────────────────────────────────────────────────────────────
 class _WebTopBar extends StatelessWidget {
   final LichkhamProvider provider;
   const _WebTopBar({required this.provider});
@@ -226,7 +223,6 @@ class _WebTopBar extends StatelessWidget {
   }
 }
 
-// ── Web Sidebar ───────────────────────────────────────────────────────────────
 class _WebSidebar extends StatelessWidget {
   final LichkhamProvider provider;
   const _WebSidebar({required this.provider});
@@ -234,7 +230,7 @@ class _WebSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    // Count per room using date filter only (regardless of selected room)
+
     final Map<String, int> allRoomCounts = {};
     for (final s in provider.allSchedules) {
       if (s.isBetweenDates(provider.startDate, provider.endDate)) {
@@ -250,7 +246,7 @@ class _WebSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date range
+
           _SidebarCard(
             isDark: isDark,
             icon: FontAwesomeIcons.calendarDay,
@@ -316,7 +312,7 @@ class _WebSidebar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Room filter
+
           if (provider.rooms.isNotEmpty)
             _SidebarCard(
               isDark: isDark,
@@ -636,7 +632,6 @@ class _WebDateField extends StatelessWidget {
   }
 }
 
-// ── Web Content ───────────────────────────────────────────────────────────────
 class _WebContent extends StatelessWidget {
   final LichkhamProvider provider;
   const _WebContent({required this.provider});
@@ -654,7 +649,7 @@ class _WebContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Stats row
+
           Row(
             children: [
               _StatCard(
@@ -782,7 +777,6 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ── Web Room Table ────────────────────────────────────────────────────────────
 class _WebRoomTable extends StatelessWidget {
   final String roomName;
   final List<LichkhamModel> schedules;
@@ -812,7 +806,7 @@ class _WebRoomTable extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Room header
+
           Container(
             padding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 14),
@@ -890,7 +884,7 @@ class _WebRoomTable extends StatelessWidget {
               ],
             ),
           ),
-          // Table column headers
+
           Container(
             padding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 8),
@@ -920,7 +914,7 @@ class _WebRoomTable extends StatelessWidget {
                 ? const Color(0xFF38383A)
                 : Colors.grey[200],
           ),
-          // Data rows
+
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -972,7 +966,7 @@ class _WebRow extends StatelessWidget {
           const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
       child: Row(
         children: [
-          // Date badge
+
           SizedBox(
             width: 76,
             child: Container(
@@ -1010,7 +1004,7 @@ class _WebRow extends StatelessWidget {
               ),
             ),
           ),
-          // Shift chip
+
           SizedBox(
             width: 100,
             child: Container(
@@ -1043,7 +1037,7 @@ class _WebRow extends StatelessWidget {
               ),
             ),
           ),
-          // Doctor
+
           Expanded(
             child: schedule.hasDoctor
                 ? Row(
@@ -1075,7 +1069,7 @@ class _WebRow extends StatelessWidget {
                     ),
                   ),
           ),
-          // Nurse
+
           Expanded(
             child: schedule.hasNurse
                 ? Row(
@@ -1107,7 +1101,7 @@ class _WebRow extends StatelessWidget {
                     ),
                   ),
           ),
-          // Status / Note
+
           SizedBox(
             width: 88,
             child: Row(

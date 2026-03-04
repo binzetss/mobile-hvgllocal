@@ -3,12 +3,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Local {
-  // final prefs;
-
-  // Local(this.prefs) {
-  //   this.prefs = await SharedPreferences.getInstance();
-  // }
-
 
   static saveLocal(String key, Object data) async {
     final prefs = await SharedPreferences.getInstance();

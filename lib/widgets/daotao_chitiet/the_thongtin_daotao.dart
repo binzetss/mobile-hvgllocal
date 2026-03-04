@@ -24,10 +24,10 @@ class TheThongTinDaoTao extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-    
+
         Column(
             children: [
-          
+
               Container(
                 width: 40,
                 height: 40,
@@ -47,7 +47,7 @@ class TheThongTinDaoTao extends StatelessWidget {
                   ),
                 ),
               ),
-         
+
               if (!isLast)
                 Expanded(
                   child: Container(
@@ -68,7 +68,7 @@ class TheThongTinDaoTao extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 16),
- 
+
           Expanded(
             child: Container(
               margin: EdgeInsets.only(bottom: isLast ? 0 : 20),

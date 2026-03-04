@@ -136,11 +136,11 @@ class _BosungcongPageState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Breadcrumb
+
           _WebBreadcrumb(
             onBack: () => context.read<NavigationProvider>().setIndex(3),
           ),
-          // Form
+
           Expanded(
             child: Consumer<BosungChamcongProvider>(
               builder: (context, provider, _) {
@@ -219,8 +219,6 @@ class _BosungcongPageState
     }
   }
 }
-
-// ── Web-only helper widgets ───────────────────────────────────────────────────
 
 class _WebBreadcrumb extends StatelessWidget {
   final VoidCallback onBack;
@@ -324,7 +322,7 @@ class _WebFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Card header
+
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -375,7 +373,7 @@ class _WebFormCard extends StatelessWidget {
               ],
             ),
           ),
-          // ── Form body
+
           Padding(
             padding: const EdgeInsets.all(28),
             child: Form(
@@ -383,7 +381,7 @@ class _WebFormCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Row 1: Họ tên + Loại
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -407,7 +405,7 @@ class _WebFormCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Row 2: Ngày + Buổi
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -427,10 +425,10 @@ class _WebFormCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Lý do full width
+
                   BosungcongReasonField(controller: lyDoController),
                   const SizedBox(height: 28),
-                  // Submit
+
                   SizedBox(
                     width: double.infinity,
                     child: BosungcongSubmitButton(

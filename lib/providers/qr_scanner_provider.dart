@@ -22,7 +22,7 @@ class QrScannerProvider extends ChangeNotifier {
   void toggleFlash() {
     _isFlashOn = !_isFlashOn;
     notifyListeners();
-    // TODO: Implement actual flash toggle with camera package
+
   }
 
   Future<void> onQRCodeScanned(String code) async {
@@ -32,15 +32,12 @@ class QrScannerProvider extends ChangeNotifier {
     _scannedCode = code;
     notifyListeners();
 
-    // Simulate processing
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // Validate QR code
     if (_validateQRCode(code)) {
       _state = ScannerState.success;
       notifyListeners();
 
-      // TODO: Call API to record attendance
       await _recordAttendance(code);
     } else {
       _state = ScannerState.error;
@@ -50,12 +47,12 @@ class QrScannerProvider extends ChangeNotifier {
   }
 
   bool _validateQRCode(String code) {
-    // TODO: Implement actual validation logic
+
     return code.isNotEmpty && code.length > 5;
   }
 
   Future<void> _recordAttendance(String code) async {
-    // TODO: Implement API call to record attendance
+
     await Future.delayed(const Duration(seconds: 1));
   }
 
@@ -80,7 +77,7 @@ class QrScannerProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // TODO: Dispose camera controller if needed
+
     super.dispose();
   }
 }

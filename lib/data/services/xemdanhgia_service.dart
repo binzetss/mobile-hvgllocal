@@ -5,7 +5,6 @@ class XemDanhGiaService {
   factory XemDanhGiaService() => _instance;
   XemDanhGiaService._internal();
 
-  // TODO: Thay bằng API call sau
   Future<List<XemDanhGiaModel>> getDanhGia() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _sampleData;

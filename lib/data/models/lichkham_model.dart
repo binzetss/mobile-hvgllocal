@@ -4,7 +4,7 @@ class LichkhamModel {
   final String? tenBS;
   final String? tenDD;
   final DateTime ngay;
-  final int buoi; // 0 = sáng, 1 = chiều
+  final int buoi;
   final String? ghiChu;
 
   const LichkhamModel({
@@ -41,7 +41,6 @@ class LichkhamModel {
     };
   }
 
-  // Helper getters
   bool get isMorning => buoi == 0;
   bool get isAfternoon => buoi == 1;
 

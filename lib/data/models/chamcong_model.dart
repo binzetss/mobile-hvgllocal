@@ -1,4 +1,4 @@
-/// Một lần bấm thẻ từ API (time + loaiChamCong)
+
 class ChamcongPunch {
   final DateTime time;
   final String loaiChamCong;
@@ -27,7 +27,7 @@ class ChamcongModel {
   final String? location;
   final String? notes;
   final double? workingHours;
-  /// Danh sách tất cả lần chấm trong ngày (không giới hạn)
+
   final List<ChamcongPunch> punches;
 
   const ChamcongModel({

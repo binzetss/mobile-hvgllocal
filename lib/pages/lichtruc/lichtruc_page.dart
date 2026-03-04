@@ -37,7 +37,6 @@ class LichtructPage extends StatelessWidget {
   }
 }
 
-// ── Mobile layout (unchanged) ─────────────────────────────────────────────────
 Widget _buildMobileLayout(
     BuildContext context, LichtructProvider provider, int totalShifts) {
   return SingleChildScrollView(
@@ -68,7 +67,6 @@ Widget _buildMobileLayout(
   );
 }
 
-// ── Desktop layout ────────────────────────────────────────────────────────────
 Widget _buildDesktopLayout(
     BuildContext context, LichtructProvider provider, int totalShifts) {
   return Column(
@@ -78,7 +76,7 @@ Widget _buildDesktopLayout(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left: Calendar cố định nhỏ hơn
+
             SizedBox(
               width: 400,
               child: SingleChildScrollView(
@@ -90,7 +88,7 @@ Widget _buildDesktopLayout(
               ),
             ),
             VerticalDivider(width: 1, color: context.borderColor),
-            // Right: Stats + Legend + Shift list
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -129,7 +127,6 @@ Widget _buildDesktopLayout(
   );
 }
 
-// ── Web Top Bar ───────────────────────────────────────────────────────────────
 class _WebTopBar extends StatelessWidget {
   final LichtructProvider provider;
   const _WebTopBar({required this.provider});
@@ -170,7 +167,7 @@ class _WebTopBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // Month navigation pill
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             decoration: BoxDecoration(
@@ -237,7 +234,6 @@ class _NavBtn extends StatelessWidget {
   }
 }
 
-// ── Web Shift List ────────────────────────────────────────────────────────────
 class _WebShiftList extends StatelessWidget {
   final List<LichtructModel> schedules;
   final String monthText;
@@ -442,7 +438,7 @@ class _ShiftListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          // Date badge
+
           Container(
             width: 48,
             height: 52,
@@ -549,7 +545,7 @@ class _ShiftListItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // Status chip
+
           Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

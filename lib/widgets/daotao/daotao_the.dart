@@ -42,7 +42,7 @@ class DaotaoThe extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header màu gradient ──
+
           Container(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             decoration: BoxDecoration(
@@ -57,7 +57,7 @@ class DaotaoThe extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Badge trạng thái
+
                 _TrangThaiBadge(lopDaoTao: lopDaoTao, color: _statusColor),
                 if (lopDaoTao.isNew) ...[
                   const SizedBox(width: 8),
@@ -81,7 +81,7 @@ class DaotaoThe extends StatelessWidget {
                   ),
                 ],
                 const Spacer(),
-                // Số tiết
+
                 Row(
                   children: [
                     FaIcon(
@@ -104,13 +104,12 @@ class DaotaoThe extends StatelessWidget {
             ),
           ),
 
-          // ── Nội dung chính ──
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tên khóa học
+
                 Text(
                   lopDaoTao.tenLopDaoTao,
                   style: const TextStyle(
@@ -124,7 +123,6 @@ class DaotaoThe extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
 
-                // Thông tin ngày
                 Row(
                   children: [
                     Expanded(
@@ -173,7 +171,6 @@ class DaotaoThe extends StatelessWidget {
             ),
           ),
 
-          // ── Nút đăng ký (chỉ khi đang mở) ──
           if (lopDaoTao.dangMoDangKy) ...[
             const SizedBox(height: 14),
             Padding(

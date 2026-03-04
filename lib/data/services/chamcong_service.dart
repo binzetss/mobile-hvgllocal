@@ -81,7 +81,7 @@ class ChamcongService {
         final key = '$year-${_pad(month)}-${_pad(day)}';
 
         if (weekday == DateTime.saturday || weekday == DateTime.sunday) {
-          // Vẫn kiểm tra có chấm công cuối tuần không
+
           if (byDate.containsKey(key)) {
             final punches = byDate[key]!;
             result.add(ChamcongModel(

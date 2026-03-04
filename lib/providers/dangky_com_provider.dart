@@ -26,7 +26,6 @@ class DangkyComProvider extends ChangeNotifier {
   bool get isLoadingDinner => _isLoadingDinner;
   bool get isInitialLoading => _isInitialLoading;
 
-  /// Tải trạng thái đăng ký cơm hôm nay từ server
   Future<void> loadTodayRegistrations() async {
     _isInitialLoading = true;
     notifyListeners();
@@ -38,7 +37,6 @@ class DangkyComProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle đăng ký/hủy bữa Trưa — trả về null nếu OK, error message nếu lỗi
   Future<String?> toggleLunch() async {
     _isLoadingLunch = true;
     notifyListeners();
@@ -61,7 +59,6 @@ class DangkyComProvider extends ChangeNotifier {
     }
   }
 
-  /// Toggle đăng ký/hủy bữa Tối — trả về null nếu OK, error message nếu lỗi
   Future<String?> toggleDinner() async {
     _isLoadingDinner = true;
     notifyListeners();

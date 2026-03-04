@@ -9,16 +9,14 @@ class LichkhamShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-   
+
         SliverToBoxAdapter(
           child: _buildHeaderShimmer(context),
         ),
 
-
         SliverToBoxAdapter(
           child: _buildFiltersShimmer(context),
         ),
-
 
         SliverPadding(
           padding: const EdgeInsets.all(16),
@@ -191,7 +189,7 @@ class LichkhamShimmer extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -251,7 +249,6 @@ class LichkhamShimmer extends StatelessWidget {
             ),
           ),
 
-          // Schedule Items
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

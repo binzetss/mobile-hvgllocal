@@ -19,7 +19,6 @@ class FacebookProvider extends ChangeNotifier {
     await fetchLatestPost();
   }
 
-
   Future<void> fetchLatestPost() async {
     _isLoading = true;
     _errorMessage = null;
@@ -35,7 +34,6 @@ class FacebookProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   Future<void> fetchPosts({int limit = 5}) async {
     _isLoading = true;
@@ -53,7 +51,6 @@ class FacebookProvider extends ChangeNotifier {
     }
   }
 
- 
   Future<void> refresh() async {
     await fetchLatestPost();
   }

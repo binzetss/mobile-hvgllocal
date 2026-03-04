@@ -20,8 +20,6 @@ class GioithieuPage extends StatelessWidget {
   }
 }
 
-// ── Mobile layout (giữ nguyên + thêm bảo mật) ────────────────────────────────
-
 class _MobileGioithieuPage extends StatelessWidget {
   const _MobileGioithieuPage();
 
@@ -108,8 +106,6 @@ class _MobileGioithieuPage extends StatelessWidget {
   }
 }
 
-// ── Web layout ────────────────────────────────────────────────────────────────
-
 class _WebGioithieuPage extends StatelessWidget {
   const _WebGioithieuPage();
 
@@ -119,7 +115,7 @@ class _WebGioithieuPage extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          // Top bar
+
           Container(
             height: 64,
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -158,12 +154,11 @@ class _WebGioithieuPage extends StatelessWidget {
             ),
           ),
 
-          // Body
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Left: Header + Bảo mật + Footer
+
                 SizedBox(
                   width: 360,
                   child: SingleChildScrollView(
@@ -182,7 +177,6 @@ class _WebGioithieuPage extends StatelessWidget {
 
                 VerticalDivider(width: 1, color: context.borderColor),
 
-                // Right: 2×2 section grid
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
@@ -198,7 +192,7 @@ class _WebGioithieuPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Row 1
+
                         const IntrinsicHeight(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -224,7 +218,7 @@ class _WebGioithieuPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Row 2
+
                         IntrinsicHeight(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -2,8 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../core/extensions/theme_extensions.dart';
 
-/// Animated background cho toàn bộ web app shell.
-/// Gradient nhẹ + blobs động — giống phong cách trang đăng nhập.
 class WebAppBackground extends StatefulWidget {
   const WebAppBackground({super.key});
 
@@ -36,7 +34,7 @@ class _WebAppBackgroundState extends State<WebAppBackground>
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Base gradient
+
         Container(
           decoration: BoxDecoration(
             gradient: isDark
@@ -61,7 +59,6 @@ class _WebAppBackgroundState extends State<WebAppBackground>
           ),
         ),
 
-        // Animated blobs
         AnimatedBuilder(
           animation: _controller,
           builder: (_, _) => CustomPaint(
@@ -72,8 +69,6 @@ class _WebAppBackgroundState extends State<WebAppBackground>
     );
   }
 }
-
-// ── Blob painter ───────────────────────────────────────────────────────────────
 
 class _BlobPainter extends CustomPainter {
   final double t;
@@ -92,7 +87,7 @@ class _BlobPainter extends CustomPainter {
     final s2 = math.sin(t * math.pi * 2 + 1.1);
 
     if (isDark) {
-      // Dark: subtle deep-blue/indigo blobs
+
       _blob(canvas, Offset(-90 + s * 28, -90 + c * 20), 340,
           const Color(0xFF1A3A8A), 0.20);
       _blob(canvas, Offset(size.width + 70 + c * 22, -70 + s * 16), 300,
@@ -106,7 +101,7 @@ class _BlobPainter extends CustomPainter {
           Offset(size.width * 0.45 + c * 35, size.height + 55), 250,
           const Color(0xFF1A3070), 0.14);
     } else {
-      // Light: soft sky-blue blobs
+
       _blob(canvas, Offset(-110 + s * 28, -110 + c * 20), 380,
           const Color(0xFF80B8E8), 0.38);
       _blob(canvas, Offset(size.width + 90 + c * 22, -80 + s * 16), 320,
@@ -119,7 +114,7 @@ class _BlobPainter extends CustomPainter {
       _blob(canvas,
           Offset(size.width * 0.48 + c * 32, size.height + 65), 260,
           const Color(0xFF78AEDD), 0.22);
-      // Accent blob mid-screen (very faint)
+
       _blob(canvas,
           Offset(size.width * 0.75 + s * 18, size.height * 0.25 + c * 14),
           180, const Color(0xFFBFDDFF), 0.14);

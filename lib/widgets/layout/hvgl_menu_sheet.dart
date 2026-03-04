@@ -35,7 +35,6 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
   bool _isHelpExpanded = false;
   bool _isSettingsExpanded = false;
 
-
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;

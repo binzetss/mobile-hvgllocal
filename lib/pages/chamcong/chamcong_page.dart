@@ -61,8 +61,6 @@ class _ChamcongPageState extends State<ChamcongPage> {
     );
   }
 
-  // ── Mobile layout ──────────────────────────────────────────────────────────
-
   Widget _buildMobileLayout(BuildContext context, ChamcongProvider provider) {
     return CustomScrollView(
       slivers: [
@@ -122,17 +120,13 @@ class _ChamcongPageState extends State<ChamcongPage> {
     );
   }
 
-  // ── Desktop full-calendar layout ──────────────────────────────────────────
-
   Widget _buildDesktopLayout(BuildContext context, ChamcongProvider provider) {
     final isEmpty = provider.monthlyAttendances.isEmpty;
 
-    // Loading (lần đầu tải)
     if (provider.isLoading && isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Mọi trường hợp data rỗng: hiển thị lỗi hoặc thông báo + nút Tải lại
     if (isEmpty) {
       final msg = provider.error ?? 'Chưa tải được dữ liệu. Hãy nhấn Tải lại.';
       return Center(
@@ -176,8 +170,6 @@ class _ChamcongPageState extends State<ChamcongPage> {
       onDanhSach: _navigateToSupplementaryList,
     );
   }
-
-  // ── Shared ─────────────────────────────────────────────────────────────────
 
   Widget _buildActionButton({
     required BuildContext context,

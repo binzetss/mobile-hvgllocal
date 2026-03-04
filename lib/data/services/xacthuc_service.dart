@@ -29,7 +29,6 @@ class XacthucService {
     await prefs.setString(_credentialsKey, credentials);
   }
 
-  /// Lấy credentials đã lưu
   Future<Map<String, String>?> getSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     final credentialsJson = prefs.getString(_credentialsKey);
@@ -44,31 +43,26 @@ class XacthucService {
     return null;
   }
 
-  /// Xóa credentials đã lưu
   Future<void> clearCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_credentialsKey);
   }
 
-  /// Lưu trạng thái remember me
   Future<void> setRememberMe(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_rememberMeKey, value);
   }
 
-  /// Kiểm tra trạng thái remember me
   Future<bool> isRememberMe() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_rememberMeKey) ?? false;
   }
 
-  /// Lưu thông tin user
   Future<void> saveUser(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, jsonEncode(user.toJson()));
   }
 
-  /// Lấy thông tin user đã lưu
   Future<UserModel?> getSavedUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(_userKey);
@@ -93,7 +87,6 @@ class XacthucService {
       final user = UserModel.fromJson(userInfo);
       final token = response["token"];
 
-      
       if (token != null && token.isNotEmpty) {
         await _tokenManager.saveToken(token);
       }
@@ -107,18 +100,15 @@ class XacthucService {
     }
   }
 
- 
   Future<void> logout() async {
     await _tokenManager.clearToken();
     await Local.cleanLocalAll();
   }
 
-
   Future<bool> isLoggedIn() async {
     return await _tokenManager.hasToken();
   }
 
-  /// Lấy họ và tên từ API DanhSachNhanVien (dùng khi login không trả về tên)
   Future<String?> fetchHoVaTen(String maSo) async {
     if (maSo.isEmpty) return null;
     try {
@@ -136,7 +126,6 @@ class XacthucService {
     }
   }
 
-  /// Kiểm tra người dùng có cần đổi mật khẩu không (từ API DanhSachNhanVien)
   Future<bool> checkDoiMatKhau(String maSo) async {
     if (maSo.isEmpty) return false;
     try {
@@ -154,7 +143,6 @@ class XacthucService {
     }
   }
 
-  /// Giữ lại để tương thích cũ, dùng checkDoiMatKhau thay thế
   Future<bool> isFirstLogin(String maSo) async {
     if (maSo.isEmpty) return false;
     final prefs = await SharedPreferences.getInstance();
@@ -162,15 +150,12 @@ class XacthucService {
     return !done;
   }
 
-  /// Đánh dấu người dùng đã hoàn thành đổi mật khẩu lần đầu
   Future<void> markFirstLoginDone(String maSo) async {
     if (maSo.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('$_firstLoginPrefix$maSo', true);
   }
 
-  /// Đổi mật khẩu người dùng
-  /// Trả về message thành công hoặc throw Exception nếu thất bại
   Future<String> doiMatKhau({
     required String maSo,
     required String matKhauCu,
@@ -198,10 +183,8 @@ class XacthucService {
     }
   }
 
-  /// URL GET ảnh đại diện theo maSo
   String buildAvatarUrl(String maSo) => '${ApiEndpoints.anhDaiDien}/$maSo';
 
-  /// Đọc magic bytes để xác định định dạng ảnh thực sự
   Future<String> _detectImageExt(File file) async {
     final bytes = await file.openRead(0, 12).fold<List<int>>(
       [],
@@ -231,10 +214,9 @@ class XacthucService {
         bytes[11] == 0x50) {
       return 'webp';
     }
-    return 'jpg'; // fallback
+    return 'jpg';
   }
 
-  /// Upload ảnh đại diện — trả về anhDaiDienUrl nếu thành công
   Future<String?> uploadAnhDaiDien({
     required String maSo,
     required File file,
@@ -260,7 +242,6 @@ class XacthucService {
       throw Exception(response['message']?.toString() ?? 'Cập nhật ảnh thất bại');
     }
 
-    // Server trả về URL thực của ảnh vừa upload
     return response['anhDaiDienUrl']?.toString();
   }
 }

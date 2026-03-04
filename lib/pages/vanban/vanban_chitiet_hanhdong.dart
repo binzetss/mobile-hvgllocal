@@ -3,12 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/routes/app_routes.dart';
 import '../../data/models/vanban_model.dart';
 import '../../providers/vanban_chitiet_provider.dart';
 import '../../widgets/common/app_dialogs.dart';
 import '../../widgets/vanban_chitiet/hop_thoai_chon_file.dart';
 
 class VanbanChitietActions {
+  static String toAbsoluteUrl(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    final clean = path.startsWith('/') ? path.substring(1) : path;
+    return 'https://docs.bvhvgl.com/$clean';
+  }
+
   static String formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
@@ -60,8 +67,19 @@ class VanbanChitietActions {
 
     if (kIsWeb) {
       try {
-        final url = await provider.getAuthenticatedUrl(filePath);
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        final absoluteUrl = toAbsoluteUrl(filePath);
+        final uri = Uri.parse(absoluteUrl);
+        final inlineUri = uri.replace(queryParameters: {
+          ...uri.queryParameters,
+          'inline': 'true',
+        });
+        final url = await provider.getAuthenticatedUrl(inlineUri.toString());
+        if (context.mounted) {
+          Navigator.of(context).pushNamed(
+            AppRoutes.pdfViewer,
+            arguments: {'url': url, 'title': document.fileName},
+          );
+        }
       } catch (e) {
         if (context.mounted) {
           showErrorDialog(context, message: 'Không thể mở tài liệu: $e');
@@ -110,7 +128,8 @@ class VanbanChitietActions {
 
     if (kIsWeb) {
       try {
-        final url = await provider.getAuthenticatedUrl(filePath);
+        final absoluteUrl = toAbsoluteUrl(filePath);
+        final url = await provider.getAuthenticatedUrl(absoluteUrl);
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
         if (context.mounted) {
           showSuccessDialog(

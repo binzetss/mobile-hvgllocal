@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-/// Section hiển thị QR code để người dùng quét và tải app
-/// Đặt URL thực của app store vào các hằng bên dưới
 class DangnhapWebDownload extends StatelessWidget {
   const DangnhapWebDownload({super.key});
 
-  // TODO: Thay bằng URL thực khi app được publish
   static const _iosUrl =
       'https://apps.apple.com/app/hvgl';
   static const _androidUrl =
@@ -77,7 +74,7 @@ class _QrCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // QR code
+
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: QrImageView(

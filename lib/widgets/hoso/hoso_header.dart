@@ -117,7 +117,7 @@ class HosoHeader extends StatelessWidget {
             ),
             child: ClipOval(child: _buildAvatarContent()),
           ),
-          // Loading overlay
+
           if (isUploading)
             Container(
               width: 72,
@@ -137,7 +137,7 @@ class HosoHeader extends StatelessWidget {
                 ),
               ),
             ),
-          // Camera button
+
           if (!isUploading)
             Positioned(
               bottom: 0,

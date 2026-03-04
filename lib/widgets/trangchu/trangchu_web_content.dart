@@ -20,7 +20,7 @@ class TrangchuWebContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Welcome banner ────────────────────────────────────────────
+
           const _WelcomeBanner()
               .animate()
               .fadeIn(duration: 450.ms)
@@ -28,7 +28,6 @@ class TrangchuWebContent extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // ── Quick actions row ─────────────────────────────────────────
           const _QuickActionsRow()
               .animate()
               .fadeIn(delay: 100.ms, duration: 400.ms)
@@ -36,11 +35,10 @@ class TrangchuWebContent extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // ── Main 2-column grid ─────────────────────────────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left: chấm công + facebook
+
               Expanded(
                 flex: 6,
                 child: Column(
@@ -60,7 +58,6 @@ class TrangchuWebContent extends StatelessWidget {
 
               const SizedBox(width: 16),
 
-              // Right: đăng ký cơm + văn bản
               Expanded(
                 flex: 5,
                 child: Column(
@@ -84,8 +81,6 @@ class TrangchuWebContent extends StatelessWidget {
     );
   }
 }
-
-// ── Welcome Banner ────────────────────────────────────────────────────────────
 
 class _WelcomeBanner extends StatefulWidget {
   const _WelcomeBanner();
@@ -169,7 +164,7 @@ class _WelcomeBannerState extends State<_WelcomeBanner> {
       ),
       child: Row(
         children: [
-          // Avatar
+
           Container(
             width: 54,
             height: 54,
@@ -193,7 +188,6 @@ class _WelcomeBannerState extends State<_WelcomeBanner> {
 
           const SizedBox(width: 16),
 
-          // Greeting text
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,7 +216,6 @@ class _WelcomeBannerState extends State<_WelcomeBanner> {
 
           const SizedBox(width: 16),
 
-          // Clock + date
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -250,8 +243,6 @@ class _WelcomeBannerState extends State<_WelcomeBanner> {
     );
   }
 }
-
-// ── Quick Actions Row ─────────────────────────────────────────────────────────
 
 class _QuickActionsRow extends StatelessWidget {
   const _QuickActionsRow();

@@ -286,8 +286,6 @@ class NhansuCard extends StatelessWidget {
   }
 }
 
-// ── Detail content (shared between Dialog and BottomSheet) ────────────────────
-
 class _StaffDetailContent extends StatelessWidget {
   final NhansuModel staff;
   final Color departmentColor;
@@ -352,11 +350,11 @@ class _StaffDetailContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Gradient header ──
+
             _buildHeader(context, avatarColor, initials, posColor),
-            // ── Info rows ──
+
             _buildInfoSection(context),
-            // ── Action buttons ──
+
             _buildActions(context, hasPhone),
             SizedBox(
                 height: isDialog
@@ -370,7 +368,7 @@ class _StaffDetailContent extends StatelessWidget {
 
   Widget _buildHeader(
       BuildContext context, Color avatarColor, String initials, Color? posColor) {
-    // Derive a second gradient color
+
     final gradEnd = Color.fromARGB(
       255,
       (avatarColor.r * 255 * 0.75).round().clamp(0, 255),
@@ -389,7 +387,7 @@ class _StaffDetailContent extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Close button (dialog only)
+
           if (isDialog)
             Positioned(
               top: 12,
@@ -407,7 +405,7 @@ class _StaffDetailContent extends StatelessWidget {
                 ),
               ),
             ),
-          // Drag handle (bottom sheet only)
+
           if (!isDialog)
             Positioned(
               top: 10,
@@ -424,12 +422,12 @@ class _StaffDetailContent extends StatelessWidget {
                 ),
               ),
             ),
-          // Content
+
           Padding(
             padding: EdgeInsets.fromLTRB(20, isDialog ? 20 : 24, 20, 24),
             child: Column(
               children: [
-                // Avatar
+
                 Container(
                   width: 84,
                   height: 84,
@@ -482,7 +480,7 @@ class _StaffDetailContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                // Name
+
                 Text(
                   staff.hoVaTen,
                   style: const TextStyle(
@@ -493,7 +491,7 @@ class _StaffDetailContent extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                // Badge chips row
+
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 8,
@@ -691,8 +689,6 @@ class _StaffDetailContent extends StatelessWidget {
     );
   }
 }
-
-// ── Small helpers ─────────────────────────────────────────────────────────────
 
 class _Chip extends StatelessWidget {
   final String text;

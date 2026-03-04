@@ -25,7 +25,7 @@ class DoimatkhauLandauForm extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Form card
+
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -134,7 +134,6 @@ class DoimatkhauLandauForm extends StatelessWidget {
                 const DoimatkhauRequirements(),
                 const SizedBox(height: 28),
 
-                // Nút xác nhận
                 SizedBox(
                   height: 56,
                   child: ElevatedButton(

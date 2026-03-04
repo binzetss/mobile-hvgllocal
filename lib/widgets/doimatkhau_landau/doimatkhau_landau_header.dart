@@ -14,7 +14,7 @@ class DoimatkhauLandauHeader extends StatelessWidget {
 
     return Column(
       children: [
-        // Banner bảo mật
+
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -74,7 +74,6 @@ class DoimatkhauLandauHeader extends StatelessWidget {
           ),
         ),
 
-        // Hộp cảnh báo
         Container(
           margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           padding: const EdgeInsets.all(16),

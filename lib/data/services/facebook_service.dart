@@ -1,27 +1,11 @@
 import '../models/facebook_post_model.dart';
 
 class FacebookService {
-  // TODO: Thay thế bằng thông tin thật của bệnh viện
-  // static const String pageId = 'YOUR_PAGE_ID';
-  // static const String accessToken = 'YOUR_ACCESS_TOKEN';
 
-  /// Lấy bài viết mới nhất từ Facebook Page
-  /// Hiện tại đang sử dụng dữ liệu mẫu, sau này sẽ kết nối Facebook Graph API
   Future<FacebookPostModel?> getLatestPost() async {
     try {
-      // Simulate API delay
-      await Future.delayed(const Duration(milliseconds: 800));
 
-      // TODO: Thay thế bằng API call thật
-      // final response = await http.get(
-      //   Uri.parse('https://graph.facebook.com/v18.0/$pageId/posts?fields=id,message,full_picture,created_time,permalink_url,likes.summary(true),comments.summary(true),shares&limit=1&access_token=$accessToken'),
-      // );
-      // if (response.statusCode == 200) {
-      //   final data = json.decode(response.body);
-      //   if (data['data'] != null && data['data'].isNotEmpty) {
-      //     return FacebookPostModel.fromJson(data['data'][0]);
-      //   }
-      // }
+      await Future.delayed(const Duration(milliseconds: 800));
 
       return _getMockLatestPost();
     } catch (e) {
@@ -29,19 +13,16 @@ class FacebookService {
     }
   }
 
-  /// Lấy danh sách bài viết từ Facebook Page
   Future<List<FacebookPostModel>> getPosts({int limit = 5}) async {
     try {
       await Future.delayed(const Duration(milliseconds: 1000));
 
-      // TODO: Thay thế bằng API call thật
       return _getMockPosts().take(limit).toList();
     } catch (e) {
       throw Exception('Không thể tải danh sách bài viết Facebook: $e');
     }
   }
 
-  /// Mock data - Bài viết mẫu mới nhất
   FacebookPostModel _getMockLatestPost() {
     return FacebookPostModel(
       id: '1',
@@ -70,7 +51,6 @@ class FacebookService {
     );
   }
 
-  /// Mock data - Danh sách bài viết mẫu
   List<FacebookPostModel> _getMockPosts() {
     return [
       FacebookPostModel(
