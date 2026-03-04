@@ -18,7 +18,7 @@ class PhongbanSection extends StatefulWidget {
   const PhongbanSection({
     super.key,
     required this.department,
-     this.staffList = const [],
+    this.staffList = const [],
 
     this.index = 0,
   });
@@ -37,11 +37,13 @@ class _PhongbanSectionState extends State<PhongbanSection> {
     if (name.contains('công đoàn')) return FontAwesomeIcons.handshake;
 
     if (name.contains('chưa phân loại')) return FontAwesomeIcons.question;
-    if (name.contains('chuyên gia') || name.contains('cộng tác viên'))
+    if (name.contains('chuyên gia') || name.contains('cộng tác viên')) {
       return FontAwesomeIcons.userGraduate;
+    }
     if (name.contains('khách hàng')) return FontAwesomeIcons.userGroup;
-    if (name.contains('thuê ngoài') || name.contains('công nhật'))
+    if (name.contains('thuê ngoài') || name.contains('công nhật')) {
       return FontAwesomeIcons.userClock;
+    }
 
     if (name.contains('khám sức khỏe')) return FontAwesomeIcons.heartPulse;
     if (name.contains('mua sắm')) return FontAwesomeIcons.cartShopping;
@@ -52,38 +54,47 @@ class _PhongbanSectionState extends State<PhongbanSection> {
     if (name.contains('khoa chấn thương')) return FontAwesomeIcons.userDoctor;
     if (name.contains('khoa dinh dưỡng')) return FontAwesomeIcons.appleWhole;
     if (name.contains('khoa dược')) return FontAwesomeIcons.pills;
-    if (name.contains('khoa hstc') || name.contains('chống độc'))
+    if (name.contains('khoa hstc') || name.contains('chống độc')) {
       return FontAwesomeIcons.truckMedical;
+    }
     if (name.contains('khoa khám bệnh')) return FontAwesomeIcons.stethoscope;
-    if (name.contains('khoa kiểm soát nhiễm khuẩn'))
+    if (name.contains('khoa kiểm soát nhiễm khuẩn')) {
       return FontAwesomeIcons.shieldVirus;
+    }
     if (name.contains('khoa ngoại')) return FontAwesomeIcons.userDoctor;
     if (name.contains('khoa nhi')) return FontAwesomeIcons.baby;
     if (name.contains('khoa nội tim mạch')) return FontAwesomeIcons.heartPulse;
     if (name.contains('khoa nội')) return FontAwesomeIcons.heartPulse;
     if (name.contains('khoa phẫu thuật')) return FontAwesomeIcons.syringe;
-    if (name.contains('khoa phcn') || name.contains('y học cổ truyền'))
+    if (name.contains('khoa phcn') || name.contains('y học cổ truyền')) {
       return FontAwesomeIcons.personWalking;
+    }
     if (name.contains('khoa phụ sản')) return FontAwesomeIcons.personPregnant;
     if (name.contains('khoa xét nghiệm')) return FontAwesomeIcons.flask;
     if (name.contains('liên chuyên khoa')) return FontAwesomeIcons.sitemap;
 
     if (name.contains('phòng bảo hiểm')) return FontAwesomeIcons.shieldHalved;
-    if (name.contains('phòng công nghệ thông tin'))
+    if (name.contains('phòng công nghệ thông tin')) {
       return FontAwesomeIcons.computer;
-    if (name.contains('phòng công tác xã hội'))
+    }
+    if (name.contains('phòng công tác xã hội')) {
       return FontAwesomeIcons.handHoldingHeart;
-    if (name.contains('phòng đào tạo'))
+    }
+    if (name.contains('phòng đào tạo')) {
       return FontAwesomeIcons.chalkboardUser;
+    }
     if (name.contains('phòng điều dưỡng')) return FontAwesomeIcons.userNurse;
     if (name.contains('phòng kế hoạch')) return FontAwesomeIcons.chartLine;
-    if (name.contains('phòng quản lý tài sản'))
+    if (name.contains('phòng quản lý tài sản')) {
       return FontAwesomeIcons.building;
+    }
     if (name.contains('phòng quản trị')) return FontAwesomeIcons.fileLines;
-    if (name.contains('phòng tài chính') || name.contains('kế toán'))
+    if (name.contains('phòng tài chính') || name.contains('kế toán')) {
       return FontAwesomeIcons.sackDollar;
-    if (name.contains('phòng vttbyt') || name.contains('ktht'))
+    }
+    if (name.contains('phòng vttbyt') || name.contains('ktht')) {
       return FontAwesomeIcons.boxesStacked;
+    }
 
     return FontAwesomeIcons.hospital;
   }
@@ -110,211 +121,230 @@ class _PhongbanSectionState extends State<PhongbanSection> {
     final headStaff = widget.staffList.where((s) => s.isHead).firstOrNull;
 
     return Selector<NhansuProvider, bool>(
-      selector: (context, provider) => provider.expandedDepartments.contains(widget.department.tenKhoa),
+      selector: (context, provider) =>
+          provider.expandedDepartments.contains(widget.department.tenKhoa),
       builder: (context, isExpanded, child) => Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 2),
-          ),
-          BoxShadow(
-            color: color.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          children: [
-            InkWell(
-              onTap: () {
-                final provider = context.read<NhansuProvider>();
-                final deptKey = widget.department.tenKhoa;
-                debugPrint('🔍 PhongbanSection: Tapping on "$deptKey"');
-
-                provider.toggleDepartment(deptKey);
-
-                if (provider.expandedDepartments.contains(deptKey)) {
-                  debugPrint('🔍 Loading staff for "$deptKey"');
-                  provider.loadStaffByIdDept(deptKey);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            color.withValues(alpha: 0.2),
-                            color.withValues(alpha: 0.12),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: color.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: FaIcon(icon, color: color, size: 22),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.department.tenKhoa,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: context.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              if (headStaff != null)
-                                Flexible(
-                                  child: _buildInfoChip(
-                                    icon: FontAwesomeIcons.crown,
-                                    text: 'Trưởng khoa/Phòng: ${headStaff.hoVaTen}',
-                                    color: const Color(0xFFFF9800),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    AnimatedRotation(
-                      turns: isExpanded ?  0.5 : 0,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOutCubic,
-                      child: FaIcon(
-                        FontAwesomeIcons.chevronDown,
-                        color: context.textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        margin: const EdgeInsets.only(bottom: 14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withValues(alpha: 0.1), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
             ),
-
-            AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              child: isExpanded
-                  ? Consumer<NhansuProvider>(builder: (context, value, child) {
-                    bool isLoading = value.isLoadingDepartment(widget.department.tenKhoa);
-                    List<NhansuModel> staffList = value.staffByDepartment[widget.department.tenKhoa] ?? [];
-
-                    return Container(
-                      color: context.surfaceColor,
-                      child: Column(
-                        children: [
-                          Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: context.borderColor,
-                          ),
-                          if (isLoading)
-                            ListView.separated(
-                              padding: const EdgeInsets.all(10),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: 3,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 8),
-                              itemBuilder: (context, idx) {
-                                return SkeletonNhansuCard(
-                                  departmentColor: color,
-                                );
-                              },
-                            )
-                          else if (staffList.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 30),
-                              child: Column(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.userSlash,
-                                    color: context.textSecondary,
-                                    size: 28,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Chưa có nhân viên',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: context.textSecondary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          else
-                            ListView.separated(
-                              padding: const EdgeInsets.all(10),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: staffList.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 8),
-                              itemBuilder: (context, idx) {
-                                final staff = staffList[idx];
-                                return NhansuCard(
-                                      staff: staff,
-                                      departmentColor: color,
-                                      index: idx,
-                                    )
-                                    .animate()
-                                    .fadeIn(
-                                      delay: Duration(milliseconds: 30 * idx),
-                                      duration: const Duration(milliseconds: 20),
-                                    )
-                                    .slideX(
-                                      begin: 0.04,
-                                      end: 0,
-                                      delay: Duration(milliseconds: 30 * idx),
-                                      duration: const Duration(milliseconds: 20),
-                                      curve: Curves.easeOutCubic,
-                                    );
-                              },
-                            ),
-                        ],
-                      ),
-                    );
-                  },)
-                  : const SizedBox.shrink(),
+            BoxShadow(
+              color: color.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () {
+                  final provider = context.read<NhansuProvider>();
+                  final deptKey = widget.department.tenKhoa;
+                  debugPrint('🔍 PhongbanSection: Tapping on "$deptKey"');
+
+                  provider.toggleDepartment(deptKey);
+
+                  if (provider.expandedDepartments.contains(deptKey)) {
+                    debugPrint('🔍 Loading staff for "$deptKey"');
+                    provider.loadStaffByIdDept(deptKey);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              color.withValues(alpha: 0.2),
+                              color.withValues(alpha: 0.12),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: color.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: FaIcon(icon, color: color, size: 22),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.department.tenKhoa,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: context.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                if (headStaff != null)
+                                  Flexible(
+                                    child: _buildInfoChip(
+                                      icon: FontAwesomeIcons.crown,
+                                      text:
+                                          'Trưởng khoa/Phòng: ${headStaff.hoVaTen}',
+                                      color: const Color(0xFFFF9800),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      AnimatedRotation(
+                        turns: isExpanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOutCubic,
+                        child: FaIcon(
+                          FontAwesomeIcons.chevronDown,
+                          color: context.textSecondary,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                child: isExpanded
+                    ? Consumer<NhansuProvider>(
+                        builder: (context, value, child) {
+                          bool isLoading = value.isLoadingDepartment(
+                            widget.department.tenKhoa,
+                          );
+                          List<NhansuModel> staffList =
+                              value.staffByDepartment[widget
+                                  .department
+                                  .tenKhoa] ??
+                              [];
+
+                          return Container(
+                            color: context.surfaceColor,
+                            child: Column(
+                              children: [
+                                Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: context.borderColor,
+                                ),
+                                if (isLoading)
+                                  ListView.separated(
+                                    padding: const EdgeInsets.all(10),
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: 3,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(height: 8),
+                                    itemBuilder: (context, idx) {
+                                      return SkeletonNhansuCard(
+                                        departmentColor: color,
+                                      );
+                                    },
+                                  )
+                                else if (staffList.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 30,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        FaIcon(
+                                          FontAwesomeIcons.userSlash,
+                                          color: context.textSecondary,
+                                          size: 28,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Chưa có nhân viên',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: context.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  ListView.separated(
+                                    padding: const EdgeInsets.all(10),
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: staffList.length,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(height: 8),
+                                    itemBuilder: (context, idx) {
+                                      final staff = staffList[idx];
+                                      return NhansuCard(
+                                            staff: staff,
+                                            departmentColor: color,
+                                            index: idx,
+                                          )
+                                          .animate()
+                                          .fadeIn(
+                                            delay: Duration(
+                                              milliseconds: 30 * idx,
+                                            ),
+                                            duration: const Duration(
+                                              milliseconds: 20,
+                                            ),
+                                          )
+                                          .slideX(
+                                            begin: 0.04,
+                                            end: 0,
+                                            delay: Duration(
+                                              milliseconds: 30 * idx,
+                                            ),
+                                            duration: const Duration(
+                                              milliseconds: 20,
+                                            ),
+                                            curve: Curves.easeOutCubic,
+                                          );
+                                    },
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
     );
   }
 

@@ -78,7 +78,7 @@ class HosoProvider extends ChangeNotifier {
   );
 
   File? _localAvatar;
-  bool _isUploadingAvatar = false;
+  final bool _isUploadingAvatar = false;
 
   HosoData get profile => _profile;
   File? get localAvatar => _localAvatar;
@@ -95,7 +95,6 @@ class HosoProvider extends ChangeNotifier {
 
     _localAvatar = File(picked.path);
     notifyListeners();
-
   }
 
   void removeLocalAvatar() {

@@ -42,8 +42,9 @@ class NhansuCard extends StatelessWidget {
   Color? _getPositionColor() {
     final pos = staff.tenChucVu.toLowerCase().trim();
     if (pos.contains('hội đồng')) return const Color(0xFF14B8A6);
-    if (pos.contains('phó') && pos.contains('giám đốc'))
+    if (pos.contains('phó') && pos.contains('giám đốc')) {
       return const Color(0xFF06B6D4);
+    }
     if (pos.contains('giám đốc')) return const Color(0xFF9333EA);
     if (pos.contains('chủ tịch')) return const Color(0xFF6366F1);
     if (pos.contains('tổ trưởng')) return const Color(0xFF22C55E);
@@ -170,7 +171,10 @@ class NhansuCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     staff.chucVu,
-                    style: TextStyle(fontSize: 13, color: context.textSecondary),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.textSecondary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -179,7 +183,11 @@ class NhansuCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.phone, size: 11, color: context.textSecondary),
+                        Icon(
+                          Icons.phone,
+                          size: 11,
+                          color: context.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           staff.soDienThoai!,
@@ -191,13 +199,15 @@ class NhansuCard extends StatelessWidget {
                       ],
                     ),
                   ],
-                  if (staff.namSinh != null &&
-                      staff.namSinh!.isNotEmpty) ...[
+                  if (staff.namSinh != null && staff.namSinh!.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.cake_outlined,
-                            size: 11, color: context.textSecondary),
+                        Icon(
+                          Icons.cake_outlined,
+                          size: 11,
+                          color: context.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           _formatBirthDate(staff.namSinh!),
@@ -227,10 +237,7 @@ class NhansuCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: color.withValues(alpha: 0.4),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -317,8 +324,9 @@ class _StaffDetailContent extends StatelessWidget {
   Color? _getPositionColor() {
     final pos = staff.tenChucVu.toLowerCase().trim();
     if (pos.contains('hội đồng')) return const Color(0xFF14B8A6);
-    if (pos.contains('phó') && pos.contains('giám đốc'))
+    if (pos.contains('phó') && pos.contains('giám đốc')) {
       return const Color(0xFF06B6D4);
+    }
     if (pos.contains('giám đốc')) return const Color(0xFF9333EA);
     if (pos.contains('chủ tịch')) return const Color(0xFF6366F1);
     if (pos.contains('tổ trưởng')) return const Color(0xFF22C55E);
@@ -333,8 +341,7 @@ class _StaffDetailContent extends StatelessWidget {
     final posColor = _getPositionColor();
     final avatarColor = posColor ?? departmentColor;
     final initials = _buildInitials(staff.hoVaTen);
-    final hasPhone =
-        staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty;
+    final hasPhone = staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty;
 
     final radius = isDialog
         ? BorderRadius.circular(24)
@@ -350,16 +357,16 @@ class _StaffDetailContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
             _buildHeader(context, avatarColor, initials, posColor),
 
             _buildInfoSection(context),
 
             _buildActions(context, hasPhone),
             SizedBox(
-                height: isDialog
-                    ? 20
-                    : MediaQuery.of(context).padding.bottom + 16),
+              height: isDialog
+                  ? 20
+                  : MediaQuery.of(context).padding.bottom + 16,
+            ),
           ],
         ),
       ),
@@ -367,8 +374,11 @@ class _StaffDetailContent extends StatelessWidget {
   }
 
   Widget _buildHeader(
-      BuildContext context, Color avatarColor, String initials, Color? posColor) {
-
+    BuildContext context,
+    Color avatarColor,
+    String initials,
+    Color? posColor,
+  ) {
     final gradEnd = Color.fromARGB(
       255,
       (avatarColor.r * 255 * 0.75).round().clamp(0, 255),
@@ -387,7 +397,6 @@ class _StaffDetailContent extends StatelessWidget {
       ),
       child: Stack(
         children: [
-
           if (isDialog)
             Positioned(
               top: 12,
@@ -400,8 +409,11 @@ class _StaffDetailContent extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.close_rounded,
-                      size: 16, color: Colors.white),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -427,7 +439,6 @@ class _StaffDetailContent extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(20, isDialog ? 20 : 24, 20, 24),
             child: Column(
               children: [
-
                 Container(
                   width: 84,
                   height: 84,
@@ -435,17 +446,21 @@ class _StaffDetailContent extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.6), width: 2.5),
+                      color: Colors.white.withValues(alpha: 0.6),
+                      width: 2.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.15),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4)),
+                        color: Colors.black.withValues(alpha: 0.15),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: staff.anhDaiDienUrl != null &&
+                    child:
+                        staff.anhDaiDienUrl != null &&
                             staff.anhDaiDienUrl!.isNotEmpty
                         ? CachedNetworkImage(
                             imageUrl: staff.anhDaiDienUrl!,
@@ -456,26 +471,35 @@ class _StaffDetailContent extends StatelessWidget {
                             },
                             fit: BoxFit.cover,
                             placeholder: (context2, url) => Center(
-                              child: Text(initials,
-                                  style: const TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white)),
+                              child: Text(
+                                initials,
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                             errorWidget: (context2, url, err) => Center(
-                              child: Text(initials,
-                                  style: const TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white)),
+                              child: Text(
+                                initials,
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           )
                         : Center(
-                            child: Text(initials,
-                                style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white)),
+                            child: Text(
+                              initials,
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                   ),
                 ),
@@ -484,10 +508,11 @@ class _StaffDetailContent extends StatelessWidget {
                 Text(
                   staff.hoVaTen,
                   style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: -0.4),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: -0.4,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
@@ -499,9 +524,10 @@ class _StaffDetailContent extends StatelessWidget {
                   children: [
                     if (posColor != null && staff.tenChucVu.isNotEmpty)
                       _Chip(
-                          text: staff.tenChucVu,
-                          icon: Icons.star_rounded,
-                          bright: true),
+                        text: staff.tenChucVu,
+                        icon: Icons.star_rounded,
+                        bright: true,
+                      ),
                     if (staff.chucVu.isNotEmpty &&
                         staff.chucVu != staff.tenChucVu)
                       _Chip(text: staff.chucVu, bright: false),
@@ -512,16 +538,20 @@ class _StaffDetailContent extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.location_on_rounded,
-                          size: 12, color: Colors.white60),
+                      Icon(
+                        Icons.location_on_rounded,
+                        size: 12,
+                        color: Colors.white60,
+                      ),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
                           staff.khoaPhongTen,
                           style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white70,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 12,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w500,
+                          ),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -541,51 +571,65 @@ class _StaffDetailContent extends StatelessWidget {
     final isDark = context.isDark;
     final rows = <_InfoRowData>[];
 
-    rows.add(_InfoRowData(
+    rows.add(
+      _InfoRowData(
         icon: FontAwesomeIcons.idBadge,
         label: 'Mã nhân viên',
         value: staff.maSo,
-        color: const Color(0xFF6366F1)));
+        color: const Color(0xFF6366F1),
+      ),
+    );
 
-    rows.add(_InfoRowData(
+    rows.add(
+      _InfoRowData(
         icon: FontAwesomeIcons.buildingUser,
         label: 'Khoa / Phòng',
         value: staff.khoaPhongTen.isNotEmpty ? staff.khoaPhongTen : '—',
-        color: const Color(0xFF0EA5E9)));
+        color: const Color(0xFF0EA5E9),
+      ),
+    );
 
     if (staff.soDienThoai != null && staff.soDienThoai!.isNotEmpty) {
-      rows.add(_InfoRowData(
+      rows.add(
+        _InfoRowData(
           icon: FontAwesomeIcons.phone,
           label: 'Điện thoại',
           value: staff.soDienThoai!,
-          color: const Color(0xFF22C55E)));
+          color: const Color(0xFF22C55E),
+        ),
+      );
     }
 
     if (staff.namSinh != null && staff.namSinh!.isNotEmpty) {
-      rows.add(_InfoRowData(
+      rows.add(
+        _InfoRowData(
           icon: FontAwesomeIcons.cakeCandles,
           label: 'Ngày sinh',
           value: _formatDate(staff.namSinh!),
-          color: const Color(0xFFF97316)));
+          color: const Color(0xFFF97316),
+        ),
+      );
     }
 
     if (staff.gioiTinh != null && staff.gioiTinh!.isNotEmpty) {
-      rows.add(_InfoRowData(
+      rows.add(
+        _InfoRowData(
           icon: FontAwesomeIcons.person,
           label: 'Giới tính',
           value: staff.gioiTinh!,
-          color: const Color(0xFFEC4899)));
+          color: const Color(0xFFEC4899),
+        ),
+      );
     }
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       decoration: BoxDecoration(
-        color: isDark
-            ? context.surfaceColor
-            : const Color(0xFFF8F9FB),
+        color: isDark ? context.surfaceColor : const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-            color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.5)),
+          color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.5),
+        ),
       ),
       child: Column(
         children: [
@@ -593,9 +637,10 @@ class _StaffDetailContent extends StatelessWidget {
             _buildInfoRow(context, rows[i]),
             if (i < rows.length - 1)
               Divider(
-                  height: 1,
-                  indent: 52,
-                  color: context.borderColor.withValues(alpha: 0.6)),
+                height: 1,
+                indent: 52,
+                color: context.borderColor.withValues(alpha: 0.6),
+              ),
           ],
         ],
       ),
@@ -623,18 +668,24 @@ class _StaffDetailContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(data.label,
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: context.textSecondary)),
+                Text(
+                  data.label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: context.textSecondary,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(data.value,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: context.textPrimary),
-                    overflow: TextOverflow.ellipsis),
+                Text(
+                  data.value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -653,7 +704,8 @@ class _StaffDetailContent extends StatelessWidget {
       onPressed: hasPhone
           ? () => launchUrl(
               Uri.parse('https://zalo.me/${staff.soDienThoai}'),
-              mode: LaunchMode.externalApplication)
+              mode: LaunchMode.externalApplication,
+            )
           : null,
     );
 
@@ -678,7 +730,8 @@ class _StaffDetailContent extends StatelessWidget {
               onPressed: hasPhone
                   ? () => launchUrl(
                       Uri.parse('tel:${staff.soDienThoai}'),
-                      mode: LaunchMode.externalApplication)
+                      mode: LaunchMode.externalApplication,
+                    )
                   : null,
             ),
           ),
@@ -707,7 +760,8 @@ class _Chip extends StatelessWidget {
             : Colors.black.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-            color: Colors.white.withValues(alpha: bright ? 0.5 : 0.2)),
+          color: Colors.white.withValues(alpha: bright ? 0.5 : 0.2),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -716,11 +770,14 @@ class _Chip extends StatelessWidget {
             Icon(icon, size: 11, color: Colors.white),
             const SizedBox(width: 4),
           ],
-          Text(text,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: bright ? 1.0 : 0.85))),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white.withValues(alpha: bright ? 1.0 : 0.85),
+            ),
+          ),
         ],
       ),
     );
@@ -732,11 +789,12 @@ class _InfoRowData {
   final String label;
   final String value;
   final Color color;
-  const _InfoRowData(
-      {required this.icon,
-      required this.label,
-      required this.value,
-      required this.color});
+  const _InfoRowData({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 }
 
 class _ActionButton extends StatelessWidget {
@@ -772,15 +830,21 @@ class _ActionButton extends StatelessWidget {
               if (imageAsset != null)
                 Opacity(
                   opacity: enabled ? 1.0 : 0.4,
-                  child: Image.asset(imageAsset!, width: imageSize, height: imageSize),
+                  child: Image.asset(
+                    imageAsset!,
+                    width: imageSize,
+                    height: imageSize,
+                  ),
                 ),
               const SizedBox(width: 8),
-              Text(label,
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          enabled ? Colors.white : context.textSecondary)),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: enabled ? Colors.white : context.textSecondary,
+                ),
+              ),
             ],
           ),
         ),

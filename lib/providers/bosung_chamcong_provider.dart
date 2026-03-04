@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import '../data/models/bosung_chamcong_model.dart';
 
 class BosungChamcongProvider extends ChangeNotifier {
-  List<BosungChamcongModel> _supplementaryList = [];
+  final List<BosungChamcongModel> _supplementaryList = [];
   bool _isLoading = false;
   String? _error;
 
-  List<BosungChamcongModel> get supplementaryList =>
-      _supplementaryList;
+  List<BosungChamcongModel> get supplementaryList => _supplementaryList;
   bool get isLoading => _isLoading;
   String? get error => _error;
 

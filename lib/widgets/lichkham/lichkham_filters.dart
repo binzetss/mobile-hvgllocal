@@ -36,9 +36,7 @@ class _DateRangeFilter extends StatelessWidget {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark
-              ? const Color(0xFF38383A)
-              : const Color(0xFFE8EAF0),
+          color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0),
           width: 1,
         ),
         boxShadow: [
@@ -85,7 +83,8 @@ class _DateRangeFilter extends StatelessWidget {
                   label: 'Hôm nay',
                   days: 1,
                   isSelected: provider.selectedDateRange == 1,
-                  onTap: () => context.read<LichkhamProvider>().updateDateRange(1),
+                  onTap: () =>
+                      context.read<LichkhamProvider>().updateDateRange(1),
                 ),
               ),
               const SizedBox(width: 8),
@@ -94,7 +93,8 @@ class _DateRangeFilter extends StatelessWidget {
                   label: '7 ngày',
                   days: 7,
                   isSelected: provider.selectedDateRange == 7,
-                  onTap: () => context.read<LichkhamProvider>().updateDateRange(7),
+                  onTap: () =>
+                      context.read<LichkhamProvider>().updateDateRange(7),
                 ),
               ),
               const SizedBox(width: 8),
@@ -103,7 +103,8 @@ class _DateRangeFilter extends StatelessWidget {
                   label: 'Tùy chọn',
                   days: 0,
                   isSelected: provider.selectedDateRange == 0,
-                  onTap: () => context.read<LichkhamProvider>().updateDateRange(0),
+                  onTap: () =>
+                      context.read<LichkhamProvider>().updateDateRange(0),
                 ),
               ),
             ],
@@ -139,10 +140,14 @@ class _DateRangeButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : (isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA)),
+          color: isSelected
+              ? AppColors.primary
+              : (isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? AppColors.primary : (isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
+            color: isSelected
+                ? AppColors.primary
+                : (isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
             width: 1.5,
           ),
         ),
@@ -152,7 +157,9 @@ class _DateRangeButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : (isDark ? Colors.white : const Color(0xFF1A1A1A)),
+            color: isSelected
+                ? Colors.white
+                : (isDark ? Colors.white : const Color(0xFF1A1A1A)),
           ),
         ),
       ),
@@ -179,10 +186,7 @@ class _CustomDatePicker extends StatelessWidget {
               label: 'Từ ngày',
               date: provider.startDate,
               onTap: () async {
-                final date = await _pickDate(
-                  context,
-                  provider.startDate,
-                );
+                final date = await _pickDate(context, provider.startDate);
                 if (date != null) {
                   context.read<LichkhamProvider>().setStartDate(date);
                 }
@@ -195,10 +199,7 @@ class _CustomDatePicker extends StatelessWidget {
               label: 'Đến ngày',
               date: provider.endDate,
               onTap: () async {
-                final date = await _pickDate(
-                  context,
-                  provider.endDate,
-                );
+                final date = await _pickDate(context, provider.endDate);
                 if (date != null) {
                   context.read<LichkhamProvider>().setEndDate(date);
                 }
@@ -210,7 +211,10 @@ class _CustomDatePicker extends StatelessWidget {
     );
   }
 
-  Future<DateTime?> _pickDate(BuildContext context, DateTime initialDate) async {
+  Future<DateTime?> _pickDate(
+    BuildContext context,
+    DateTime initialDate,
+  ) async {
     return showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -253,7 +257,9 @@ class _DateField extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0)),
+          border: Border.all(
+            color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +303,10 @@ class _RoomFilter extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0), width: 1),
+        border: Border.all(
+          color: isDark ? const Color(0xFF38383A) : const Color(0xFFE8EAF0),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -336,24 +345,51 @@ class _RoomFilter extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: provider.selectedRoom,
+            initialValue: provider.selectedRoom,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF38383A) : const Color(0xFFF8F9FA),
+              fillColor: isDark
+                  ? const Color(0xFF38383A)
+                  : const Color(0xFFF8F9FA),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF48484A)
+                      : const Color(0xFFE8EAF0),
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: isDark ? const Color(0xFF48484A) : const Color(0xFFE8EAF0)),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF48484A)
+                      : const Color(0xFFE8EAF0),
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
             ),
             items: [
-              DropdownMenuItem(value: 'all', child: Text('Tất cả phòng khám', style: TextStyle(color: isDark ? Colors.white : Colors.black))),
+              DropdownMenuItem(
+                value: 'all',
+                child: Text(
+                  'Tất cả phòng khám',
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                ),
+              ),
               ...provider.rooms.map(
-                (room) => DropdownMenuItem(value: room, child: Text(room, style: TextStyle(color: isDark ? Colors.white : Colors.black))),
+                (room) => DropdownMenuItem(
+                  value: room,
+                  child: Text(
+                    room,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ),
               ),
             ],
             onChanged: (value) {

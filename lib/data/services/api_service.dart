@@ -73,10 +73,35 @@ class ApiService {
     Map<String, dynamic> body, {
     bool requiresAuth = true,
   }) async {
-    if (kIsWeb) {
-      return post(url, body, requiresAuth: requiresAuth);
+    // Browser không support GET có body → dùng query params cho cả web lẫn native
+    return getWithQueryParams(url, body, requiresAuth: requiresAuth);
+  }
+
+  Future<Map<String, dynamic>> getWithQueryParams(
+    String url,
+    Map<String, dynamic> body, {
+    bool requiresAuth = true,
+  }) async {
+    try {
+      final headers = await _getHeaders(includeToken: requiresAuth);
+      final uri = Uri.parse(url).replace(
+        queryParameters: body.map((k, v) => MapEntry(k, v.toString())),
+      );
+
+      final response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return _decode(response.body);
+      } else if (response.statusCode == 401) {
+        await _tokenManager.clearToken();
+        throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Network error: $e');
     }
-    return getWithBody(url, body, requiresAuth: requiresAuth);
   }
 
   Future<Map<String, dynamic>> getWithBody(
