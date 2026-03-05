@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,14 +35,23 @@ class ApiService {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({'maSo': maSo, 'matKhau': matKhau}),
+        body: jsonEncode({
+        'maSo': maSo,
+        'matKhau': matKhau,
+        'deviceInfo': kIsWeb ? 'Web' : Platform.isIOS ? 'iOS' : 'Android',
+      }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         final token = data['token']?.toString();
         if (token != null && token.isNotEmpty) {
-          await _tokenManager.saveToken(token);
+          DateTime? expiryDate;
+          final expiryStr = data['expiryDate']?.toString();
+          if (expiryStr != null && expiryStr.isNotEmpty) {
+            expiryDate = DateTime.parse(expiryStr);
+          }
+          await _tokenManager.saveToken(token, expiryDate: expiryDate);
           return true;
         }
       }

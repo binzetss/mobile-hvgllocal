@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:hvgl/core/utils/local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/api_endpoints.dart';
@@ -74,11 +75,21 @@ class XacthucService {
 
   Future<Map> login(String maSo, String matKhau) async {
     try {
+      final String deviceInfo;
+      if (kIsWeb) {
+        deviceInfo = 'Web';
+      } else if (Platform.isIOS) {
+        deviceInfo = 'iOS';
+      } else {
+        deviceInfo = 'Android';
+      }
+
       final response = await _apiService.post(
         ApiEndpoints.login,
         {
           'maSo': maSo,
           'matKhau': matKhau,
+          'deviceInfo': deviceInfo,
         },
         requiresAuth: false,
       );
@@ -88,7 +99,12 @@ class XacthucService {
       final token = response["token"];
 
       if (token != null && token.isNotEmpty) {
-        await _tokenManager.saveToken(token);
+        DateTime? expiryDate;
+        final expiryStr = response["expiryDate"]?.toString();
+        if (expiryStr != null && expiryStr.isNotEmpty) {
+          expiryDate = DateTime.parse(expiryStr);
+        }
+        await _tokenManager.saveToken(token, expiryDate: expiryDate);
       }
 
       return {
@@ -101,6 +117,9 @@ class XacthucService {
   }
 
   Future<void> logout() async {
+    try {
+      await _apiService.post(ApiEndpoints.logout, {});
+    } catch (_) {}
     await _tokenManager.clearToken();
     await Local.cleanLocalAll();
   }

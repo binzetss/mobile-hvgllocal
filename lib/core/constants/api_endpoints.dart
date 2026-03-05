@@ -5,6 +5,7 @@ class ApiEndpoints {
   static const String docsBaseUrl = 'https://docs.bvhvgl.com';
   static const String lichKhamBaseUrl = 'https://lichphongkham.bvhvgl.com/api';
   static const String login = '$baseUrl/Login';
+  static const String logout = '$baseUrl/Logout';
   static const String vanBanNoiBo = '$baseUrl/VanBanNoiBo';
   static const String danhSachNhanVien = '$baseUrl/DanhSachNhanVien';
   static const String lichLamViec = '$lichKhamBaseUrl/lichlamviec';
