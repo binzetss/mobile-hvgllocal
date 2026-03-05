@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ScannerState {
-  idle,
-  scanning,
-  success,
-  error,
-}
+enum ScannerState { idle, scanning, success, error }
 
 class QrScannerProvider extends ChangeNotifier {
   ScannerState _state = ScannerState.scanning;
@@ -22,7 +17,6 @@ class QrScannerProvider extends ChangeNotifier {
   void toggleFlash() {
     _isFlashOn = !_isFlashOn;
     notifyListeners();
-
   }
 
   Future<void> onQRCodeScanned(String code) async {
@@ -47,12 +41,10 @@ class QrScannerProvider extends ChangeNotifier {
   }
 
   bool _validateQRCode(String code) {
-
     return code.isNotEmpty && code.length > 5;
   }
 
   Future<void> _recordAttendance(String code) async {
-
     await Future.delayed(const Duration(seconds: 1));
   }
 
@@ -73,11 +65,5 @@ class QrScannerProvider extends ChangeNotifier {
     _scannedCode = null;
     _errorMessage = null;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-
-    super.dispose();
   }
 }

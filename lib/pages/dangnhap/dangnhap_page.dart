@@ -24,44 +24,26 @@ class DangnhapPage extends StatefulWidget {
   State<DangnhapPage> createState() => _DangnhapPageState();
 }
 
-class _DangnhapPageState extends State<DangnhapPage>
-    with TickerProviderStateMixin {
+class _DangnhapPageState extends State<DangnhapPage> {
 
   final _formKey = GlobalKey<FormState>();
   final _maSoController = TextEditingController();
   final _matKhauController = TextEditingController();
 
-  late AnimationController _gradientController;
-  late AnimationController _particleController;
   late XacthucProvider _authProviderRef;
 
   @override
   void initState() {
     super.initState();
-    _initAnimations();
     _listenToProviderInit();
   }
 
   @override
   void dispose() {
     _authProviderRef.removeListener(_onProviderChanged);
-    _gradientController.dispose();
-    _particleController.dispose();
     _maSoController.dispose();
     _matKhauController.dispose();
     super.dispose();
-  }
-
-  void _initAnimations() {
-    _gradientController = AnimationController(
-      duration: const Duration(seconds: 4),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _particleController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
   }
 
   void _listenToProviderInit() {
@@ -169,10 +151,7 @@ class _DangnhapPageState extends State<DangnhapPage>
     return Scaffold(
       body: Stack(
         children: [
-          DangnhapAnimatedBackground(
-            gradientController: _gradientController,
-            particleController: _particleController,
-          ),
+          const DangnhapAnimatedBackground(),
           SafeArea(
             child: SingleChildScrollView(
               child: ConstrainedBox(
@@ -211,7 +190,7 @@ class _DangnhapPageState extends State<DangnhapPage>
       body: Stack(
         children: [
 
-          DangnhapWebBackground(controller: _gradientController),
+          const DangnhapWebBackground(),
 
           Column(
             children: [

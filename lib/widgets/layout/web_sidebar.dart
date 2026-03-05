@@ -18,9 +18,7 @@ class WebSidebar extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         color: context.cardColor,
-        border: Border(
-          right: BorderSide(color: context.borderColor, width: 1),
-        ),
+        border: Border(right: BorderSide(color: context.borderColor, width: 1)),
       ),
       child: Column(
         children: [
@@ -35,10 +33,26 @@ class WebSidebar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionLabel('CHÍNH'),
-                  _MainNavItem(index: 0, icon: FontAwesomeIcons.house, label: 'Trang chủ'),
-                  _MainNavItem(index: 1, icon: FontAwesomeIcons.fileLines, label: 'Văn bản'),
-                  _MainNavItem(index: 3, icon: FontAwesomeIcons.clock, label: 'Chấm công'),
-                  _MainNavItem(index: 4, icon: FontAwesomeIcons.userGroup, label: 'Nhân sự'),
+                  _MainNavItem(
+                    index: 0,
+                    icon: FontAwesomeIcons.house,
+                    label: 'Trang chủ',
+                  ),
+                  _MainNavItem(
+                    index: 1,
+                    icon: FontAwesomeIcons.fileLines,
+                    label: 'Văn bản',
+                  ),
+                  _MainNavItem(
+                    index: 3,
+                    icon: FontAwesomeIcons.clock,
+                    label: 'Chấm công',
+                  ),
+                  _MainNavItem(
+                    index: 4,
+                    icon: FontAwesomeIcons.userGroup,
+                    label: 'Nhân sự',
+                  ),
                   const SizedBox(height: 8),
                   Divider(height: 1, color: context.borderColor),
                   const SizedBox(height: 8),
@@ -197,7 +211,8 @@ class _UserCard extends StatelessWidget {
         final avatarUrl = auth.user?.hinhAnh;
         final initials = _buildInitials(name);
         return InkWell(
-          onTap: () => context.read<NavigationProvider>().setWebCurrentPage('profile'),
+          onTap: () =>
+              context.read<NavigationProvider>().setWebCurrentPage('profile'),
           child: Container(
             margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             padding: const EdgeInsets.all(12),
@@ -221,7 +236,7 @@ class _UserCard extends StatelessWidget {
                             width: 38,
                             height: 38,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, e) => Center(
+                            errorBuilder: (_, _, e) => Center(
                               child: Text(
                                 initials,
                                 style: TextStyle(
@@ -309,13 +324,18 @@ class _MainNavItem extends StatelessWidget {
   final int index;
   final IconData icon;
   final String label;
-  const _MainNavItem({required this.index, required this.icon, required this.label});
+  const _MainNavItem({
+    required this.index,
+    required this.icon,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Consumer<NavigationProvider>(
       builder: (context, nav, _) {
-        final isSelected = nav.webCurrentPage == null && nav.currentIndex == index;
+        final isSelected =
+            nav.webCurrentPage == null && nav.currentIndex == index;
         return InkWell(
           onTap: () => nav.setIndex(index),
           child: AnimatedContainer(
@@ -333,7 +353,9 @@ class _MainNavItem extends StatelessWidget {
                 FaIcon(
                   icon,
                   size: 15,
-                  color: isSelected ? context.primaryColor : context.textSecondary,
+                  color: isSelected
+                      ? context.primaryColor
+                      : context.textSecondary,
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -341,7 +363,9 @@ class _MainNavItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? context.primaryColor : context.textPrimary,
+                    color: isSelected
+                        ? context.primaryColor
+                        : context.textPrimary,
                   ),
                 ),
                 if (isSelected) ...[
@@ -388,7 +412,9 @@ class _PushNavItem extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.10) : Colors.transparent,
+              color: isSelected
+                  ? color.withValues(alpha: 0.10)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -400,9 +426,7 @@ class _PushNavItem extends StatelessWidget {
                     color: color.withValues(alpha: isSelected ? 0.20 : 0.12),
                     borderRadius: BorderRadius.circular(7),
                   ),
-                  child: Center(
-                    child: FaIcon(icon, size: 13, color: color),
-                  ),
+                  child: Center(child: FaIcon(icon, size: 13, color: color)),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -429,8 +453,9 @@ class _LogoutButton extends StatelessWidget {
       onTap: () {
         DataPreloadService().clearAllCache(context);
         context.read<XacthucProvider>().logout();
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
       },
       child: Container(
         width: double.infinity,

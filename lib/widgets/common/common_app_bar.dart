@@ -65,7 +65,9 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     final canPop = Navigator.canPop(context);
-    final leadingIcon = canPop ? FontAwesomeIcons.chevronLeft : FontAwesomeIcons.bars;
+    final leadingIcon = canPop
+        ? FontAwesomeIcons.chevronLeft
+        : FontAwesomeIcons.bars;
 
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -113,11 +115,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
-                  child: FaIcon(
-                    leadingIcon,
-                    size: 16,
-                    color: Colors.white,
-                  ),
+                  child: FaIcon(leadingIcon, size: 16, color: Colors.white),
                 ),
               ),
             ),
@@ -142,13 +140,16 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 2,
+                ),
               ),
               child: ClipOval(
                 child: Image.asset(
                   'assets/avata/default.png',
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.white24),
+                  errorBuilder: (_, _, _) => Container(color: Colors.white24),
                 ),
               ),
             ),
