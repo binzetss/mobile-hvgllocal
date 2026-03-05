@@ -56,7 +56,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '785145480437',
     projectId: 'hvgl-app-2f7da',
     storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
-    iosBundleId: 'com.noibo.hvgl',
+    iosBundleId: 'vn.hvgl.noibo',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '785145480437',
     projectId: 'hvgl-app-2f7da',
     storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
-    iosBundleId: 'com.noibo.hvgl',
+    iosBundleId: 'vn.hvgl.noibo',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
