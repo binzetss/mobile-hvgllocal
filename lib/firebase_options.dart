@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBDyyG2Od9hQgnrsvJSBNks8ng0jwZ6w50',
-    appId: '1:785145480437:ios:4ea7d56c168762b33d71bc',
+    appId: '1:785145480437:ios:cf3c78e87c49f1093d71bc',
     messagingSenderId: '785145480437',
     projectId: 'hvgl-app-2f7da',
     storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBDyyG2Od9hQgnrsvJSBNks8ng0jwZ6w50',
-    appId: '1:785145480437:ios:4ea7d56c168762b33d71bc',
+    appId: '1:785145480437:ios:cf3c78e87c49f1093d71bc',
     messagingSenderId: '785145480437',
     projectId: 'hvgl-app-2f7da',
     storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
