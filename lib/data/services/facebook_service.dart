@@ -5,7 +5,7 @@ import '../models/facebook_post_model.dart';
 
 class FacebookService {
   static const String _userToken =
-      'EAAMJDCWLkaQBQ8d6BV69y0c051hb57fdZCyEFnxYCBBV54hxWDfZBAZA2pfHSQjKfEElcAXexZC7ZBWrgZA0EvltvO6a7esrmOBa1b3BDUK8ZAGpZCcisQnGQOJ7ZBus4vZCDmxucBIkdycNrI2RS7AgYwpwADXwVmNJTvPKISD8ZBXILqtkMXrzZADvfZCZCDoHxXetclT8kc29eNZAHotYF4stSHyHO6FsnVN7OIfB0eXVBn38ErtdEmVWmeFZC1v5VdbRy5oUG1dcSZBovlXGZCZB64ZA5IgDFZBVEFwZDZD';
+      'EAANRy989OMcBQyETZB9RhZC3wUL0WZBh3T6LkmqZA8yBhOEwkpeIw5iKkZCj760svM5gZCeTqXeUCOU4F2tFpmujnwHu8QQKk6BUMdLDYzVh3F0GrmOqnjcmzcIRHZAtpBAEMcAIVqhOKXXijhpZCSNsf3Uimh5vPvZATZBo5TtvZBNgYFXVQBtFNSQfrRokcUEkUGNm5KIbLLv87BLRlddSM9rZAKSmKqbZB2sw3OIYQuPFT5YtOZAQdHzzQs3fIRfFWSvNW9W9Ye7iTkdtye4NzQHXYZC';
 
   static const String _pageUsername = 'bvhvgl';
   static const String _graphBase = 'https://graph.facebook.com/v19.0';
