@@ -6,7 +6,7 @@ import '../models/facebook_post_model.dart';
 class FacebookService {
   // User Access Token (dùng lần đầu để lấy Page Access Token)
   static const String _userToken =
-      'EAAMJDCWLkaQBQ8tgWoalpEVFX9mmvklZCiTShoFAbRU6ZCcrjBshqcJVk8EGN6K7iZAdx2covRwE3HFkTDHr2zw5NS4sBZCjLWuLENQDVyogS7ZBK77RBjh7oZAlF3UeL0AZAN5KEmADJeZCYfGoQr4b13mO0Pr5pCUlVIIxcR78jdCGlNqhaHsZCnbiUt6bLECq47ECSUZCZAemq0VXyBRiLjdnf7CL7B5ZCCaS7hTRFaWCvipmeWIKcVUKtfZBSL7DDme7TvpcUyW4nZCPVTjdBSyixW';
+      'EAAMJDCWLkaQBQ8d6BV69y0c051hb57fdZCyEFnxYCBBV54hxWDfZBAZA2pfHSQjKfEElcAXexZC7ZBWrgZA0EvltvO6a7esrmOBa1b3BDUK8ZAGpZCcisQnGQOJ7ZBus4vZCDmxucBIkdycNrI2RS7AgYwpwADXwVmNJTvPKISD8ZBXILqtkMXrzZADvfZCZCDoHxXetclT8kc29eNZAHotYF4stSHyHO6FsnVN7OIfB0eXVBn38ErtdEmVWmeFZC1v5VdbRy5oUG1dcSZBovlXGZCZB64ZA5IgDFZBVEFwZDZD';
 
   static const String _pageUsername = 'bvhvgl';
   static const String _graphBase = 'https://graph.facebook.com/v19.0';
