@@ -47,6 +47,51 @@ class FacebookPostModel {
     );
   }
 
+  factory FacebookPostModel.fromFbJson(Map<String, dynamic> json, {String? pageId}) {
+    // Extract images from attachments
+    final List<String> images = [];
+    final attachments = json['attachments']?['data'] as List?;
+    if (attachments != null && attachments.isNotEmpty) {
+      final first = attachments.first as Map<String, dynamic>;
+      final subattachments = first['subattachments']?['data'] as List?;
+      if (subattachments != null && subattachments.isNotEmpty) {
+        // Multiple images
+        for (final sub in subattachments) {
+          final src = sub['media']?['image']?['src']?.toString();
+          if (src != null) images.add(src);
+        }
+      } else {
+        // Single image
+        final src = first['media']?['image']?['src']?.toString();
+        if (src != null) images.add(src);
+      }
+    }
+
+    final fullPicture = json['full_picture']?.toString();
+    if (images.isEmpty && fullPicture != null) images.add(fullPicture);
+
+    final pid = pageId ?? '';
+    final avatarUrl = pid.isNotEmpty
+        ? 'https://graph.facebook.com/$pid/picture?type=large'
+        : null;
+
+    return FacebookPostModel(
+      id: json['id']?.toString() ?? '',
+      message: json['message']?.toString() ?? '',
+      fullPicture: fullPicture,
+      images: images,
+      pageAvatar: avatarUrl,
+      createdTime: json['created_time'] != null
+          ? DateTime.parse(json['created_time'].toString())
+          : DateTime.now(),
+      link: json['permalink_url']?.toString(),
+      likesCount: json['likes']?['summary']?['total_count'] ?? 0,
+      commentsCount: json['comments']?['summary']?['total_count'] ?? 0,
+      sharesCount: json['shares']?['count'] ?? 0,
+      permalink: json['permalink_url']?.toString(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
