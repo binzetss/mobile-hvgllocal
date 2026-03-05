@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/facebook_post_model.dart';
 
 class FacebookService {
-  // User Access Token (dùng lần đầu để lấy Page Access Token)
   static const String _userToken =
       'EAAMJDCWLkaQBQ8d6BV69y0c051hb57fdZCyEFnxYCBBV54hxWDfZBAZA2pfHSQjKfEElcAXexZC7ZBWrgZA0EvltvO6a7esrmOBa1b3BDUK8ZAGpZCcisQnGQOJ7ZBus4vZCDmxucBIkdycNrI2RS7AgYwpwADXwVmNJTvPKISD8ZBXILqtkMXrzZADvfZCZCDoHxXetclT8kc29eNZAHotYF4stSHyHO6FsnVN7OIfB0eXVBn38ErtdEmVWmeFZC1v5VdbRy5oUG1dcSZBovlXGZCZB64ZA5IgDFZBVEFwZDZD';
 
@@ -13,7 +12,7 @@ class FacebookService {
   static const String _pageTokenKey = 'fb_page_token';
   static const String _pageIdKey = 'fb_page_id';
 
-  // Lấy Page Access Token đã lưu
+
   Future<Map<String, String>?> _getCachedPageInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(_pageTokenKey);
@@ -22,7 +21,7 @@ class FacebookService {
     return null;
   }
 
-  // Gọi /me/accounts để lấy Page Access Token từ User Token
+
   Future<Map<String, String>?> _fetchPageTokenFromApi() async {
     try {
       final response = await http.get(
@@ -32,7 +31,6 @@ class FacebookService {
         final data = jsonDecode(response.body);
         final accounts = data['data'] as List?;
         if (accounts != null && accounts.isNotEmpty) {
-          // Tìm page bvhvgl hoặc lấy page đầu tiên
           Map<String, dynamic>? found;
           for (final acc in accounts) {
             final name = acc['name']?.toString().toLowerCase() ?? '';
@@ -57,58 +55,72 @@ class FacebookService {
     return null;
   }
 
+  Future<List<FacebookPostModel>> _callPostsApi(String pageId, String token, int limit) async {
+    final fields = [
+      'id',
+      'message',
+      'full_picture',
+      'attachments{media,subattachments{media}}',
+      'created_time',
+      'permalink_url',
+      'likes.summary(true)',
+      'comments.summary(true)',
+      'shares',
+    ].join(',');
+
+    final url = Uri.parse(
+      '$_graphBase/$pageId/posts'
+      '?fields=$fields'
+      '&limit=${limit * 2}'
+      '&access_token=$token',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return (data['data'] as List? ?? [])
+          .map((p) => FacebookPostModel.fromFbJson(p as Map<String, dynamic>, pageId: pageId))
+          .where((p) => p.message.trim().isNotEmpty)
+          .take(limit)
+          .toList();
+    } else {
+      throw Exception('HTTP ${response.statusCode}');
+    }
+  }
+
+  Future<void> _clearCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pageTokenKey);
+    await prefs.remove(_pageIdKey);
+  }
+
   Future<List<FacebookPostModel>> getPosts({int limit = 3}) async {
-    try {
-      // Lấy page token (cached hoặc fetch mới)
-      var pageInfo = await _getCachedPageInfo();
-      pageInfo ??= await _fetchPageTokenFromApi();
-
-      final token = pageInfo?['token'] ?? _userToken;
-      final pageId = pageInfo?['id'] ?? _pageUsername;
-
-      final fields = [
-        'id',
-        'message',
-        'full_picture',
-        'attachments{media,subattachments{media}}',
-        'created_time',
-        'permalink_url',
-        'likes.summary(true)',
-        'comments.summary(true)',
-        'shares',
-      ].join(',');
-
-      final url = Uri.parse(
-        '$_graphBase/$pageId/posts'
-        '?fields=$fields'
-        '&limit=${limit * 2}' // lấy nhiều hơn để lọc bài không có message
-        '&access_token=$token',
-      );
-
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final posts = (data['data'] as List? ?? [])
-            .map((p) => FacebookPostModel.fromFbJson(
-                  p as Map<String, dynamic>,
-                  pageId: pageId,
-                ))
-            .where((p) => p.message.trim().isNotEmpty)
-            .take(limit)
-            .toList();
-        return posts;
-      } else if (response.statusCode == 401 || response.statusCode == 400) {
-        // Token hết hạn → xóa cache, thử lại với user token
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(_pageTokenKey);
-        await prefs.remove(_pageIdKey);
-        throw Exception('Token hết hạn. Vui lòng liên hệ admin cập nhật token.');
-      } else {
-        throw Exception('Facebook API lỗi: ${response.statusCode}');
+    // Bước 1: thử với page token đã cache
+    final cached = await _getCachedPageInfo();
+    if (cached != null) {
+      try {
+        return await _callPostsApi(cached['id']!, cached['token']!, limit);
+      } catch (_) {
+        await _clearCache(); // cache hỏng → xóa, tiếp tục
       }
+    }
+
+    // Bước 2: lấy page token mới từ user token
+    final newPageInfo = await _fetchPageTokenFromApi();
+    if (newPageInfo != null) {
+      try {
+        return await _callPostsApi(newPageInfo['id']!, newPageInfo['token']!, limit);
+      } catch (_) {
+        await _clearCache();
+      }
+    }
+
+    // Bước 3: thử trực tiếp với user token + page username
+    try {
+      return await _callPostsApi(_pageUsername, _userToken, limit);
     } catch (e) {
-      throw Exception('Không thể tải bài viết Facebook: $e');
+      throw Exception('Token hết hạn. Vui lòng cấp token mới trong Meta Developer.');
     }
   }
 
