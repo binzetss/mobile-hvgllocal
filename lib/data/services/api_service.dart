@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/constants/api_endpoints.dart';
 import '../../core/utils/token_manager.dart';
 
 class ApiService {
@@ -11,6 +12,46 @@ class ApiService {
   ApiService._internal();
 
   final TokenManager _tokenManager = TokenManager();
+  bool _refreshing = false;
+
+ 
+  Future<bool> _tryAutoReLogin() async {
+    if (_refreshing) return false;
+    _refreshing = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final credJson = prefs.getString('saved_credentials');
+      if (credJson == null) return false;
+
+      final creds = jsonDecode(credJson) as Map<String, dynamic>;
+      final maSo = creds['maSo']?.toString() ?? '';
+      final matKhau = creds['matKhau']?.toString() ?? '';
+      if (maSo.isEmpty || matKhau.isEmpty) return false;
+
+      final response = await http.post(
+        Uri.parse(ApiEndpoints.login),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({'maSo': maSo, 'matKhau': matKhau}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final token = data['token']?.toString();
+        if (token != null && token.isNotEmpty) {
+          await _tokenManager.saveToken(token);
+          return true;
+        }
+      }
+      return false;
+    } catch (_) {
+      return false;
+    } finally {
+      _refreshing = false;
+    }
+  }
 
   Map<String, dynamic> _decode(String body) {
     if (body.trim().isEmpty) return {'success': true};
@@ -32,6 +73,7 @@ class ApiService {
 
     return headers;
   }
+
   Future<Map<String, dynamic>> post(
     String url,
     Map<String, dynamic> body, {
@@ -49,13 +91,20 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await post(url, body, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
-
         try {
-          final body = jsonDecode(response.body);
-          final msg = body['message']?.toString();
+          final errBody = jsonDecode(response.body);
+          final msg = errBody['message']?.toString();
           if (msg != null && msg.isNotEmpty) throw Exception(msg);
         } catch (jsonErr) {
           if (jsonErr is Exception) rethrow;
@@ -73,7 +122,6 @@ class ApiService {
     Map<String, dynamic> body, {
     bool requiresAuth = true,
   }) async {
-    // Browser không support GET có body → dùng query params cho cả web lẫn native
     return getWithQueryParams(url, body, requiresAuth: requiresAuth);
   }
 
@@ -93,6 +141,14 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await getWithQueryParams(url, body, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
@@ -122,15 +178,25 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await getWithBody(url, body, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<Map<String, dynamic>> get(
     String url, {
     bool requiresAuth = true,
@@ -146,15 +212,25 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await get(url, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<List<dynamic>> getList(
     String url, {
     bool requiresAuth = true,
@@ -175,15 +251,25 @@ class ApiService {
           throw Exception('Expected List but got ${decoded.runtimeType}');
         }
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await getList(url, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<Map<String, dynamic>> put(
     String url,
     Map<String, dynamic> body, {
@@ -201,15 +287,25 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await put(url, body, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<Map<String, dynamic>> delete(
     String url, {
     bool requiresAuth = true,
@@ -225,15 +321,25 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await delete(url, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<Map<String, dynamic>> deleteWithBody(
     String url,
     Map<String, dynamic> body, {
@@ -252,15 +358,25 @@ class ApiService {
       if (response.statusCode == 200) {
         return _decode(response.body);
       } else if (response.statusCode == 401) {
+        if (requiresAuth && !_refreshing && await _tryAutoReLogin()) {
+          _refreshing = true;
+          try {
+            return await deleteWithBody(url, body, requiresAuth: requiresAuth);
+          } finally {
+            _refreshing = false;
+          }
+        }
         await _tokenManager.clearToken();
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) rethrow;
       throw Exception('Network error: $e');
     }
   }
+
   Future<Map<String, dynamic>> postMultipart(
     String url,
     Map<String, String> fields,
@@ -301,8 +417,8 @@ class ApiService {
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
         try {
-          final body = jsonDecode(response.body);
-          final msg = body['message']?.toString();
+          final errBody = jsonDecode(response.body);
+          final msg = errBody['message']?.toString();
           if (msg != null && msg.isNotEmpty) throw Exception(msg);
         } catch (jsonErr) {
           if (jsonErr is Exception) rethrow;

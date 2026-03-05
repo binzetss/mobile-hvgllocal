@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -428,7 +429,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
 
     if (images.length == 2) {
       return SizedBox(
-        height: 200,
+        height: kIsWeb ? 340 : 200,
         child: Row(
           children: [
             Expanded(
@@ -453,7 +454,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
 
     if (images.length == 3) {
       return SizedBox(
-        height: 240,
+        height: kIsWeb ? 400 : 240,
         child: Row(
           children: [
 
@@ -496,7 +497,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
 
     final extra = images.length - 4;
     return SizedBox(
-      height: 240,
+      height: kIsWeb ? 400 : 240,
       child: Column(
         children: [
           Expanded(

@@ -5,7 +5,7 @@ import '../models/facebook_post_model.dart';
 class FacebookService {
   // Page Access Token vĩnh viễn - không bao giờ hết hạn
   static const String _pageToken =
-      'EAANRy989OMcBQzpoJmLoM4pedOE3wuZCZCwts45P8SZAiXpAAb4ecCMMOEETXXLDvZCEUXxjqes0csGBqGZBIiC668Q5wRDXqzfGQiBDojfxt0Ku49m1XuO0eMCA0Jtaq9t8ZCwtNMlHdhpmMEohJxw8oHWC6YxrB0jhb4AvanOYfDZCI4ZApD7euevIE3M1k8mUd5nZCaZAgZD';
+      'EAANRy989OMcBQZBcyhSrttZCx6hpJlQVhcs9UHBnqdDUsz0HIp7E4AcnimvX2XGaFjFDGZAmEJvE8KxOnTdXJ8v4pxZBZBUDE1ZAYJ9kBY0VbZBD7OaBkkZALVyzkCTZB64JPNQ709VbkeKv3qB4CqT0ZBsWp8RZCSadlQAnW0YOdRTsvi4XwuB25scp9t7qcSgEu7ZCCDEiZCJMZD';
 
   static const String _pageId = '157566379728871';
   static const String _graphBase = 'https://graph.facebook.com/v19.0';
