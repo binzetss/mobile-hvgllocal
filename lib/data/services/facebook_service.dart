@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import '../models/facebook_post_model.dart';
 
 class FacebookService {
-  // Page Access Token - dùng trực tiếp, không cần cache
+  // Page Access Token vĩnh viễn - không bao giờ hết hạn
   static const String _pageToken =
-      'EAANRy989OMcBQ4X2VITZAfZCPZB0neKnVZBGtQvQlyCFZB0owAeT1fdCm5qbrx9kS2L7UZAz4Y07TFkXZCq566HNH9cutNZA8ASZBy6TIKZB3fZAM7h6bne1wZBl7eGRlVE2NyJZBa5HxCSWS2sQfe8aKdLKZC2P7cfUk1bdNqKRtpuVd53FzviYXUJNAFxFhg4ics87TQm4b1VnDJTXTEyRFlsTUlZClFoE3rnRJL8r7ZBTLZBfXTsuDFZCEAP3xalQ5SHZAJnSb1cUYHZCgD6ODHIO1d1GNvkXEgZDZD';
+      'EAANRy989OMcBQzpoJmLoM4pedOE3wuZCZCwts45P8SZAiXpAAb4ecCMMOEETXXLDvZCEUXxjqes0csGBqGZBIiC668Q5wRDXqzfGQiBDojfxt0Ku49m1XuO0eMCA0Jtaq9t8ZCwtNMlHdhpmMEohJxw8oHWC6YxrB0jhb4AvanOYfDZCI4ZApD7euevIE3M1k8mUd5nZCaZAgZD';
 
-  static const String _pageId = 'bvhvgl';
+  static const String _pageId = '157566379728871';
   static const String _graphBase = 'https://graph.facebook.com/v19.0';
 
   Future<List<FacebookPostModel>> getPosts({int limit = 3}) async {
