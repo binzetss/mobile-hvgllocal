@@ -18,7 +18,9 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   String? _error;
   int _knownTodayPunchCount = 0;
   bool _initialLoadDone = false;
+  bool _isFetching = false;
   Timer? _webRefreshTimer;
+  Timer? _mobileRefreshTimer;
 
   ChamcongProvider() {
     WidgetsBinding.instance.addObserver(this);
@@ -26,6 +28,11 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
       _webRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
         if (_initialLoadDone) refresh();
       });
+    } else {
+      // Mobile: tự load ngay khi app khởi động, không cần mở trang Chấm Công
+      Future.delayed(Duration.zero, init);
+      // Poll mỗi 2 phút để phát hiện chấm công mới (thư viện, đào tạo, v.v.)
+      _mobileRefreshTimer = Timer.periodic(const Duration(minutes: 2), (_) => init());
     }
   }
 
@@ -129,6 +136,8 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _fetchAndUpdate(int year, int month) async {
+    if (_isFetching) return;
+    _isFetching = true;
     try {
       final attendances = await _service.getAttendanceByMonth(year, month);
       _monthlyAttendances = attendances;
@@ -146,6 +155,8 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
       _error = e.toString();
       debugPrint('ChamCong fetch error: $e');
       notifyListeners();
+    } finally {
+      _isFetching = false;
     }
   }
 
@@ -193,6 +204,7 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void dispose() {
     _webRefreshTimer?.cancel();
+    _mobileRefreshTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
