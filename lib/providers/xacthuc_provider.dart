@@ -55,6 +55,18 @@ class XacthucProvider extends ChangeNotifier {
     final savedUser = await _authService.getSavedUser();
     if (savedUser != null) {
       _user = savedUser;
+      // Bust avatar cache mỗi lần khởi động để tránh hiển thị ảnh cũ
+      final maSo = _user?.maSo ?? '';
+      if (maSo.isNotEmpty) {
+        final baseUrl = _authService.buildAvatarUrl(maSo);
+        if (_user?.hinhAnh == null ||
+            _user!.hinhAnh!.isEmpty ||
+            !_user!.hinhAnh!.contains('?t=')) {
+          _user = _user!.copyWith(
+            hinhAnh: '$baseUrl?t=${DateTime.now().millisecondsSinceEpoch}',
+          );
+        }
+      }
       _status = AuthStatus.authenticated;
       notifyListeners();
       return true;
@@ -76,10 +88,11 @@ class XacthucProvider extends ChangeNotifier {
         _user = mapUser["user"];
 
         final maSoStr = _user?.maSo ?? '';
-        if ((_user?.hinhAnh == null || _user!.hinhAnh!.isEmpty) &&
-            maSoStr.isNotEmpty) {
+        // Luôn dùng URL có timestamp để tránh cache ảnh cũ
+        if (maSoStr.isNotEmpty) {
+          final baseUrl = _authService.buildAvatarUrl(maSoStr);
           _user = _user!.copyWith(
-            hinhAnh: _authService.buildAvatarUrl(maSoStr),
+            hinhAnh: '$baseUrl?t=${DateTime.now().millisecondsSinceEpoch}',
           );
         }
 
@@ -166,12 +179,20 @@ class XacthucProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final anhDaiDienUrl = await _authService.uploadAnhDaiDien(maSo: maSo, file: file);
+      final hoVaTen = _user?.hoVaTen;
+      final anhDaiDienUrl = await _authService.uploadAnhDaiDien(
+        maSo: maSo,
+        file: file,
+        hoVaTen: hoVaTen,
+      );
+      final ts = DateTime.now().millisecondsSinceEpoch;
       final newUrl = (anhDaiDienUrl != null && anhDaiDienUrl.isNotEmpty)
-          ? anhDaiDienUrl
-          : '${_authService.buildAvatarUrl(maSo)}?t=${DateTime.now().millisecondsSinceEpoch}';
+          ? '$anhDaiDienUrl?t=$ts'
+          : '${_authService.buildAvatarUrl(maSo)}?t=$ts';
       _user = _user!.copyWith(hinhAnh: newUrl);
       await _authService.saveUser(_user!);
+      // Xoá file local sau khi upload thành công, hiển thị từ URL mới
+      _localAvatarFile = null;
       _isUploadingAvatar = false;
       notifyListeners();
       return null;

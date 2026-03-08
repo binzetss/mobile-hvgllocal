@@ -42,12 +42,22 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
   Future<void> _openPost(String? permalink) async {
     if (permalink == null) return;
     final uri = Uri.parse(permalink);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
+    try {
+      // Không dùng canLaunchUrl vì hay trả false sai trên iOS
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
         showErrorDialog(context,
             message: 'Không thể mở link Facebook.\nVui lòng kiểm tra lại kết nối mạng.');
+      }
+    } catch (_) {
+      // Fallback: mở bằng trình duyệt mặc định
+      try {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      } catch (e) {
+        if (mounted) {
+          showErrorDialog(context,
+              message: 'Không thể mở link Facebook.\nVui lòng kiểm tra lại kết nối mạng.');
+        }
       }
     }
   }

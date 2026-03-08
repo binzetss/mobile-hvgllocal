@@ -2,10 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../core/utils/token_manager.dart';
 import '../../data/models/nhansu_model.dart';
+import '../../providers/xacthuc_provider.dart';
 
 class NhansuCard extends StatelessWidget {
   final NhansuModel staff;
@@ -73,6 +75,12 @@ class NhansuCard extends StatelessWidget {
     final avatarColor = _getAvatarColor(posColor);
     final initials = _buildInitials(staff.hoVaTen);
 
+    final auth = context.read<XacthucProvider>();
+    final effectiveUrl = (auth.user?.maSo == staff.maSo &&
+            (auth.user?.hinhAnh ?? '').isNotEmpty)
+        ? auth.user!.hinhAnh!
+        : staff.anhDaiDienUrl;
+
     return InkWell(
       onTap: onTap ?? () => _showStaffDetails(context),
       borderRadius: BorderRadius.circular(12),
@@ -100,10 +108,9 @@ class NhansuCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child:
-                    staff.anhDaiDienUrl != null &&
-                        staff.anhDaiDienUrl!.isNotEmpty
+                    effectiveUrl != null && effectiveUrl.isNotEmpty
                     ? CachedNetworkImage(
-                        imageUrl: staff.anhDaiDienUrl!,
+                        imageUrl: effectiveUrl,
                         httpHeaders: {
                           if (TokenManager().getCachedToken() != null)
                             'Authorization':
@@ -379,6 +386,11 @@ class _StaffDetailContent extends StatelessWidget {
     String initials,
     Color? posColor,
   ) {
+    final auth = context.read<XacthucProvider>();
+    final effectiveUrl = (auth.user?.maSo == staff.maSo &&
+            (auth.user?.hinhAnh ?? '').isNotEmpty)
+        ? auth.user!.hinhAnh!
+        : staff.anhDaiDienUrl;
     final gradEnd = Color.fromARGB(
       255,
       (avatarColor.r * 255 * 0.75).round().clamp(0, 255),
@@ -460,10 +472,9 @@ class _StaffDetailContent extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child:
-                        staff.anhDaiDienUrl != null &&
-                            staff.anhDaiDienUrl!.isNotEmpty
+                        effectiveUrl != null && effectiveUrl.isNotEmpty
                         ? CachedNetworkImage(
-                            imageUrl: staff.anhDaiDienUrl!,
+                            imageUrl: effectiveUrl,
                             httpHeaders: {
                               if (TokenManager().getCachedToken() != null)
                                 'Authorization':

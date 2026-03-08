@@ -51,7 +51,7 @@ class DaotaoService {
       final maSo = await _getMaSo();
       debugPrint('Đăng ký: idLopDaoTao=$idLopDaoTao, maSo=$maSo');
 
-      final response = await _apiService.fetchData(
+      final response = await _apiService.post(
         ApiEndpoints.dangKyDaoTao,
         {'idLopDaoTao': idLopDaoTao, 'maSo': maSo},
         requiresAuth: true,

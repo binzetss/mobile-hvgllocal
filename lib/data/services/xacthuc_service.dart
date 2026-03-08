@@ -204,6 +204,25 @@ class XacthucService {
 
   String buildAvatarUrl(String maSo) => '${ApiEndpoints.anhDaiDien}/$maSo';
 
+  static String _removeVietnamese(String s) {
+    final pairs = [
+      ['àáảãạăắặằẳẵâấậầẩẫ', 'a'], ['ÀÁẢÃẠĂẮẶẰẲẴÂẤẬẦẨẪ', 'A'],
+      ['èéẻẽẹêếệềểễ', 'e'],       ['ÈÉẺẼẸÊẾỆỀỂỄ', 'E'],
+      ['ìíỉĩị', 'i'],              ['ÌÍỈĨỊ', 'I'],
+      ['òóỏõọôốộồổỗơớợờởỡ', 'o'], ['ÒÓỎÕỌÔỐỘỒỔỖƠỚỢỜỞỠ', 'O'],
+      ['ùúủũụưứựừửữ', 'u'],       ['ÙÚỦŨỤƯỨỰỪỬỮ', 'U'],
+      ['ỳýỷỹỵ', 'y'],             ['ỲÝỶỸỴ', 'Y'],
+      ['đ', 'd'],                  ['Đ', 'D'],
+    ];
+    var result = s;
+    for (final p in pairs) {
+      for (var i = 0; i < p[0].length; i++) {
+        result = result.replaceAll(p[0][i], p[1]);
+      }
+    }
+    return result;
+  }
+
   Future<String> _detectImageExt(File file) async {
     final bytes = await file.openRead(0, 12).fold<List<int>>(
       [],
@@ -239,6 +258,7 @@ class XacthucService {
   Future<String?> uploadAnhDaiDien({
     required String maSo,
     required File file,
+    String? hoVaTen,
   }) async {
     final sizeInBytes = await file.length();
     if (sizeInBytes > 5 * 1024 * 1024) {
@@ -248,12 +268,18 @@ class XacthucService {
     final ext = await _detectImageExt(file);
     final mimeMap = {'jpg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp'};
 
+    // Đặt tên file: {maSo}_{Ho_Va_Ten_khong_dau}
+    final safeName = _removeVietnamese((hoVaTen ?? '').trim())
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+    final filename = safeName.isNotEmpty ? '${maSo}_$safeName.$ext' : '$maSo.$ext';
+
     final response = await _apiService.postMultipart(
       ApiEndpoints.anhDaiDien,
       {'maSo': maSo},
       file,
       'anhDaiDien',
-      filename: 'photo.$ext',
+      filename: filename,
       mimeType: mimeMap[ext] ?? 'image/jpeg',
     );
 

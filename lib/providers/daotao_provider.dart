@@ -125,6 +125,11 @@ class DaotaoProvider extends ChangeNotifier {
       final result = await _service.dangKy(idLopDaoTao);
       if (result) {
         _daDangKyIds.add(idLopDaoTao);
+        final idx = _danhSach.indexWhere((l) => l.idLopDaoTao == idLopDaoTao);
+        if (idx != -1) {
+          _danhSach[idx] = _danhSach[idx].copyWith(isTrangThai: true);
+        }
+        _applyFilters();
         _safeNotifyListeners();
       }
       return result;
@@ -140,6 +145,11 @@ class DaotaoProvider extends ChangeNotifier {
       final result = await _service.huyDangKy(idLopDaoTao);
       if (result) {
         _daDangKyIds.remove(idLopDaoTao);
+        final idx = _danhSach.indexWhere((l) => l.idLopDaoTao == idLopDaoTao);
+        if (idx != -1) {
+          _danhSach[idx] = _danhSach[idx].copyWith(isTrangThai: false);
+        }
+        _applyFilters();
         _safeNotifyListeners();
       }
       return result;

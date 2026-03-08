@@ -20,7 +20,11 @@ class DangkyComService {
       );
       if (response['success'] == true) {
         final data = List<dynamic>.from(response['data'] ?? []);
-        return data.map<int>((e) => (e['buoi'] as num).toInt()).toList();
+        return data.map<int>((e) {
+          if (e is num) return e.toInt();
+          if (e is Map) return ((e['buoi'] ?? e['Buoi']) as num).toInt();
+          return 0;
+        }).where((e) => e > 0).toList();
       }
       return [];
     } catch (e) {

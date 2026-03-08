@@ -22,10 +22,8 @@ class _ThongBaoPageState extends State<ThongBaoPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<ThongBaoProvider>();
-      if (!provider.isInitialized) {
-        provider.init();
-      }
+      // Luôn tải lại để hiển thị thông báo mới nhất
+      context.read<ThongBaoProvider>().init();
     });
   }
 

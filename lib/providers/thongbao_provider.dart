@@ -35,7 +35,7 @@ class ThongBaoProvider extends ChangeNotifier {
   String get currentFilter => _currentFilter;
   bool get isInitialized => _isInitialized;
 
-  int get unreadCount => _notifications.where((tb) => !tb.isRead && tb.isNew).length;
+  int get unreadCount => _notifications.where((tb) => !tb.isRead).length;
 
   void _safeNotifyListeners() {
     if (!_isDisposed) {
@@ -44,10 +44,7 @@ class ThongBaoProvider extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    if (_isInitialized && _notifications.isNotEmpty) {
-      return;
-    }
-
+    // Luôn tải lại để đảm bảo dữ liệu mới nhất
     await loadNotifications();
   }
 
@@ -127,14 +124,14 @@ class ThongBaoProvider extends ChangeNotifier {
     _safeNotifyListeners();
   }
 
-  void clearCache() {
+  Future<void> clearCache() async {
     _notifications = [];
     _currentFilter = 'all';
     _isLoading = false;
     _error = null;
     _isInitialized = false;
     _safeNotifyListeners();
-    _service.clearAll();
+    await _service.clearAll();
   }
 
   Future<VanbanModel?> navigateToDocument(

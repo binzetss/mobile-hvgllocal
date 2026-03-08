@@ -37,6 +37,14 @@ class FirebaseNotificationService {
     try {
       await _initializeLocalNotifications();
       _initialized = true;
+
+      // Cho phép FCM hiển thị banner khi app đang foreground (quan trọng cho iOS)
+      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
       final settings = await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
@@ -44,8 +52,9 @@ class FirebaseNotificationService {
         provisional: false,
       );
 
-      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-        return; 
+      if (settings.authorizationStatus != AuthorizationStatus.authorized &&
+          settings.authorizationStatus != AuthorizationStatus.provisional) {
+        return;
       }
       _fcmToken = await _firebaseMessaging.getToken();
 
@@ -169,6 +178,10 @@ class FirebaseNotificationService {
     String loai = 'Chấm công',
   }) async {
     if (kIsWeb) return;
+    // Tự khởi động lại nếu chưa được initialized (iOS edge case)
+    if (!_initialized) {
+      await initialize();
+    }
     try {
       final timeStr = DateFormat('HH:mm').format(time);
       final dateStr = DateFormat('dd/MM/yyyy').format(time);

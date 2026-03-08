@@ -1,3 +1,5 @@
+import '../../core/constants/api_endpoints.dart';
+
 class NhansuModel {
   final String id;
   final String maSo;
@@ -31,6 +33,15 @@ class NhansuModel {
     this.doiMatKhau = false,
   });
 
+  static String? _buildAvatarUrl(Map<String, dynamic> json) {
+    final maSo = json['maSo']?.toString() ?? '';
+    final raw = (json['anhDaiDienUrl']?.toString() ?? '').isNotEmpty
+        ? json['anhDaiDienUrl'].toString()
+        : (maSo.isNotEmpty ? '${ApiEndpoints.anhDaiDien}/$maSo' : null);
+    if (raw == null) return null;
+    return '$raw?t=${DateTime.now().millisecondsSinceEpoch}';
+  }
+
   factory NhansuModel.fromJson(Map<String, dynamic> json) {
     final tenChucVu = json['tenChucVu']?.toString() ?? '';
     final tenChucDanh = json['tenChucDanh']?.toString() ?? '';
@@ -46,7 +57,7 @@ class NhansuModel {
       tenChucVu: tenChucVu,
       khoaPhongId: '',
       khoaPhongTen: json['tenKhoaPhong']?.toString() ?? '',
-      anhDaiDienUrl: json['anhDaiDienUrl']?.toString(),
+      anhDaiDienUrl: _buildAvatarUrl(json),
       gioiTinh: json['gioiTinh']?.toString(),
       namSinh: json['namSinh']?.toString() ?? json['ngaySinh']?.toString(),
       diaChi: json['noiOHienTai']?.toString(),
