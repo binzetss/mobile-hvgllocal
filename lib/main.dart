@@ -6,6 +6,8 @@ import 'package:hvgl/providers/facebook_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
@@ -16,6 +18,9 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh'));
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -57,7 +62,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChamcongProvider()..init()),
+        ChangeNotifierProvider(create: (_) => ChamcongProvider(), lazy: false),
         ChangeNotifierProvider(create: (_) => XacthucProvider()..init()),
         ChangeNotifierProvider(create: (_) => ThongBaoProvider()),
         ChangeNotifierProvider(create: (_) => VanbanProvider()),

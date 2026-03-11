@@ -1,71 +1,33 @@
-class LichtructModel {
-  final DateTime date;
-  final String shift;
-  final String location;
-  final String? note;
-  final LoaiCaTruct shiftType;
+class ChamTrucModel {
+  final String maSo;
+  final String hoVaTen;
+  final String tenKhoaPhong;
+  final String tenChucDanh;
+  final DateTime ngay;
+  final String kyHieu;
+  final String moTa;
 
-  LichtructModel({
-    required this.date,
-    required this.shift,
-    required this.location,
-    this.note,
-    required this.shiftType,
+  ChamTrucModel({
+    required this.maSo,
+    required this.hoVaTen,
+    required this.tenKhoaPhong,
+    required this.tenChucDanh,
+    required this.ngay,
+    required this.kyHieu,
+    required this.moTa,
   });
 
-  static List<LichtructModel> getSampleData() {
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-
-    return [
-      LichtructModel(
-        date: startOfWeek.add(const Duration(days: 0)),
-        shift: 'Ca sang (7:00 - 12:00)',
-        location: 'Khoa Noi',
-        shiftType: LoaiCaTruct.morning,
-        note: 'Truc chinh',
-      ),
-      LichtructModel(
-        date: startOfWeek.add(const Duration(days: 0)),
-        shift: 'Ca chieu (13:00 - 17:00)',
-        location: 'Phong kham',
-        shiftType: LoaiCaTruct.afternoon,
-      ),
-      LichtructModel(
-        date: startOfWeek.add(const Duration(days: 2)),
-        shift: 'Ca toi (18:00 - 22:00)',
-        location: 'Cap cuu',
-        shiftType: LoaiCaTruct.evening,
-        note: 'Ho tro ca toi',
-      ),
-      LichtructModel(
-        date: startOfWeek.add(const Duration(days: 4)),
-        shift: 'Ca sang (7:00 - 12:00)',
-        location: 'Khoa Ngoai',
-        shiftType: LoaiCaTruct.morning,
-      ),
-      LichtructModel(
-        date: startOfWeek.add(const Duration(days: 5)),
-        shift: 'Ca dem (22:00 - 7:00)',
-        location: 'Cap cuu',
-        shiftType: LoaiCaTruct.night,
-        note: 'Truc dem',
-      ),
-    ];
+  factory ChamTrucModel.fromJson(Map<String, dynamic> json) {
+    return ChamTrucModel(
+      maSo: json['maSo']?.toString() ?? '',
+      hoVaTen: json['hoVaTen']?.toString() ?? '',
+      tenKhoaPhong: json['tenKhoaPhong']?.toString() ?? '',
+      tenChucDanh: json['tenChucDanh']?.toString() ?? '',
+      ngay: json['ngay'] != null
+          ? DateTime.tryParse(json['ngay'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      kyHieu: json['kyHieu']?.toString() ?? '',
+      moTa: json['moTa']?.toString() ?? '',
+    );
   }
-
-  static List<LichtructModel> getSchedulesForDate(DateTime date, List<LichtructModel> schedules) {
-    return schedules.where((schedule) {
-      return schedule.date.year == date.year &&
-          schedule.date.month == date.month &&
-          schedule.date.day == date.day;
-    }).toList();
-  }
-}
-
-enum LoaiCaTruct {
-  morning,
-  afternoon,
-  evening,
-  night,
 }

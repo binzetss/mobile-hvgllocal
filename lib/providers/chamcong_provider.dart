@@ -10,6 +10,8 @@ import './thongbao_provider.dart';
 class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   final ChamcongService _service = ChamcongService();
 
+  static ChamcongProvider? _globalInstance;
+
   List<ChamcongModel> _monthlyAttendances = [];
   ChamcongModel? _todayAttendance;
   Map<String, dynamic>? _monthlyStats;
@@ -23,17 +25,38 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   Timer? _mobileRefreshTimer;
 
   ChamcongProvider() {
+    _globalInstance = this;
     WidgetsBinding.instance.addObserver(this);
     if (kIsWeb) {
       _webRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
         if (_initialLoadDone) refresh();
       });
     } else {
-      // Mobile: tự load ngay khi app khởi động, không cần mở trang Chấm Công
-      Future.delayed(Duration.zero, init);
-      // Poll mỗi 2 phút để phát hiện chấm công mới (thư viện, đào tạo, v.v.)
-      _mobileRefreshTimer = Timer.periodic(const Duration(minutes: 2), (_) => init());
+      _mobileRefreshTimer = Timer.periodic(const Duration(minutes: 2), (_) {
+        if (_initialLoadDone) refresh();
+      });
     }
+  }
+
+
+  static void initAfterLoginStatic() {
+    _globalInstance?.init();
+  }
+
+
+  static void resetOnLogoutStatic() {
+    _globalInstance?._resetState();
+  }
+
+  void _resetState() {
+    _monthlyAttendances = [];
+    _todayAttendance = null;
+    _monthlyStats = null;
+    _knownTodayPunchCount = 0;
+    _initialLoadDone = false;
+    _isLoading = false;
+    _error = null;
+    notifyListeners();
   }
 
   List<ChamcongModel> get monthlyAttendances => _monthlyAttendances;

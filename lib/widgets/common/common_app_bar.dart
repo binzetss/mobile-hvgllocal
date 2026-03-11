@@ -8,6 +8,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool centerTitle;
   final bool showAvatar;
+  final bool showBackButton;
 
   const CommonAppBar({
     super.key,
@@ -15,6 +16,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.centerTitle = true,
     this.showAvatar = false,
+    this.showBackButton = true,
   });
 
   @override
@@ -32,24 +34,27 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       return AppBar(
         backgroundColor: bgColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: backBtnBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Center(
-              child: FaIcon(
-                FontAwesomeIcons.chevronLeft,
-                size: 14,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
+        leading: showBackButton
+            ? IconButton(
+                icon: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: backBtnBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: FaIcon(
+                      FontAwesomeIcons.chevronLeft,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         title: Text(
           title,
           style: const TextStyle(

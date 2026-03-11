@@ -16,6 +16,24 @@ import '../../widgets/luong/luong_net_salary_card.dart';
 class LuongPage extends StatelessWidget {
   const LuongPage({super.key});
 
+  Future<void> _handleEyeToggle(
+      BuildContext context, LuongProvider provider) async {
+    if (provider.isRevealed) {
+      provider.hideAmount();
+      return;
+    }
+
+    final revealed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _PasswordDialog(onVerify: provider.verifyPassword),
+    );
+
+    if ((revealed ?? false) && context.mounted) {
+      provider.revealAmount();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
@@ -60,6 +78,8 @@ class LuongPage extends StatelessWidget {
             tienNhanDot1: data.tienNhanDot1,
             tienNhanDot2: data.tienNhanDot2,
             formatCurrency: provider.formatCurrency,
+            isRevealed: provider.isRevealed,
+            onToggle: () => _handleEyeToggle(context, provider),
           ),
           const SizedBox(height: 16),
           LuongSectionCard(
@@ -160,6 +180,7 @@ class LuongPage extends StatelessWidget {
           LuongNetSalaryCard(
             thucNhan: data.thucNhan,
             formatCurrency: provider.formatCurrency,
+            isRevealed: provider.isRevealed,
           ),
           const SizedBox(height: 24),
         ],
@@ -187,6 +208,8 @@ class LuongPage extends StatelessWidget {
                     tienNhanDot1: data.tienNhanDot1,
                     tienNhanDot2: data.tienNhanDot2,
                     formatCurrency: provider.formatCurrency,
+                    isRevealed: provider.isRevealed,
+                    onToggle: () => _handleEyeToggle(context, provider),
                   ),
                   const SizedBox(height: 20),
 
@@ -308,6 +331,7 @@ class LuongPage extends StatelessWidget {
                   LuongNetSalaryCard(
                     thucNhan: data.thucNhan,
                     formatCurrency: provider.formatCurrency,
+                    isRevealed: provider.isRevealed,
                   ),
                 ],
               ),
@@ -329,18 +353,94 @@ class LuongPage extends StatelessWidget {
     bool isWorkday = false,
     bool isPercent = false,
   }) {
+    final isCurrency = !isWorkday && !isPercent;
     return LuongRow(
       label: label,
-      formattedValue: provider.formatValue(
-        value: value,
-        isWorkday: isWorkday,
-        isPercent: isPercent,
-      ),
+      formattedValue: isCurrency && !provider.isRevealed
+          ? '•••••••'
+          : provider.formatValue(
+              value: value,
+              isWorkday: isWorkday,
+              isPercent: isPercent,
+            ),
       subtitle: subtitle,
       isHighlight: isHighlight,
       isPositive: isPositive,
       isNegative: isNegative,
       value: value,
+    );
+  }
+}
+
+class _PasswordDialog extends StatefulWidget {
+  final Future<bool> Function(String) onVerify;
+  const _PasswordDialog({required this.onVerify});
+
+  @override
+  State<_PasswordDialog> createState() => _PasswordDialogState();
+}
+
+class _PasswordDialogState extends State<_PasswordDialog> {
+  final _ctrl = TextEditingController();
+  String? _errorMsg;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        'Xác thực',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Nhập mật khẩu tài khoản để xem thông tin lương',
+              style: TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _ctrl,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'Mật khẩu',
+                errorText: _errorMsg,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 12),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Hủy'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            final ok = await widget.onVerify(_ctrl.text.trim());
+            if (!mounted) return;
+            if (ok) {
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context, true);
+            } else {
+              setState(() => _errorMsg = 'Mật khẩu không đúng');
+            }
+          },
+          child: const Text('Xác nhận'),
+        ),
+      ],
     );
   }
 }

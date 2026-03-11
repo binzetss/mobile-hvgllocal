@@ -4,6 +4,7 @@ import 'package:hvgl/core/utils/local.dart';
 import '../core/services/firebase_notification_service.dart';
 import '../data/models/user_model.dart';
 import '../data/services/xacthuc_service.dart';
+import './chamcong_provider.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -68,6 +69,8 @@ class XacthucProvider extends ChangeNotifier {
         }
       }
       _status = AuthStatus.authenticated;
+      FirebaseNotificationService().scheduleWorkReminders();
+      ChamcongProvider.initAfterLoginStatic();
       notifyListeners();
       return true;
     }
@@ -117,6 +120,8 @@ class XacthucProvider extends ChangeNotifier {
         await refreshUserNameIfNeeded();
 
         FirebaseNotificationService().sendTokenToServer(maSo: maSo);
+        FirebaseNotificationService().scheduleWorkReminders();
+        ChamcongProvider.initAfterLoginStatic();
 
         notifyListeners();
         return true;
@@ -159,6 +164,8 @@ class XacthucProvider extends ChangeNotifier {
 
   Future<void> logout() async {
     await _authService.logout();
+    FirebaseNotificationService().cancelWorkReminders();
+    ChamcongProvider.resetOnLogoutStatic();
     _user = null;
     _token = "";
     _status = AuthStatus.unauthenticated;

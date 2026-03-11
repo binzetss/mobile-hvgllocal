@@ -152,7 +152,7 @@ class NhansuProvider extends ChangeNotifier {
     if (_searchQuery.isEmpty) {
       depts = List.from(_departments);
     } else {
-      final filtered = _departments.where((dept) {
+      depts = _departments.where((dept) {
         final staffInDept = _staffByDepartment[dept.tenKhoa] ?? [];
         final hasMatchingStaff = staffInDept.any(
           (staff) =>
@@ -162,7 +162,6 @@ class NhansuProvider extends ChangeNotifier {
         );
         return VietnameseUtils.containsIgnoreDiacritics(dept.tenKhoa, _searchQuery) || hasMatchingStaff;
       }).toList();
-      depts = filtered.isEmpty ? List.from(_departments) : filtered;
     }
 
     depts.sort((a, b) {
@@ -198,12 +197,11 @@ class NhansuProvider extends ChangeNotifier {
 
   List<NhansuModel> get filteredStaff {
     if (_searchQuery.isEmpty) return _allStaff;
-    final results = _allStaff.where((staff) =>
+    return _allStaff.where((staff) =>
       VietnameseUtils.containsIgnoreDiacritics(staff.hoVaTen, _searchQuery) ||
       VietnameseUtils.containsIgnoreDiacritics(staff.chucVu, _searchQuery) ||
       VietnameseUtils.containsIgnoreDiacritics(staff.maSo, _searchQuery),
     ).toList();
-    return results.isEmpty ? _allStaff : results;
   }
 
   bool get isSearchByEmployee {

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../core/extensions/theme_extensions.dart';
+import '../../data/models/lichtruc_model.dart';
+import '../../data/services/lichtruc_service.dart';
 import '../../providers/chamcong_provider.dart';
 import '../../providers/navigation_provider.dart';
 import '../../widgets/chamcong/chamcong_calendar.dart';
@@ -22,6 +24,7 @@ class ChamcongPage extends StatefulWidget {
 class _ChamcongPageState extends State<ChamcongPage> {
   static const int _chamcongTabIndex = 3;
   NavigationProvider? _navProvider;
+  List<ChamTrucModel> _trucSchedules = [];
 
   @override
   void initState() {
@@ -31,7 +34,26 @@ class _ChamcongPageState extends State<ChamcongPage> {
       context.read<ChamcongProvider>().init();
       _navProvider = context.read<NavigationProvider>()
         ..addListener(_onTabChanged);
+      final now = DateTime.now();
+      _fetchTrucSchedules(now.year, now.month);
     });
+  }
+
+  Future<void> _fetchTrucSchedules(int year, int month) async {
+    final schedules = await LichtructService().getMySchedule(year, month);
+    if (!mounted) return;
+    setState(() => _trucSchedules = schedules);
+  }
+
+  ChamTrucModel? _getTrucForDate(DateTime date) {
+    try {
+      return _trucSchedules.firstWhere((s) =>
+          s.ngay.year == date.year &&
+          s.ngay.month == date.month &&
+          s.ngay.day == date.day);
+    } catch (_) {
+      return null;
+    }
   }
 
   void _onTabChanged() {
@@ -67,12 +89,6 @@ class _ChamcongPageState extends State<ChamcongPage> {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-            child: ChamcongStatsCard(stats: provider.monthlyStats),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             child: Row(
               children: [
                 Expanded(
@@ -99,21 +115,32 @@ class _ChamcongPageState extends State<ChamcongPage> {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: ChamcongHistoryCard(
+              attendance: provider.getAttendanceByDate(provider.selectedDate),
+              selectedDate: provider.selectedDate,
+              trucSchedule: _getTrucForDate(provider.selectedDate),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             child: ChamcongCalendar(
               selectedDate: provider.selectedDate,
               attendances: provider.monthlyAttendances,
               onDateSelected: provider.selectDate,
-              onMonthChanged: provider.changeMonth,
+              onMonthChanged: (year, month) {
+                provider.changeMonth(year, month);
+                _fetchTrucSchedules(year, month);
+              },
+              trucDays: _trucSchedules.map((s) => s.ngay.day).toSet(),
             ),
           ),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: ChamcongHistoryCard(
-              attendance: provider.getAttendanceByDate(provider.selectedDate),
-              selectedDate: provider.selectedDate,
-            ),
+            child: ChamcongStatsCard(stats: provider.monthlyStats),
           ),
         ),
       ],

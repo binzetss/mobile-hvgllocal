@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, Tar
 import 'package:flutter/material.dart' show Color;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -109,6 +110,16 @@ class FirebaseNotificationService {
         enableVibration: true,
       );
       await androidPlugin?.createNotificationChannel(channel);
+
+      const reminderChannel = AndroidNotificationChannel(
+        'reminder_channel',
+        'Nhắc nhở chấm công',
+        description: 'Nhắc nhở chấm công hàng ngày',
+        importance: Importance.high,
+        playSound: true,
+        enableVibration: true,
+      );
+      await androidPlugin?.createNotificationChannel(reminderChannel);
     }
   }
 
@@ -211,6 +222,85 @@ class FirebaseNotificationService {
       print('❌ Failed to unsubscribe from topic: $e');
     }
   }
+
+  // ─── Nhắc nhở chấm công hàng ngày ───────────────────────────────────────
+
+  static const int _idNhacSangVao   = 2001; // 06:50 - nhắc vào ca sáng
+  static const int _idNhacSangRa    = 2002; // 11:32 - nhắc ra ca sáng
+  static const int _idNhacChieuVao  = 2003; // 12:55 - nhắc vào ca chiều
+  static const int _idNhacChieuRa1  = 2004; // 16:32 - nhắc ra ca chiều (ca 16:30)
+  static const int _idNhacChieuRa2  = 2005; // 17:02 - nhắc ra ca chiều (ca 17:00)
+
+  Future<void> scheduleWorkReminders() async {
+    if (kIsWeb || !_initialized) return;
+    await cancelWorkReminders();
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'reminder_channel',
+        'Nhắc nhở chấm công',
+        channelDescription: 'Nhắc nhở chấm công hàng ngày',
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: '@drawable/ic_notification',
+        playSound: true,
+        enableVibration: true,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: false,
+        presentSound: true,
+      ),
+    );
+
+    await _scheduleDaily(_idNhacSangVao,  'Nhắc chấm công vào ca sáng',  'Ca sáng bắt đầu lúc 07:00 - Đừng quên chấm công!',   6, 50, details);
+    await _scheduleDaily(_idNhacSangRa,   'Nhắc chấm công ra ca sáng',   'Ca sáng kết thúc lúc 11:30 - Đừng quên chấm công ra!', 11, 32, details);
+    await _scheduleDaily(_idNhacChieuVao, 'Nhắc chấm công vào ca chiều', 'Ca chiều bắt đầu lúc 13:00 - Đừng quên chấm công!',   12, 55, details);
+    await _scheduleDaily(_idNhacChieuRa1, 'Nhắc chấm công ra ca chiều',  'Ca chiều kết thúc lúc 16:30 - Đừng quên chấm công ra!', 16, 32, details);
+    await _scheduleDaily(_idNhacChieuRa2, 'Nhắc chấm công ra ca chiều',  'Ca chiều kết thúc lúc 17:00 - Đừng quên chấm công ra!', 17,  2, details);
+
+    print('✅ Đã lên lịch 5 thông báo nhắc chấm công hàng ngày');
+  }
+
+  Future<void> _scheduleDaily(int id, String title, String body,
+      int hour, int minute, NotificationDetails details) async {
+    try {
+      await _localNotifications.zonedSchedule(
+        id,
+        title,
+        body,
+        _nextInstanceOfTime(hour, minute),
+        details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      print('❌ _scheduleDaily($hour:$minute) error: $e');
+    }
+  }
+
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+    return scheduled;
+  }
+
+  Future<void> cancelWorkReminders() async {
+    await _localNotifications.cancel(_idNhacSangVao);
+    await _localNotifications.cancel(_idNhacSangRa);
+    await _localNotifications.cancel(_idNhacChieuVao);
+    await _localNotifications.cancel(_idNhacChieuRa1);
+    await _localNotifications.cancel(_idNhacChieuRa2);
+    print('🗑️ Đã hủy thông báo nhắc chấm công');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   Future<void> sendTokenToServer({required String maSo}) async {
     if (_fcmToken == null || maSo.isEmpty) return;

@@ -8,6 +8,8 @@ class LuongSummaryCard extends StatelessWidget {
   final double tienNhanDot1;
   final double tienNhanDot2;
   final String Function(double) formatCurrency;
+  final bool isRevealed;
+  final VoidCallback onToggle;
 
   const LuongSummaryCard({
     super.key,
@@ -15,6 +17,8 @@ class LuongSummaryCard extends StatelessWidget {
     required this.tienNhanDot1,
     required this.tienNhanDot2,
     required this.formatCurrency,
+    required this.isRevealed,
+    required this.onToggle,
   });
 
   @override
@@ -73,7 +77,7 @@ class LuongSummaryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${formatCurrency(thucNhan)} đ',
+                      isRevealed ? '${formatCurrency(thucNhan)} đ' : '••••••••••',
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
@@ -81,6 +85,23 @@ class LuongSummaryCard extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              GestureDetector(
+                onTap: onToggle,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: FaIcon(
+                    isRevealed
+                        ? FontAwesomeIcons.eyeSlash
+                        : FontAwesomeIcons.eye,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                 ),
               ),
             ],
@@ -95,7 +116,7 @@ class LuongSummaryCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: _buildSummaryItem('Đợt 1', tienNhanDot1, formatCurrency),
+                  child: _buildSummaryItem('Đợt 1', tienNhanDot1, formatCurrency, isRevealed),
                 ),
                 Container(
                   width: 1,
@@ -103,7 +124,7 @@ class LuongSummaryCard extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.3),
                 ),
                 Expanded(
-                  child: _buildSummaryItem('Đợt 2', tienNhanDot2, formatCurrency),
+                  child: _buildSummaryItem('Đợt 2', tienNhanDot2, formatCurrency, isRevealed),
                 ),
               ],
             ),
@@ -113,7 +134,7 @@ class LuongSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryItem(String label, double value, String Function(double) format) {
+  Widget _buildSummaryItem(String label, double value, String Function(double) format, bool revealed) {
     return Column(
       children: [
         Text(
@@ -126,7 +147,7 @@ class LuongSummaryCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${format(value)} đ',
+          revealed ? '${format(value)} đ' : '•••••••',
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

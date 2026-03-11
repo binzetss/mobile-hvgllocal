@@ -44,6 +44,7 @@ class _ThongBaoContent extends StatelessWidget {
           backgroundColor: kIsWeb ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
           appBar: CommonAppBar(
             title: 'Thông báo',
+            showBackButton: !kIsWeb,
             actions: provider.unreadCount > 0
                 ? [
                     IconButton(

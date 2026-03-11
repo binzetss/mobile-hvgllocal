@@ -5,6 +5,9 @@
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 <!-- Bắt buộc để hiển thị notification trên Android 13+ (API 33+) -->
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<!-- Cho phép lên lịch thông báo nhắc nhở chấm công chính xác -->
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <application
         android:label="HVNB"
         android:name="${applicationName}"

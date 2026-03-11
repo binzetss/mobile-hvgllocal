@@ -7,6 +7,7 @@ class ChamcongCalendar extends StatefulWidget {
   final List<ChamcongModel> attendances;
   final Function(DateTime) onDateSelected;
   final Function(int year, int month) onMonthChanged;
+  final Set<int> trucDays;
 
   const ChamcongCalendar({
     super.key,
@@ -14,6 +15,7 @@ class ChamcongCalendar extends StatefulWidget {
     required this.attendances,
     required this.onDateSelected,
     required this.onMonthChanged,
+    this.trucDays = const {},
   });
 
   @override
@@ -240,12 +242,28 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
       }
     }
 
+    final isTruc = widget.trucDays.contains(date.day) &&
+        date.month == _currentMonth.month;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    final trucBorderColor = dateOnly.isBefore(today)
+        ? const Color(0xFF1877F2)  // đã trực → xanh
+        : const Color(0xFFFF3B30); // chưa trực / hôm nay → đỏ
+
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: isTruc && !isSelected
+            ? BorderSide(color: trucBorderColor, width: 1.5)
+            : BorderSide.none,
+      ),
       child: InkWell(
         onTap: () => widget.onDateSelected(date),
-        borderRadius: BorderRadius.circular(8),
+        customBorder: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
         splashColor: context.primaryColor.withValues(alpha: 0.1),
         child: Container(
           alignment: Alignment.center,

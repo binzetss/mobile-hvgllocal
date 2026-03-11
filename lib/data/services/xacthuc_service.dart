@@ -268,7 +268,7 @@ class XacthucService {
     final ext = await _detectImageExt(file);
     final mimeMap = {'jpg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp'};
 
-    // Đặt tên file: {maSo}_{Ho_Va_Ten_khong_dau}
+
     final safeName = _removeVietnamese((hoVaTen ?? '').trim())
         .replaceAll(RegExp(r'\s+'), '_')
         .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');

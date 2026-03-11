@@ -1,210 +1,430 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/theme_extensions.dart';
-import '../../data/models/lichtruc_model.dart';
 import '../../providers/lichtruc_provider.dart';
-import '../../widgets/common/common_app_bar.dart';
-import '../../widgets/lichtruc/lichtruc_stats_card.dart';
-import '../../widgets/lichtruc/lichtruc_month_selector.dart';
 import '../../widgets/lichtruc/lichtruc_calendar.dart';
-import '../../widgets/lichtruc/lichtruc_legend.dart';
+import '../../widgets/lichtruc/lichtruc_my_shift_card.dart';
+import '../../widgets/lichtruc/lichtruc_day_navigator.dart';
+import '../../widgets/lichtruc/lichtruc_dept_section.dart';
 
-class LichtructPage extends StatelessWidget {
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+class LichtructPage extends StatefulWidget {
   const LichtructPage({super.key});
+
+  @override
+  State<LichtructPage> createState() => _LichtructPageState();
+}
+
+class _LichtructPageState extends State<LichtructPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+
     return ChangeNotifierProvider(
-      create: (_) => LichtructProvider(),
-      child: Scaffold(
-        backgroundColor: isDesktop ? Colors.transparent : context.bgColor,
-        appBar: isDesktop ? null : const CommonAppBar(title: 'Lịch Trực'),
-        body: Consumer<LichtructProvider>(
-          builder: (context, provider, child) {
-            final totalShifts = provider.getMonthSchedules().length;
-            if (isDesktop) {
-              return _buildDesktopLayout(context, provider, totalShifts);
-            }
-            return _buildMobileLayout(context, provider, totalShifts);
-          },
+      create: (_) => LichtructProvider()..init(),
+      child: Consumer<LichtructProvider>(
+        builder: (context, provider, _) {
+          if (isDesktop) return _buildWebLayout(context, provider);
+          return _buildMobileLayout(context, provider);
+        },
+      ),
+    );
+  }
+
+  // ── Mobile ──────────────────────────────────────────────────────────────────
+
+  Widget _buildMobileLayout(BuildContext context, LichtructProvider provider) {
+    final isDark = context.isDark;
+    final bgColor = isDark ? Colors.black : AppColors.primary;
+
+    return Scaffold(
+      backgroundColor: context.bgColor,
+      appBar: AppBar(
+        backgroundColor: bgColor,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Lịch Trực',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+          ),
+        ),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.55),
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelStyle:
+              const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+          unselectedLabelStyle:
+              const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          tabs: const [
+            Tab(text: 'Lịch trực của tôi'),
+            Tab(text: 'Lịch trực toàn viện'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _MyScheduleTab(provider: provider),
+          _AllScheduleTab(provider: provider),
+        ],
+      ),
+    );
+  }
+
+  // ── Web ─────────────────────────────────────────────────────────────────────
+
+  Widget _buildWebLayout(BuildContext context, LichtructProvider provider) {
+    final isDark = context.isDark;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Column(
+        children: [
+          // Top bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            decoration: BoxDecoration(
+              color: context.cardColor.withValues(alpha: isDark ? 0.6 : 0.85),
+              border: Border(
+                bottom: BorderSide(
+                    color: context.borderColor.withValues(alpha: 0.4)),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: FaIcon(FontAwesomeIcons.calendarCheck,
+                      size: 14, color: context.primaryColor),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Lịch trực',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const Spacer(),
+                // Tabs as pill buttons
+                _WebTabBar(tabController: _tabController),
+              ],
+            ),
+          ),
+          // Content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _MyScheduleTabWeb(provider: provider),
+                _AllScheduleTabWeb(provider: provider),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Web Tab Bar ──────────────────────────────────────────────────────────────
+
+class _WebTabBar extends StatefulWidget {
+  final TabController tabController;
+  const _WebTabBar({required this.tabController});
+
+  @override
+  State<_WebTabBar> createState() => _WebTabBarState();
+}
+
+class _WebTabBarState extends State<_WebTabBar> {
+  @override
+  void initState() {
+    super.initState();
+    widget.tabController.addListener(_onTabChange);
+  }
+
+  @override
+  void dispose() {
+    widget.tabController.removeListener(_onTabChange);
+    super.dispose();
+  }
+
+  void _onTabChange() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+            color: context.borderColor.withValues(alpha: isDark ? 1.0 : 0.6)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _WebTabPill(
+            label: 'Lịch trực của tôi',
+            isSelected: widget.tabController.index == 0,
+            onTap: () => widget.tabController.animateTo(0),
+          ),
+          const SizedBox(width: 2),
+          _WebTabPill(
+            label: 'Lịch trực toàn viện',
+            isSelected: widget.tabController.index == 1,
+            onTap: () => widget.tabController.animateTo(1),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WebTabPill extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  const _WebTabPill(
+      {required this.label, required this.isSelected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? context.primaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : context.textSecondary,
+          ),
         ),
       ),
     );
   }
 }
 
-Widget _buildMobileLayout(
-    BuildContext context, LichtructProvider provider, int totalShifts) {
-  return SingleChildScrollView(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        LichtructStatsCard(totalShifts: totalShifts),
-        const SizedBox(height: 16),
-        LichtructMonthSelector(
-          monthYearText: provider.getMonthYearText(),
-          onPreviousMonth: provider.previousMonth,
-          onNextMonth: provider.nextMonth,
-        ),
-        const SizedBox(height: 16),
-        LichtructCalendar(
-          currentMonth: provider.currentMonth,
-          allSchedules: provider.allSchedules,
-        ),
-        const SizedBox(height: 16),
-        LichtructLegend(
-          completedShifts: provider.getCompletedShifts(),
-          upcomingShifts: provider.getUpcomingShifts(),
-        ),
-        const SizedBox(height: 24),
-      ],
-    ),
-  );
-}
+// ─── Web Tab 0: Lịch trực của tôi ────────────────────────────────────────────
 
-Widget _buildDesktopLayout(
-    BuildContext context, LichtructProvider provider, int totalShifts) {
-  return Column(
-    children: [
-      _WebTopBar(provider: provider),
-      Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            SizedBox(
-              width: 400,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: LichtructCalendar(
-                  currentMonth: provider.currentMonth,
-                  allSchedules: provider.allSchedules,
-                ),
-              ),
-            ),
-            VerticalDivider(width: 1, color: context.borderColor),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child:
-                              LichtructStatsCard(totalShifts: totalShifts),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: LichtructLegend(
-                            completedShifts: provider.getCompletedShifts(),
-                            upcomingShifts: provider.getUpcomingShifts(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    _WebShiftList(
-                      schedules: provider.getMonthSchedules(),
-                      monthText: provider.getMonthYearText(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-class _WebTopBar extends StatelessWidget {
+class _MyScheduleTabWeb extends StatelessWidget {
   final LichtructProvider provider;
-  const _WebTopBar({required this.provider});
+  const _MyScheduleTabWeb({required this.provider});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
-        border: Border(
-          bottom: BorderSide(color: context.borderColor, width: 1),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const FaIcon(
-              FontAwesomeIcons.calendarCheck,
-              size: 16,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Lịch Trực',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-            ),
-          ),
-          const Spacer(),
+    if (provider.isLoadingMy) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (provider.errorMy != null) {
+      return _ErrorState(
+          message: provider.errorMy!, onRetry: provider.fetchMySchedule);
+    }
 
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF2C2C2E)
-                  : const Color(0xFFF0F2F5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+    final schedules = provider.getMyMonthSchedules();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left: calendar
+          SizedBox(
+            width: 420,
+            child: Column(
               children: [
-                _NavBtn(
-                  icon: FontAwesomeIcons.chevronLeft,
-                  onTap: provider.previousMonth,
+                _MonthSelector(
+                  monthText: provider.getMonthYearText(),
+                  onPrev: provider.previousMonth,
+                  onNext: provider.nextMonth,
                 ),
-                SizedBox(
-                  width: 148,
-                  child: Text(
-                    provider.getMonthYearText(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          isDark ? Colors.white : const Color(0xFF1A1A1A),
+                const SizedBox(height: 16),
+                LichtructCalendar(
+                  currentMonth: provider.currentMonth,
+                  allSchedules: schedules,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 24),
+          // Right: shift list
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Ca trực trong tháng',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: context.textPrimary,
+                      ),
                     ),
-                  ),
+                    const Spacer(),
+                    if (schedules.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '${schedules.length} ca',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                _NavBtn(
-                  icon: FontAwesomeIcons.chevronRight,
-                  onTap: provider.nextMonth,
-                ),
+                const SizedBox(height: 12),
+                if (schedules.isEmpty)
+                  _EmptyState(
+                      message:
+                          'Không có ca trực trong ${provider.getMonthYearText()}')
+                else
+                  ...schedules.map((s) => LichtructMyShiftCard(s: s)),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Web Tab 1: Lịch trực toàn viện ──────────────────────────────────────────
+
+class _AllScheduleTabWeb extends StatelessWidget {
+  final LichtructProvider provider;
+  const _AllScheduleTabWeb({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: LichtructDayNavigator(provider: provider),
+        ),
+        Expanded(
+          child: provider.isLoadingAll
+              ? const Center(child: CircularProgressIndicator())
+              : provider.errorAll != null
+                  ? _ErrorState(
+                      message: provider.errorAll!,
+                      onRetry: provider.fetchAllSchedule)
+                  : _AllBodyWeb(provider: provider),
+        ),
+      ],
+    );
+  }
+}
+
+class _AllBodyWeb extends StatelessWidget {
+  final LichtructProvider provider;
+  const _AllBodyWeb({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    final grouped = provider.getGroupedByDeptForDay();
+
+    if (grouped.isEmpty) {
+      return _EmptyState(
+        message: provider.searchKhoa.isNotEmpty
+            ? 'Không tìm thấy khoa phòng\n"${provider.searchKhoa}"'
+            : 'Không có dữ liệu lịch trực\n${provider.getSelectedDateText()}',
+      );
+    }
+
+    final keys = grouped.keys.toList();
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
+      itemCount: keys.length,
+      itemBuilder: (context, i) => LichtructDeptSection(
+        deptName: keys[i],
+        items: grouped[keys[i]]!,
+      ),
+    );
+  }
+}
+
+// ─── Shared helpers ───────────────────────────────────────────────────────────
+
+class _MonthSelector extends StatelessWidget {
+  final String monthText;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+  const _MonthSelector(
+      {required this.monthText, required this.onPrev, required this.onNext});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _NavBtn(icon: FontAwesomeIcons.chevronLeft, onTap: onPrev),
+        SizedBox(
+          width: 172,
+          child: Center(
+            child: Text(
+              monthText,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: context.textPrimary,
+              ),
+            ),
+          ),
+        ),
+        _NavBtn(icon: FontAwesomeIcons.chevronRight, onTap: onNext),
+      ],
     );
   }
 }
@@ -216,116 +436,137 @@ class _NavBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: FaIcon(icon, size: 12, color: AppColors.primary),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: FaIcon(icon, size: 12, color: AppColors.primary),
+          ),
         ),
       ),
     );
   }
 }
 
-class _WebShiftList extends StatelessWidget {
-  final List<LichtructModel> schedules;
-  final String monthText;
-
-  const _WebShiftList({required this.schedules, required this.monthText});
-
-  Color _shiftColor(LoaiCaTruct type) {
-    switch (type) {
-      case LoaiCaTruct.morning:
-        return const Color(0xFF2196F3);
-      case LoaiCaTruct.afternoon:
-        return const Color(0xFFFF9800);
-      case LoaiCaTruct.evening:
-        return const Color(0xFF9C27B0);
-      case LoaiCaTruct.night:
-        return const Color(0xFF3F51B5);
-    }
-  }
-
-  String _shiftLabel(LoaiCaTruct type) {
-    switch (type) {
-      case LoaiCaTruct.morning:
-        return 'Ca sáng';
-      case LoaiCaTruct.afternoon:
-        return 'Ca chiều';
-      case LoaiCaTruct.evening:
-        return 'Ca tối';
-      case LoaiCaTruct.night:
-        return 'Ca đêm';
-    }
-  }
-
-  IconData _shiftIcon(LoaiCaTruct type) {
-    switch (type) {
-      case LoaiCaTruct.morning:
-        return FontAwesomeIcons.sun;
-      case LoaiCaTruct.afternoon:
-        return FontAwesomeIcons.cloud;
-      case LoaiCaTruct.evening:
-        return FontAwesomeIcons.moon;
-      case LoaiCaTruct.night:
-        return FontAwesomeIcons.moon;
-    }
-  }
+class _EmptyState extends StatelessWidget {
+  final String message;
+  const _EmptyState({required this.message});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    final now = DateTime.now();
-    final sorted = [...schedules]..sort((a, b) => a.date.compareTo(b.date));
-
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.2)
-                : Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Center(
+        child: Column(
+          children: [
+            FaIcon(FontAwesomeIcons.calendarXmark,
+                size: 36,
+                color: AppColors.textSecondary.withValues(alpha: 0.35)),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  const _ErrorState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FaIcon(FontAwesomeIcons.triangleExclamation,
+                size: 36, color: Colors.red.withValues(alpha: 0.55)),
+            const SizedBox(height: 12),
+            Text(message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary.withValues(alpha: 0.8))),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const FaIcon(FontAwesomeIcons.rotateRight, size: 13),
+              label: const Text('Thử lại'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Mobile Tab 0: Lịch trực của tôi ─────────────────────────────────────────
+
+class _MyScheduleTab extends StatelessWidget {
+  final LichtructProvider provider;
+  const _MyScheduleTab({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    if (provider.isLoadingMy) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (provider.errorMy != null) {
+      return _ErrorState(
+          message: provider.errorMy!, onRetry: provider.fetchMySchedule);
+    }
+
+    final schedules = provider.getMyMonthSchedules();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const FaIcon(FontAwesomeIcons.listCheck,
-                      size: 14, color: AppColors.primary),
+          _MonthSelector(
+            monthText: provider.getMonthYearText(),
+            onPrev: provider.previousMonth,
+            onNext: provider.nextMonth,
+          ),
+          const SizedBox(height: 16),
+          LichtructCalendar(
+            currentMonth: provider.currentMonth,
+            allSchedules: schedules,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Text(
+                'Ca trực trong tháng',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: context.textPrimary,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Danh sách ca trực',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color:
-                        isDark ? Colors.white : const Color(0xFF1A1A1A),
-                  ),
-                ),
-                const Spacer(),
+              ),
+              const Spacer(),
+              if (schedules.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
@@ -334,243 +575,77 @@ class _WebShiftList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${sorted.length} ca',
+                    '${schedules.length} ca',
                     style: const TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: AppColors.primary,
                     ),
                   ),
                 ),
-              ],
-            ),
+            ],
           ),
-          Divider(
-            height: 1,
-            color: isDark ? const Color(0xFF38383A) : Colors.grey[200],
-          ),
-          if (sorted.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(36),
-              child: Center(
-                child: Column(
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.calendarXmark,
-                      size: 32,
-                      color: AppColors.textSecondary
-                          .withValues(alpha: 0.4),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Không có ca trực trong $monthText',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary
-                            .withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
+          const SizedBox(height: 10),
+          if (schedules.isEmpty)
+            _EmptyState(
+                message:
+                    'Không có ca trực trong ${provider.getMonthYearText()}')
           else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sorted.length,
-              separatorBuilder: (_, _) => Divider(
-                height: 1,
-                color: isDark
-                    ? const Color(0xFF38383A)
-                    : Colors.grey[100],
-              ),
-              itemBuilder: (context, index) {
-                final s = sorted[index];
-                final color = _shiftColor(s.shiftType);
-                final isPast = s.date.isBefore(
-                    DateTime(now.year, now.month, now.day));
-                final isToday = s.date.year == now.year &&
-                    s.date.month == now.month &&
-                    s.date.day == now.day;
-                return _ShiftListItem(
-                  schedule: s,
-                  color: color,
-                  icon: _shiftIcon(s.shiftType),
-                  typeLabel: _shiftLabel(s.shiftType),
-                  isPast: isPast,
-                  isToday: isToday,
-                  isDark: isDark,
-                );
-              },
-            ),
+            ...schedules.map((s) => LichtructMyShiftCard(s: s)),
         ],
       ),
     );
   }
 }
 
-class _ShiftListItem extends StatelessWidget {
-  final LichtructModel schedule;
-  final Color color;
-  final IconData icon;
-  final String typeLabel;
-  final bool isPast;
-  final bool isToday;
-  final bool isDark;
+// ─── Mobile Tab 1: Lịch trực toàn viện ───────────────────────────────────────
 
-  const _ShiftListItem({
-    required this.schedule,
-    required this.color,
-    required this.icon,
-    required this.typeLabel,
-    required this.isPast,
-    required this.isToday,
-    required this.isDark,
-  });
+class _AllScheduleTab extends StatelessWidget {
+  final LichtructProvider provider;
+  const _AllScheduleTab({required this.provider});
 
   @override
   Widget build(BuildContext context) {
-    const weekDayNames = ['', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-    final weekDay = weekDayNames[schedule.date.weekday];
+    return Column(
+      children: [
+        LichtructDayNavigator(provider: provider),
+        Expanded(
+          child: provider.isLoadingAll
+              ? const Center(child: CircularProgressIndicator())
+              : provider.errorAll != null
+                  ? _ErrorState(
+                      message: provider.errorAll!,
+                      onRetry: provider.fetchAllSchedule)
+                  : _AllBody(provider: provider),
+        ),
+      ],
+    );
+  }
+}
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
+class _AllBody extends StatelessWidget {
+  final LichtructProvider provider;
+  const _AllBody({required this.provider});
 
-          Container(
-            width: 48,
-            height: 52,
-            decoration: BoxDecoration(
-              color: isToday ? color : color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${schedule.date.day}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: isToday ? Colors.white : color,
-                    height: 1,
-                  ),
-                ),
-                Text(
-                  weekDay,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: isToday
-                        ? Colors.white.withValues(alpha: 0.9)
-                        : color.withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    FaIcon(icon, size: 11, color: color),
-                    const SizedBox(width: 6),
-                    Text(
-                      typeLabel,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: color,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  schedule.shift,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.locationDot,
-                      size: 10,
-                      color:
-                          AppColors.textSecondary.withValues(alpha: 0.6),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      schedule.location,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary
-                            .withValues(alpha: 0.7),
-                      ),
-                    ),
-                    if (schedule.note != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        '·',
-                        style: TextStyle(
-                          color: AppColors.textSecondary
-                              .withValues(alpha: 0.4),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          schedule.note!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary
-                                .withValues(alpha: 0.7),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
+  @override
+  Widget build(BuildContext context) {
+    final grouped = provider.getGroupedByDeptForDay();
 
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: isToday
-                  ? color.withValues(alpha: 0.15)
-                  : isPast
-                      ? Colors.green.withValues(alpha: 0.1)
-                      : Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              isToday ? 'Hôm nay' : isPast ? 'Đã trực' : 'Sắp tới',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: isToday
-                    ? color
-                    : isPast
-                        ? Colors.green[700]
-                        : Colors.orange[700],
-              ),
-            ),
-          ),
-        ],
+    if (grouped.isEmpty) {
+      return _EmptyState(
+        message: provider.searchKhoa.isNotEmpty
+            ? 'Không tìm thấy khoa phòng\n"${provider.searchKhoa}"'
+            : 'Không có dữ liệu lịch trực\n${provider.getSelectedDateText()}',
+      );
+    }
+
+    final keys = grouped.keys.toList();
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      itemCount: keys.length,
+      itemBuilder: (context, i) => LichtructDeptSection(
+        deptName: keys[i],
+        items: grouped[keys[i]]!,
       ),
     );
   }

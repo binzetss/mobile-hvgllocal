@@ -39,18 +39,27 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
     });
   }
 
-  Future<void> _openPost(String? permalink) async {
-    if (permalink == null) return;
-    final uri = Uri.parse(permalink);
+  Future<void> _openPost(String postId, String? permalink) async {
+    // Construct reliable URL from postId (format: "pageId_postId")
+    // permalink_url from Graph API can cause "Nội dung này không hiển thị"
+    String? url;
+    final idx = postId.indexOf('_');
+    if (idx != -1) {
+      final pageId = postId.substring(0, idx);
+      final pid = postId.substring(idx + 1);
+      url = 'https://www.facebook.com/$pageId/posts/$pid';
+    }
+    url ??= permalink;
+    if (url == null) return;
+
+    final uri = Uri.parse(url);
     try {
-      // Không dùng canLaunchUrl vì hay trả false sai trên iOS
       final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!launched && mounted) {
         showErrorDialog(context,
             message: 'Không thể mở link Facebook.\nVui lòng kiểm tra lại kết nối mạng.');
       }
     } catch (_) {
-      // Fallback: mở bằng trình duyệt mặc định
       try {
         await launchUrl(uri, mode: LaunchMode.platformDefault);
       } catch (e) {
@@ -382,7 +391,7 @@ class _FacebookPostCardState extends State<FacebookPostCard> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () => _openPost(post.permalink),
+              onTap: () => _openPost(post.id, post.permalink),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),

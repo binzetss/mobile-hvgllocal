@@ -6,11 +6,13 @@ import '../../core/extensions/theme_extensions.dart';
 class LuongNetSalaryCard extends StatelessWidget {
   final double thucNhan;
   final String Function(double) formatCurrency;
+  final bool isRevealed;
 
   const LuongNetSalaryCard({
     super.key,
     required this.thucNhan,
     required this.formatCurrency,
+    required this.isRevealed,
   });
 
   @override
@@ -60,7 +62,7 @@ class LuongNetSalaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${formatCurrency(thucNhan)} đ',
+                  isRevealed ? '${formatCurrency(thucNhan)} đ' : '••••••••••',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,

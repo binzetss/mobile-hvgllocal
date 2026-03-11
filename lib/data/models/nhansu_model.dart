@@ -39,7 +39,11 @@ class NhansuModel {
         ? json['anhDaiDienUrl'].toString()
         : (maSo.isNotEmpty ? '${ApiEndpoints.anhDaiDien}/$maSo' : null);
     if (raw == null) return null;
-    return '$raw?t=${DateTime.now().millisecondsSinceEpoch}';
+    // Daily key: cache trong ngày, tự refresh mỗi ngày để cập nhật ảnh mới
+    final now = DateTime.now();
+    final dailyKey =
+        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    return '$raw?t=$dailyKey';
   }
 
   factory NhansuModel.fromJson(Map<String, dynamic> json) {

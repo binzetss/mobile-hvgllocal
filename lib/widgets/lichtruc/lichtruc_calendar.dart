@@ -5,7 +5,7 @@ import '../../data/models/lichtruc_model.dart';
 
 class LichtructCalendar extends StatelessWidget {
   final DateTime currentMonth;
-  final List<LichtructModel> allSchedules;
+  final List<ChamTrucModel> allSchedules;
 
   const LichtructCalendar({
     super.key,
@@ -88,9 +88,9 @@ class LichtructCalendar extends StatelessWidget {
 
   Widget _buildDayCell(DateTime date) {
     final schedulesForDay = allSchedules.where((s) =>
-        s.date.year == date.year &&
-        s.date.month == date.month &&
-        s.date.day == date.day).toList();
+        s.ngay.year == date.year &&
+        s.ngay.month == date.month &&
+        s.ngay.day == date.day).toList();
 
     final isToday = DateTime.now().year == date.year &&
         DateTime.now().month == date.month &&

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/models/luong_model.dart';
+import '../data/services/xacthuc_service.dart';
 
 class LuongProvider extends ChangeNotifier {
   String _selectedMonth = '';
   List<String> _availableMonths = [];
   LuongInfo? _salaryData;
+  bool _isRevealed = false;
 
   final currencyFormat = NumberFormat('#,###');
 
   String get selectedMonth => _selectedMonth;
   List<String> get availableMonths => _availableMonths;
   LuongInfo? get salaryData => _salaryData;
+  bool get isRevealed => _isRevealed;
 
   LuongProvider() {
     _initMonths();
@@ -36,7 +39,24 @@ class LuongProvider extends ChangeNotifier {
 
   void onMonthChanged(String month) {
     _selectedMonth = month;
+    _isRevealed = false;
     _loadSalaryData();
+  }
+
+  Future<bool> verifyPassword(String password) async {
+    final creds = await XacthucService().getSavedCredentials();
+    if (creds == null) return false;
+    return creds['matKhau'] == password;
+  }
+
+  void revealAmount() {
+    _isRevealed = true;
+    notifyListeners();
+  }
+
+  void hideAmount() {
+    _isRevealed = false;
+    notifyListeners();
   }
 
   String formatCurrency(double value) {

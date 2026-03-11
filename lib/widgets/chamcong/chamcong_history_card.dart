@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../data/models/chamcong_model.dart';
+import '../../data/models/lichtruc_model.dart';
 
 class ChamcongHistoryCard extends StatelessWidget {
   final ChamcongModel? attendance;
   final DateTime selectedDate;
+  final ChamTrucModel? trucSchedule;
 
   const ChamcongHistoryCard({
     super.key,
     this.attendance,
     required this.selectedDate,
+    this.trucSchedule,
   });
 
   @override
@@ -86,6 +89,104 @@ class ChamcongHistoryCard extends StatelessWidget {
             _buildEmptyState(context)
           else
             _buildAttendanceDetails(context),
+          if (trucSchedule != null) ...[
+            const SizedBox(height: 16),
+            Divider(height: 1, color: context.borderColor),
+            const SizedBox(height: 16),
+            _buildTrucSection(context),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrucSection(BuildContext context) {
+    const color = Color(0xFF1877F2);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [color, color.withValues(alpha: 0.75)],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.local_hospital_rounded,
+                        size: 16, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    trucSchedule!.moTa.isNotEmpty
+                        ? trucSchedule!.moTa
+                        : 'Lịch trực',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            height: 1,
+            thickness: 1,
+            indent: 14,
+            endIndent: 14,
+            color: color.withValues(alpha: 0.15),
+          ),
+          if (trucSchedule!.kyHieu.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+              child: Row(
+                children: [
+                  Icon(Icons.label_rounded,
+                      size: 14, color: color.withValues(alpha: 0.7)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Ký hiệu: ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.textSecondary.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  Text(
+                    trucSchedule!.kyHieu,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

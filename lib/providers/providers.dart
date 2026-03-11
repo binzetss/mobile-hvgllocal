@@ -15,3 +15,4 @@ export 'thongbao_provider.dart';
 export 'daotao_provider.dart';
 export 'doimatkhau_landau_provider.dart';
 export 'notification_settings_provider.dart';
+export 'lichtruc_provider.dart';
