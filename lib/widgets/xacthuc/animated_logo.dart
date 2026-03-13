@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/constants/api_endpoints.dart';
-import '../../core/constants/app_colors.dart';
 
 class AnimatedLogo extends StatelessWidget {
   final double size;
@@ -35,20 +32,11 @@ class AnimatedLogo extends StatelessWidget {
               )
             : null,
         child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: ApiEndpoints.logoHeader,
+          child: Image.asset(
+            'assets/images/Logo3D.png',
             fit: BoxFit.cover,
-            placeholder: (context, url) => const Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary,
-              ),
-            ),
-            errorWidget: (context, url, error) => Icon(
-              Icons.local_hospital,
-              color: showBackground ? AppColors.primary : Colors.white,
-              size: size * 0.5,
-            ),
+            width: size,
+            height: size,
           ),
         ),
       )

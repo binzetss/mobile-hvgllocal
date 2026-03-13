@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/api_endpoints.dart';
 import '../../core/routes/app_routes.dart';
 import '../../providers/xacthuc_provider.dart';
 
@@ -103,26 +102,11 @@ class _SplashPageState extends State<SplashPage> {
                 ),
 
             SizedBox(
-              width: 200,
-              height: 200,
-              child: Padding(
-                padding: const EdgeInsets.all(30),
-                child: kIsWeb
-                    ? Image.asset(
-                        'assets/images/logo_splash.png',
-                        fit: BoxFit.contain,
-                      )
-                    : Image.network(
-                        ApiEndpoints.logoHeader,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.local_hospital,
-                            size: 100,
-                            color: Color(0xFF007AFF),
-                          );
-                        },
-                      ),
+              width: 300,
+              height: 300,
+              child: Image.asset(
+                'assets/images/Logo3D.png',
+                fit: BoxFit.contain,
               ),
             )
                 .animate()

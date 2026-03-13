@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/extensions/theme_extensions.dart';
+import '../../core/utils/vietnam_holidays.dart';
 import '../../data/models/chamcong_model.dart';
 import 'chamcong_history_card.dart';
+import 'holiday_info_dialog.dart';
 
 class _Event {
   final String time;
@@ -267,6 +269,9 @@ class _ChamcongWebCalendarState extends State<ChamcongWebCalendar> {
                             ? () => _showDetail(context, e.value!)
                             : null,
                         getStatusColor: (a) => _statusColor(a),
+                        holidayName: e.value != null
+                            ? VietnamHolidays.getHolidayName(e.value!)
+                            : null,
                       ),
                     );
                   }).toList(),
@@ -526,6 +531,7 @@ class _DayCell extends StatelessWidget {
   final bool isDark;
   final VoidCallback? onTap;
   final Color Function(ChamcongModel) getStatusColor;
+  final String? holidayName;
 
   const _DayCell({
     required this.date,
@@ -539,6 +545,7 @@ class _DayCell extends StatelessWidget {
     required this.isDark,
     required this.onTap,
     required this.getStatusColor,
+    this.holidayName,
   });
 
   @override
@@ -575,7 +582,18 @@ class _DayCell extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: (onTap == null && holidayName == null)
+              ? null
+              : () async {
+                  if (holidayName != null && date != null) {
+                    await HolidayInfoDialog.show(
+                      context,
+                      holidayName: holidayName!,
+                      date: date!,
+                    );
+                  }
+                  onTap?.call();
+                },
           hoverColor: context.primaryColor.withValues(alpha: isDark ? 0.07 : 0.04),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,12 +645,23 @@ class _DayCell extends StatelessWidget {
                 ],
               ),
 
-              ...events.take(5).map((e) => _EventChip(event: e, isFuture: isFuture)),
-              if (events.length > 5)
+              if (holidayName != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
+                  child: Icon(
+                    Icons.star_rounded,
+                    size: 11,
+                    color: const Color(0xFFFF6B35).withValues(
+                      alpha: isFuture ? 0.45 : 1.0,
+                    ),
+                  ),
+                ),
+              ...events.take(4).map((e) => _EventChip(event: e, isFuture: isFuture)),
+              if (events.length > 4)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 1, 4, 0),
                   child: Text(
-                    '+${events.length - 5}',
+                    '+${events.length - 4}',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
@@ -657,32 +686,31 @@ class _EventChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(3, 1, 3, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      margin: const EdgeInsets.fromLTRB(3, 1.5, 3, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       decoration: BoxDecoration(
         color: isFuture
             ? event.color.withValues(alpha: 0.35)
             : event.color,
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             event.time,
             style: const TextStyle(
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: -0.3,
             ),
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: 4),
           Flexible(
             child: Text(
               event.label,
               style: const TextStyle(
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),

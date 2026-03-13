@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../providers/chamcong_provider.dart';
+import '../../providers/facebook_provider.dart';
 import '../../providers/navigation_provider.dart';
+import '../../providers/thongbao_provider.dart';
+import '../../providers/vanban_provider.dart';
 import '../../data/models/vanban_model.dart';
 import '../vanban/vanban_chitiet_page.dart';
 import '../../widgets/trangchu/trangchu_content.dart';
@@ -51,8 +55,24 @@ class _MobileTrangchuPage extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: navProvider.currentIndex == 2
               ? null
-              : const CustomAppBar(notificationCount: 1),
-          body: _buildBody(navProvider.currentIndex),
+              : PreferredSize(
+                  preferredSize: const Size.fromHeight(100),
+                  child: Consumer<ThongBaoProvider>(
+                    builder: (_, thongbao, _) =>
+                        CustomAppBar(notificationCount: thongbao.unreadCount),
+                  ),
+                ),
+          body: _buildBody(
+            navProvider.currentIndex,
+            onRefresh: () async {
+              await Future.wait([
+                context.read<ChamcongProvider>().refresh(),
+                context.read<VanbanProvider>().init(),
+                context.read<ThongBaoProvider>().init(),
+                context.read<FacebookProvider>().refresh(),
+              ]);
+            },
+          ),
           bottomNavigationBar: CustomBottomNavBar(
             currentIndex: navProvider.currentIndex,
             onTap: navProvider.setIndex,
@@ -140,13 +160,13 @@ Widget _buildWebBody(int currentIndex) {
   return _buildBody(currentIndex);
 }
 
-Widget _buildBody(int currentIndex) {
+Widget _buildBody(int currentIndex, {Future<void> Function()? onRefresh}) {
   switch (currentIndex) {
-    case 0:  return const TrangchuContent();
+    case 0:  return TrangchuContent(onRefresh: onRefresh);
     case 1:  return const VanbanPage();
     case 2:  return const QrScannerPage();
     case 3:  return const ChamcongPage();
     case 4:  return const NhansuPage();
-    default: return const TrangchuContent();
+    default: return TrangchuContent(onRefresh: onRefresh);
   }
 }

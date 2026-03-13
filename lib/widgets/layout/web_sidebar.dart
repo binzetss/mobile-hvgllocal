@@ -5,6 +5,7 @@ import '../../core/extensions/theme_extensions.dart';
 import '../../core/routes/app_routes.dart';
 import '../../data/services/data_preload_service.dart';
 import '../../providers/navigation_provider.dart';
+import '../../providers/thongbao_provider.dart';
 import '../../providers/xacthuc_provider.dart';
 
 class WebSidebar extends StatelessWidget {
@@ -97,11 +98,14 @@ class WebSidebar extends StatelessWidget {
                   Divider(height: 1, color: context.borderColor),
                   const SizedBox(height: 8),
                   _SectionLabel('KHÁC'),
-                  _PushNavItem(
-                    icon: FontAwesomeIcons.bell,
-                    label: 'Thông báo',
-                    color: const Color(0xFFF59E0B),
-                    pageKey: 'thongbao',
+                  Consumer<ThongBaoProvider>(
+                    builder: (_, thongbao, _) => _PushNavItem(
+                      icon: FontAwesomeIcons.bell,
+                      label: 'Thông báo',
+                      color: const Color(0xFFF59E0B),
+                      pageKey: 'thongbao',
+                      badgeCount: thongbao.unreadCount,
+                    ),
                   ),
                   _PushNavItem(
                     icon: FontAwesomeIcons.commentDots,
@@ -156,7 +160,7 @@ class _SidebarHeader extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.asset(
-              'assets/images/logo.jpg',
+              'assets/images/Logo3D.png',
               width: 36,
               height: 36,
               fit: BoxFit.cover,
@@ -393,11 +397,13 @@ class _PushNavItem extends StatelessWidget {
   final String label;
   final Color color;
   final String pageKey;
+  final int badgeCount;
   const _PushNavItem({
     required this.icon,
     required this.label,
     required this.color,
     required this.pageKey,
+    this.badgeCount = 0,
   });
 
   @override
@@ -419,14 +425,39 @@ class _PushNavItem extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: isSelected ? 0.20 : 0.12),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Center(child: FaIcon(icon, size: 13, color: color)),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: isSelected ? 0.20 : 0.12),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Center(child: FaIcon(icon, size: 13, color: color)),
+                    ),
+                    if (badgeCount > 0)
+                      Positioned(
+                        right: -5,
+                        top: -5,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEF4444),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            badgeCount > 99 ? '99+' : '$badgeCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: 12),
                 Text(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/extensions/theme_extensions.dart';
+import '../../core/utils/vietnam_holidays.dart';
 import '../../data/models/chamcong_model.dart';
+import 'holiday_info_dialog.dart';
 
 class ChamcongCalendar extends StatefulWidget {
   final DateTime selectedDate;
@@ -201,6 +203,8 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
         DateTime.now().day == date.day;
 
     final isFuture = date.isAfter(DateTime.now());
+    final holidayName = VietnamHolidays.getHolidayName(date);
+    final isHoliday = holidayName != null;
 
     Color backgroundColor = Colors.transparent;
     Color dotColor = Colors.transparent;
@@ -210,10 +214,12 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
       backgroundColor = context.primaryColor;
       textColor = Colors.white;
     } else if (isToday) {
-      backgroundColor = isDark 
-        ? context.primaryColor.withValues(alpha: 0.12)
-        : context.primaryColor.withValues(alpha: 0.08);
+      backgroundColor = isDark
+          ? context.primaryColor.withValues(alpha: 0.12)
+          : context.primaryColor.withValues(alpha: 0.08);
       textColor = context.primaryColor;
+    } else if (isHoliday) {
+      textColor = const Color(0xFFFF6B35);
     }
 
     if (!isFuture && attendance.id.isNotEmpty) {
@@ -248,10 +254,10 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
     final today = DateTime(now.year, now.month, now.day);
     final dateOnly = DateTime(date.year, date.month, date.day);
     final trucBorderColor = dateOnly.isBefore(today)
-        ? const Color(0xFF1877F2)  // đã trực → xanh
-        : const Color(0xFFFF3B30); // chưa trực / hôm nay → đỏ
+        ? const Color(0xFF1877F2)  
+        : const Color(0xFFFF3B30); 
 
-    return Material(
+    final cell = Material(
       color: backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -260,7 +266,16 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
             : BorderSide.none,
       ),
       child: InkWell(
-        onTap: () => widget.onDateSelected(date),
+        onTap: () async {
+          if (isHoliday) {
+            await HolidayInfoDialog.show(
+              context,
+              holidayName: holidayName,
+              date: date,
+            );
+          }
+          widget.onDateSelected(date);
+        },
         customBorder: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
@@ -290,12 +305,27 @@ class _ChamcongCalendarState extends State<ChamcongCalendar> {
                     shape: BoxShape.circle,
                   ),
                 ),
-              ]
+              ],
+              if (isHoliday) ...[
+                const SizedBox(height: 1),
+                Icon(
+                  Icons.star_rounded,
+                  size: 8,
+                  color: isSelected
+                      ? Colors.white
+                      : const Color(0xFFFF6B35),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
+
+    if (isHoliday) {
+      return Tooltip(message: holidayName, child: cell);
+    }
+    return cell;
   }
 
   String _getMonthYearText(DateTime date) {

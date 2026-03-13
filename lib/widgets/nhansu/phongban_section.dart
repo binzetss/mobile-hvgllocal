@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hvgl/data/models/phongban_model.dart';
 import '../../core/extensions/theme_extensions.dart';
@@ -297,42 +296,20 @@ class _PhongbanSectionState extends State<PhongbanSection> {
                                     ),
                                   )
                                 else
-                                  ListView.separated(
+                                  Padding(
                                     padding: const EdgeInsets.all(10),
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: staffList.length,
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(height: 8),
-                                    itemBuilder: (context, idx) {
-                                      final staff = staffList[idx];
-                                      return NhansuCard(
-                                            staff: staff,
+                                    child: Column(
+                                      children: [
+                                        for (int idx = 0; idx < staffList.length; idx++) ...[
+                                          if (idx > 0) const SizedBox(height: 8),
+                                          NhansuCard(
+                                            staff: staffList[idx],
                                             departmentColor: color,
                                             index: idx,
-                                          )
-                                          .animate()
-                                          .fadeIn(
-                                            delay: Duration(
-                                              milliseconds: 30 * idx,
-                                            ),
-                                            duration: const Duration(
-                                              milliseconds: 20,
-                                            ),
-                                          )
-                                          .slideX(
-                                            begin: 0.04,
-                                            end: 0,
-                                            delay: Duration(
-                                              milliseconds: 30 * idx,
-                                            ),
-                                            duration: const Duration(
-                                              milliseconds: 20,
-                                            ),
-                                            curve: Curves.easeOutCubic,
-                                          );
-                                    },
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                   ),
                               ],
                             ),

@@ -20,6 +20,7 @@ class _CropAvatarPageState extends State<CropAvatarPage>
   final _controller = CropController(aspectRatio: 1);
   bool _isCropping = false;
   double? _selectedRatio = 1;
+  double _naturalRatio = 1;
 
   late AnimationController _pulseCtrl;
   late AnimationController _scanCtrl;
@@ -30,6 +31,7 @@ class _CropAvatarPageState extends State<CropAvatarPage>
   @override
   void initState() {
     super.initState();
+    _loadNaturalRatio();
     _pulseCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -81,10 +83,19 @@ class _CropAvatarPageState extends State<CropAvatarPage>
     }
   }
 
+  Future<void> _loadNaturalRatio() async {
+    final bytes = await widget.imageFile.readAsBytes();
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    final img = frame.image;
+    final ratio = img.width / img.height;
+    if (mounted) setState(() => _naturalRatio = ratio);
+  }
+
   void _setRatio(double? ratio) {
     setState(() {
       _selectedRatio = ratio;
-      _controller.aspectRatio = ratio ?? 9999;
+      _controller.aspectRatio = ratio ?? _naturalRatio;
     });
   }
 

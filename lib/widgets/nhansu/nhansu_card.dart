@@ -117,6 +117,8 @@ class NhansuCard extends StatelessWidget {
                                 'Bearer ${TokenManager().getCachedToken()}',
                         },
                         fit: BoxFit.cover,
+                        memCacheWidth: 132,
+                        memCacheHeight: 132,
                         placeholder: (context, url) => Center(
                           child: Text(
                             initials,
@@ -266,37 +268,45 @@ class NhansuCard extends StatelessWidget {
   }
 
   void _showStaffDetails(BuildContext context) {
-    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
-    final deptColor = departmentColor ?? const Color(0xFF2196F3);
+    showNhansuDetailSheet(context, staff, departmentColor: departmentColor);
+  }
+}
 
-    if (isDesktop) {
-      showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(32),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 460),
-            child: _StaffDetailContent(
-              staff: staff,
-              departmentColor: deptColor,
-              isDialog: true,
-            ),
+void showNhansuDetailSheet(
+  BuildContext context,
+  NhansuModel staff, {
+  Color? departmentColor,
+}) {
+  final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
+  final deptColor = departmentColor ?? const Color(0xFF2196F3);
+
+  if (isDesktop) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(32),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 460),
+          child: _StaffDetailContent(
+            staff: staff,
+            departmentColor: deptColor,
+            isDialog: true,
           ),
         ),
-      );
-    } else {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => _StaffDetailContent(
-          staff: staff,
-          departmentColor: deptColor,
-          isDialog: false,
-        ),
-      );
-    }
+      ),
+    );
+  } else {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _StaffDetailContent(
+        staff: staff,
+        departmentColor: deptColor,
+        isDialog: false,
+      ),
+    );
   }
 }
 

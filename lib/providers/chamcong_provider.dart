@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../core/services/firebase_notification_service.dart';
+import '../core/services/home_widget_service.dart';
 import '../data/models/chamcong_model.dart';
 import '../data/services/chamcong_service.dart';
 import './dangky_com_provider.dart';
@@ -169,6 +170,7 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
       if (year == now.year && month == now.month) {
         _updateTodayFromList(attendances);
         _checkAndNotifyNewPunches();
+        _updateHomeWidget();
       }
       _isLoading = false;
       _error = null;
@@ -215,6 +217,20 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> loadMonthData(int year, int month) => changeMonth(year, month);
+
+  void _updateHomeWidget() {
+    final att = _todayAttendance;
+    final checkin = att != null && att.punches.isNotEmpty
+        ? _fmt(att.punches.first.time)
+        : null;
+    final checkout = att != null && att.punches.length > 1
+        ? _fmt(att.punches.last.time)
+        : null;
+    HomeWidgetService.updateAttendance(checkin: checkin, checkout: checkout);
+  }
+
+  static String _fmt(DateTime dt) =>
+      '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 
   Future<void> loadTodayAttendance() async {
     final now = DateTime.now();

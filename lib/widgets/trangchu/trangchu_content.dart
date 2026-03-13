@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../common/app_refresh_wrapper.dart';
 import 'vanban_thongbao_card.dart';
 import 'meal_registration_card.dart';
 import 'chamcong_today_card.dart';
 import 'facebook_post_card.dart';
 
 class TrangchuContent extends StatelessWidget {
-  const TrangchuContent({super.key});
+  final Future<void> Function()? onRefresh;
+  const TrangchuContent({super.key, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    final scrollView = SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,5 +39,9 @@ class TrangchuContent extends StatelessWidget {
         ],
       ),
     );
+    if (onRefresh != null) {
+      return AppRefreshWrapper(onRefresh: onRefresh!, child: scrollView);
+    }
+    return scrollView;
   }
 }

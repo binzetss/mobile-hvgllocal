@@ -31,9 +31,24 @@ class VanbanChitietPage extends StatelessWidget {
   }
 }
 
-class _MobileLayout extends StatelessWidget {
+class _MobileLayout extends StatefulWidget {
   final VanbanModel document;
   const _MobileLayout({required this.document});
+
+  @override
+  State<_MobileLayout> createState() => _MobileLayoutState();
+}
+
+class _MobileLayoutState extends State<_MobileLayout> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        VanbanChitietActions.handleOpenPdf(context, widget.document);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +59,7 @@ class _MobileLayout extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            VanbanHeaderCard(document: document),
+            VanbanHeaderCard(document: widget.document),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -59,7 +74,7 @@ class _MobileLayout extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        VanbanChitietActions.formatDate(document.uploadedAt),
+                        VanbanChitietActions.formatDate(widget.document.uploadedAt),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -74,7 +89,7 @@ class _MobileLayout extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'ID: ${document.fileId}',
+                        'ID: ${widget.document.fileId}',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -84,27 +99,27 @@ class _MobileLayout extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  if (document.soKiHieu.isNotEmpty) ...[
+                  if (widget.document.soKiHieu.isNotEmpty) ...[
                     InfoCard(
                       icon: FontAwesomeIcons.fileSignature,
                       label: 'Số ký hiệu',
-                      value: document.soKiHieu,
+                      value: widget.document.soKiHieu,
                     ),
                     const SizedBox(height: 12),
                   ],
                   InfoCard(
                     icon: FontAwesomeIcons.folderOpen,
                     label: 'Danh mục',
-                    value: document.categoryName,
+                    value: widget.document.categoryName,
                   ),
                   const SizedBox(height: 24),
                   Consumer<VanbanChitietProvider>(
                     builder: (context, provider, _) {
                       return ActionButtons(
                         onOpenPdf: () =>
-                            VanbanChitietActions.handleOpenPdf(context, document),
+                            VanbanChitietActions.handleOpenPdf(context, widget.document),
                         onDownloadPdf: () =>
-                            VanbanChitietActions.handleDownloadPdf(context, document),
+                            VanbanChitietActions.handleDownloadPdf(context, widget.document),
                         isLoadingView: provider.isLoadingView,
                         isLoadingDownload: provider.isLoadingDownload,
                       );

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hvgl/core/utils/local.dart';
 import '../core/services/firebase_notification_service.dart';
+import '../core/services/home_widget_service.dart';
 import '../data/models/user_model.dart';
 import '../data/services/xacthuc_service.dart';
 import './chamcong_provider.dart';
@@ -69,6 +70,7 @@ class XacthucProvider extends ChangeNotifier {
         }
       }
       _status = AuthStatus.authenticated;
+      HomeWidgetService.saveUserName(_user?.hoVaTen ?? '');
       FirebaseNotificationService().scheduleWorkReminders();
       ChamcongProvider.initAfterLoginStatic();
       notifyListeners();
@@ -100,6 +102,7 @@ class XacthucProvider extends ChangeNotifier {
         }
 
         _status = AuthStatus.authenticated;
+        HomeWidgetService.saveUserName(_user?.hoVaTen ?? '');
         _token = mapUser["token"];
         await Local.saveLocal("token", _token);
 

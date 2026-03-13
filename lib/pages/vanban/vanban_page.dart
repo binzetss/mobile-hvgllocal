@@ -43,8 +43,12 @@ class _VanbanPageState extends State<VanbanPage> {
     return Scaffold(
       body: Consumer<VanbanProvider>(
         builder: (context, provider, _) {
-          return CustomScrollView(
+          return RefreshIndicator(
+            onRefresh: () => provider.init(),
+            color: Theme.of(context).primaryColor,
+            child: CustomScrollView(
             controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(
                 child: CommonSearchBar(
@@ -62,6 +66,7 @@ class _VanbanPageState extends State<VanbanPage> {
                 onDocumentTap: _navigateToDetail,
               ),
             ],
+          ),
           );
         },
       ),

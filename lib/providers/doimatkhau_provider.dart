@@ -79,6 +79,7 @@ class DoimatkhauProvider extends ChangeNotifier {
         matKhauMoi: newPasswordController.text.trim(),
         xacNhanMatKhauMoi: confirmPasswordController.text.trim(),
       );
+      await _xacthucService.saveCredentials(maSo, newPasswordController.text.trim());
 
       _isLoading = false;
       notifyListeners();

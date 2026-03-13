@@ -62,6 +62,26 @@ class _LichtructPageState extends State<LichtructPage>
         backgroundColor: bgColor,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF1C1C1E)
+                  : Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: FaIcon(
+                FontAwesomeIcons.chevronLeft,
+                size: 14,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
           'Lịch Trực',
           style: TextStyle(

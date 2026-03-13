@@ -77,6 +77,7 @@ class DoimatkhauLandauProvider extends ChangeNotifier {
         matKhauMoi: matKhauMoiController.text.trim(),
         xacNhanMatKhauMoi: xacNhanMatKhauController.text.trim(),
       );
+      await _xacthucService.saveCredentials(maSo, matKhauMoiController.text.trim());
 
       _isLoading = false;
       notifyListeners();

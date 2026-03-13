@@ -51,20 +51,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBDyyG2Od9hQgnrsvJSBNks8ng0jwZ6w50',
-    appId: '1:785145480437:ios:cf3c78e87c49f1093d71bc',
-    messagingSenderId: '785145480437',
-    projectId: 'hvgl-app-2f7da',
-    storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
+    apiKey: 'AIzaSyCwTs5bKBrekYHWfNPNErfRm6wfusfVvqc',
+    appId: '1:575957738296:ios:b7d91e9491edb4e62917cd',
+    messagingSenderId: '575957738296',
+    projectId: 'hvnb-706d5',
+    storageBucket: 'hvnb-706d5.firebasestorage.app',
     iosBundleId: 'vn.hvgl.noibo',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBDyyG2Od9hQgnrsvJSBNks8ng0jwZ6w50',
-    appId: '1:785145480437:ios:cf3c78e87c49f1093d71bc',
-    messagingSenderId: '785145480437',
-    projectId: 'hvgl-app-2f7da',
-    storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
+    apiKey: 'AIzaSyCwTs5bKBrekYHWfNPNErfRm6wfusfVvqc',
+    appId: '1:575957738296:ios:b7d91e9491edb4e62917cd',
+    messagingSenderId: '575957738296',
+    projectId: 'hvnb-706d5',
+    storageBucket: 'hvnb-706d5.firebasestorage.app',
     iosBundleId: 'vn.hvgl.noibo',
   );
 
@@ -79,11 +79,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDBeNUc-IGlJtnB53o85vqLNVFOA7I4jSc',
-    appId: '1:785145480437:android:1c85215ceef6ee233d71bc',
-    messagingSenderId: '785145480437',
-    projectId: 'hvgl-app-2f7da',
-    storageBucket: 'hvgl-app-2f7da.firebasestorage.app',
+    apiKey: 'AIzaSyDQbsRvCIIX2HvKtT0c1h9bg8VO6mTBASc',
+    appId: '1:575957738296:android:e4842d243bd4eaaa2917cd',
+    messagingSenderId: '575957738296',
+    projectId: 'hvnb-706d5',
+    storageBucket: 'hvnb-706d5.firebasestorage.app',
   );
 
 }

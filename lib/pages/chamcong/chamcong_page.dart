@@ -9,6 +9,7 @@ import '../../providers/chamcong_provider.dart';
 import '../../providers/navigation_provider.dart';
 import '../../widgets/chamcong/chamcong_calendar.dart';
 import '../../widgets/chamcong/chamcong_web_calendar.dart';
+import '../../widgets/common/app_refresh_wrapper.dart';
 import '../../widgets/chamcong/chamcong_stats_card.dart';
 import '../../widgets/chamcong/chamcong_history_card.dart';
 import 'bosungcong_page.dart';
@@ -84,8 +85,10 @@ class _ChamcongPageState extends State<ChamcongPage> {
   }
 
   Widget _buildMobileLayout(BuildContext context, ChamcongProvider provider) {
-    return CustomScrollView(
-      slivers: [
+    return AppRefreshWrapper(
+      onRefresh: provider.refresh,
+      child: CustomScrollView(
+        slivers: [
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
@@ -143,7 +146,8 @@ class _ChamcongPageState extends State<ChamcongPage> {
             child: ChamcongStatsCard(stats: provider.monthlyStats),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 

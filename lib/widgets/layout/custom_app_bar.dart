@@ -103,18 +103,38 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                             if (notificationCount > 0)
                               Positioned(
-                                right: 8,
-                                top: 8,
+                                right: 4,
+                                top: 4,
                                 child: Container(
-                                  width: 8,
-                                  height: 8,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 17,
+                                    minHeight: 17,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
                                   decoration: BoxDecoration(
                                     color: AppColors.notificationBadge,
-                                    shape: BoxShape.circle,
+                                    borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                      color: Theme.of(context).cardColor,
+                                      color: Colors.white.withValues(alpha: 0.3),
                                       width: 1.5,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.notificationBadge.withValues(alpha: 0.5),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    notificationCount > 99 ? '99+' : '$notificationCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.5,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),

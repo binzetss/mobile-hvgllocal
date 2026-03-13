@@ -67,29 +67,23 @@ class _HvglMenuSheetState extends State<HvglMenuSheet> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: isDark
-                          ? [AppColors.primaryDark, AppColors.primaryLight]
-                          : [const Color(0xFF1877F2), const Color(0xFF0D5BC7)],
-                    ),
+                    color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: isDark
-                            ? AppColors.primaryDark.withValues(alpha: 0.4)
-                            : const Color(0xFF1877F2).withValues(alpha: 0.4),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: FaIcon(
-                      FontAwesomeIcons.hospital,
-                      color: Colors.white,
-                      size: 28,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      'assets/images/Logo3D.png',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),

@@ -10,11 +10,11 @@ class DangnhapWebHeader extends StatelessWidget {
       children: [
 
         Container(
-          width: 88,
-          height: 88,
+          width: 140,
+          height: 140,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: const Color.fromARGB(255, 252, 254, 255),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.18),
@@ -23,11 +23,10 @@ class DangnhapWebHeader extends StatelessWidget {
               ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
+          child: ClipOval(
             child: Image.asset(
-              'assets/images/logo_splash.png',
-              fit: BoxFit.contain,
+              'assets/images/Logo3D.png',
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -35,7 +34,7 @@ class DangnhapWebHeader extends StatelessWidget {
         const SizedBox(height: 18),
 
         const Text(
-          'HÙNG VƯƠNG GIA LAI',
+          'BỆNH VIỆN HÙNG VƯƠNG GIA LAI',
           style: TextStyle(
             color: Colors.white,
             fontSize: 22,

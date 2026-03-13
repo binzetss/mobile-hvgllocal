@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "785145480437",
-    "project_id": "hvgl-app-2f7da",
-    "storage_bucket": "hvgl-app-2f7da.firebasestorage.app"
+    "project_number": "575957738296",
+    "project_id": "hvnb-706d5",
+    "storage_bucket": "hvnb-706d5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785145480437:android:1c85215ceef6ee233d71bc",
+        "mobilesdk_app_id": "1:575957738296:android:e4842d243bd4eaaa2917cd",
         "android_client_info": {
-          "package_name": "com.example.hvgl"
+          "package_name": "vn.hvgl.noibo"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDBeNUc-IGlJtnB53o85vqLNVFOA7I4jSc"
+          "current_key": "AIzaSyDQbsRvCIIX2HvKtT0c1h9bg8VO6mTBASc"
         }
       ],
       "services": {

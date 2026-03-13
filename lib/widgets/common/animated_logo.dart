@@ -1,8 +1,5 @@
-﻿import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/api_endpoints.dart';
 
 class AnimatedLogo extends StatelessWidget {
   final double size;
@@ -58,7 +55,7 @@ class AnimatedLogo extends StatelessWidget {
                   onPlay: (controller) => controller.repeat(),
                 )
                 .rotate(
-                  duration: 7000.ms,
+                  duration: 100.ms,
                   curve: Curves.linear,
                   begin: 1,
                   end: 0,
@@ -212,24 +209,9 @@ class AnimatedLogo extends StatelessWidget {
           SizedBox(
             width: size,
             height: size,
-            child: Padding(
-              padding: EdgeInsets.all(size * 0.15),
-              child: kIsWeb
-                  ? Image.asset(
-                      'assets/images/logo_splash.png',
-                      fit: BoxFit.contain,
-                    )
-                  : Image.network(
-                      ApiEndpoints.logoHeader,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.local_hospital,
-                          size: size * 0.5,
-                          color: AppColors.primary,
-                        );
-                      },
-                    ),
+            child: Image.asset(
+              'assets/images/Logo3D.png',
+              fit: BoxFit.fitWidth,
             ),
           )
               .animate()

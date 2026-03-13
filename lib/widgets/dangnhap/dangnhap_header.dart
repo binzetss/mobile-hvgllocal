@@ -12,7 +12,7 @@ class DangnhapHeader extends StatelessWidget {
       child: Column(
         children: [
           const AnimatedLogo(
-            size: 120,
+            size: 130,
             showBorderCircles: true,
             showGlow: true,
           ),
