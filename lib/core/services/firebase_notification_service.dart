@@ -78,6 +78,7 @@ class FirebaseNotificationService {
 
   bool _initialized = false;
   String? _fcmToken;
+  bool _pendingRegistration = false;
 
   String? get fcmToken => _fcmToken;
   Future<void> initialize() async {
@@ -107,6 +108,7 @@ class FirebaseNotificationService {
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         _fcmToken = newToken;
         _registerTokenToServer(newToken);
+        _pendingRegistration = false;
       });
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
@@ -479,14 +481,17 @@ class FirebaseNotificationService {
   }
 
   Future<void> sendTokenToServer() async {
-    // Nếu chưa có token, thử lấy lại (iOS cần APNs token đăng ký trước)
-    _fcmToken ??= await _firebaseMessaging.getToken();
-    // iOS: APNs token có thể chưa sẵn sàng ngay, thử lại sau 3 giây
-    if (_fcmToken == null) {
-      await Future.delayed(const Duration(seconds: 3));
-      _fcmToken = await _firebaseMessaging.getToken();
+
+    for (int i = 0; i < 5; i++) {
+      _fcmToken ??= await _firebaseMessaging.getToken();
+      if (_fcmToken != null) break;
+      await Future.delayed(Duration(seconds: i == 0 ? 2 : 5));
     }
-    if (_fcmToken == null) return;
+    if (_fcmToken == null) {
+      _pendingRegistration = true;
+      return;
+    }
+    _pendingRegistration = false;
     await _registerTokenToServer(_fcmToken!);
   }
 

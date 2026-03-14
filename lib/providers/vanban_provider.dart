@@ -58,7 +58,6 @@ class VanbanProvider extends ChangeNotifier {
 
   Future<void> _saveSeenIds(Set<String> ids) async {
     final prefs = await SharedPreferences.getInstance();
-    // Giữ tối đa 500 ID gần nhất để tránh phình bộ nhớ
     final list = ids.toList();
     if (list.length > 500) list.removeRange(0, list.length - 500);
     await prefs.setStringList(_seenKey, list);
