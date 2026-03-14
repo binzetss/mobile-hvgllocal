@@ -38,9 +38,9 @@ class HvglWidgetProvider : AppWidgetProvider() {
             val today = sdf.format(Date())
 
             // Parse danh sách lần chấm công → lấy lần đầu (VÀO) và lần cuối (RA)
-            val checkinTime: String
-            val checkoutTime: String
-            val hasData: Boolean
+            var checkinTime  = "--:--"
+            var checkoutTime = "--:--"
+            var hasData      = false
 
             try {
                 val arr = JSONArray(punchesJson)
