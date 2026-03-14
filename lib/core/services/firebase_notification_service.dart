@@ -15,29 +15,24 @@ import '../utils/token_manager.dart';
 import '../../data/models/reminder_model.dart';
 import '../../firebase_options.dart';
 
-/// Chạy trong isolate riêng khi app bị tắt/background.
-/// Phải tự khởi tạo và hiển thị notification vì không có UI context.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (_) {
 
-  // Lấy title/body từ notification payload hoặc data payload
-  final title = message.notification?.title
-      ?? message.data['title'] as String?
-      ?? 'Thông báo HVGL';
-  final body  = message.notification?.body
-      ?? message.data['body'] as String?
-      ?? '';
+  }
 
+  if (message.notification != null) return;
+
+  final title = message.data['title'] as String? ?? 'Thông báo HVGL';
+  final body  = message.data['body']  as String? ?? '';
   if (title.isEmpty && body.isEmpty) return;
 
-  // Khởi tạo local notifications trong isolate
   final plugin = FlutterLocalNotificationsPlugin();
   const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
   const iosInit = DarwinInitializationSettings();
   await plugin.initialize(const InitializationSettings(android: androidInit, iOS: iosInit));
-
-  // Tạo channel (bắt buộc Android 8+)
   final androidPlugin = plugin.resolvePlatformSpecificImplementation<
       AndroidFlutterLocalNotificationsPlugin>();
   await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
@@ -95,8 +90,6 @@ class FirebaseNotificationService {
     try {
       await _initializeLocalNotifications();
       _initialized = true;
-
-      // Cho phép FCM hiển thị banner khi app đang foreground (quan trọng cho iOS)
       await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
@@ -109,9 +102,6 @@ class FirebaseNotificationService {
         sound: true,
         provisional: false,
       );
-
-      // Lấy FCM token bất kể user có cấp quyền hay không
-      // (token dùng để server push, không liên quan quyền hiện thông báo)
       _fcmToken = await _firebaseMessaging.getToken();
 
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
@@ -124,13 +114,12 @@ class FirebaseNotificationService {
 
       final initialMessage = await _firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
-        // App vừa mở từ notification — delay để Navigator kịp mount
         Future.delayed(const Duration(milliseconds: 1200), () {
           _handleNotificationTap(initialMessage);
         });
       }
     } catch (e) {
-      print('❌ Firebase init error: $e');
+      print(' Firebase init error: $e');
     }
   }
 
@@ -169,8 +158,6 @@ class FirebaseNotificationService {
         enableVibration: true,
       );
       await androidPlugin?.createNotificationChannel(channel);
-
-      // Kênh báo thức — dùng âm thanh alarm hệ thống
       final alarmChannel = AndroidNotificationChannel(
         'alarm_channel',
         'Báo thức nhắc nhở',
@@ -183,8 +170,6 @@ class FirebaseNotificationService {
         enableLights: true,
       );
       await androidPlugin?.createNotificationChannel(alarmChannel);
-
-      // Kênh thông báo thường (giữ lại cho tương thích)
       const reminderChannel = AndroidNotificationChannel(
         'reminder_channel',
         'Nhắc nhở chấm công',
@@ -200,14 +185,19 @@ class FirebaseNotificationService {
   void _handleForegroundMessage(RemoteMessage message) {
     print(' Foreground message: ${message.messageId}');
 
-    final notification = message.notification;
-    if (notification != null) {
-      _showLocalNotification(
-        title: notification.title ?? 'Thông báo',
-        body: notification.body ?? '',
-        payload: message.data.toString(),
-      );
-    }
+    final title = message.notification?.title
+        ?? message.data['title'] as String?
+        ?? 'Thông báo HVGL';
+    final body = message.notification?.body
+        ?? message.data['body'] as String?
+        ?? '';
+    if (title.isEmpty && body.isEmpty) return;
+
+    _showLocalNotification(
+      title: title,
+      body: body,
+      payload: message.data['screen'] as String?,
+    );
   }
 
   Future<void> _showLocalNotification({
@@ -250,7 +240,6 @@ class FirebaseNotificationService {
   void _handleNotificationTap(RemoteMessage message) {
     final screen = message.data['screen'] as String?;
     if (screen == null) return;
-    // Dùng addPostFrameCallback để đảm bảo navigator đã sẵn sàng
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigateToScreen(screen);
     });
@@ -259,7 +248,6 @@ class FirebaseNotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     final payload = response.payload;
     if (payload == null || payload.isEmpty) return;
-    // Payload là screen name (ví dụ: '/chamcong', '/reminder')
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigateToScreen(payload);
     });
@@ -292,7 +280,6 @@ class FirebaseNotificationService {
     String loai = 'Chấm công',
   }) async {
     if (kIsWeb) return;
-    // Tự khởi động lại nếu chưa được initialized (iOS edge case)
     if (!_initialized) {
       await initialize();
     }
@@ -304,7 +291,7 @@ class FirebaseNotificationService {
         body: 'Bạn đã $loai lúc $timeStr ngày $dateStr',
       );
     } catch (e) {
-      print('❌ showChamcongNotification error: $e');
+      print(' showChamcongNotification error: $e');
     }
   }
 
@@ -313,7 +300,7 @@ class FirebaseNotificationService {
       await _firebaseMessaging.subscribeToTopic(topic);
       print('✅ Subscribed to topic: $topic');
     } catch (e) {
-      print('❌ Failed to subscribe to topic: $e');
+      print(' Failed to subscribe to topic: $e');
     }
   }
 
@@ -326,13 +313,11 @@ class FirebaseNotificationService {
     }
   }
 
-  // ─── Nhắc nhở chấm công hàng ngày ───────────────────────────────────────
-
-  static const int _idNhacSangVao   = 2001; // 06:50 - nhắc vào ca sáng
-  static const int _idNhacSangRa    = 2002; // 11:32 - nhắc ra ca sáng
-  static const int _idNhacChieuVao  = 2003; // 12:55 - nhắc vào ca chiều
-  static const int _idNhacChieuRa1  = 2004; // 16:32 - nhắc ra ca chiều (ca 16:30)
-  static const int _idNhacChieuRa2  = 2005; // 17:02 - nhắc ra ca chiều (ca 17:00)
+  static const int _idNhacSangVao   = 2001; 
+  static const int _idNhacSangRa    = 2002;
+  static const int _idNhacChieuVao  = 2003;
+  static const int _idNhacChieuRa1  = 2004;
+  static const int _idNhacChieuRa2  = 2005;
 
   Future<void> scheduleWorkReminders() async {
     if (kIsWeb || !_initialized) return;
@@ -346,7 +331,7 @@ class FirebaseNotificationService {
     await _scheduleDaily(_idNhacChieuRa1, 'Nhắc chấm công ra ca chiều',  'Ca chiều kết thúc lúc 16:30 - Đừng quên chấm công ra!', 16, 32, details);
     await _scheduleDaily(_idNhacChieuRa2, 'Nhắc chấm công ra ca chiều',  'Ca chiều kết thúc lúc 17:00 - Đừng quên chấm công ra!', 17,  2, details);
 
-    print('✅ Đã lên lịch 5 thông báo nhắc chấm công hàng ngày');
+    print(' Đã lên lịch 5 thông báo nhắc chấm công hàng ngày');
   }
 
   Future<void> _scheduleDaily(int id, String title, String body,
@@ -364,7 +349,7 @@ class FirebaseNotificationService {
             UILocalNotificationDateInterpretation.absoluteTime,
       );
     } catch (e) {
-      print('❌ _scheduleDaily($hour:$minute) error: $e');
+      print(' _scheduleDaily($hour:$minute) error: $e');
     }
   }
 
@@ -386,10 +371,6 @@ class FirebaseNotificationService {
     await _localNotifications.cancel(_idNhacChieuRa2);
     print('🗑️ Đã hủy thông báo nhắc chấm công');
   }
-
-  // ─── Custom reminders ────────────────────────────────────────────────────
-
-  // Dùng getter thay vì const vì UriAndroidNotificationSound không const
   static NotificationDetails get _alarmDetails => NotificationDetails(
     android: AndroidNotificationDetails(
       'alarm_channel',
@@ -403,19 +384,18 @@ class FirebaseNotificationService {
           'content://settings/system/alarm_alert'),
       enableVibration: true,
       enableLights: true,
-      fullScreenIntent: true,                    // Hiện khi màn hình khóa
-      category: AndroidNotificationCategory.alarm, // Hành xử như báo thức
-      audioAttributesUsage: AudioAttributesUsage.alarm, // Dùng luồng âm alarm
+      fullScreenIntent: true,                 
+      category: AndroidNotificationCategory.alarm, 
+      audioAttributesUsage: AudioAttributesUsage.alarm, 
     ),
     iOS: const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: false,
       presentSound: true,
-      interruptionLevel: InterruptionLevel.timeSensitive, // Xuyên qua chế độ tập trung
+      interruptionLevel: InterruptionLevel.timeSensitive,
     ),
   );
 
-  /// Schedule (or reschedule) all notifications for [reminder].
   Future<void> scheduleCustomReminder(ReminderModel reminder) async {
     if (kIsWeb || !_initialized) return;
     await cancelCustomReminder(reminder);
@@ -436,7 +416,7 @@ class FirebaseNotificationService {
               : 'Nhắc nhở lúc ${reminder.timeLabel}',
           _nextInstanceOfWeekdayAndTime(day, reminder.hour, reminder.minute),
           _alarmDetails,
-          androidScheduleMode: AndroidScheduleMode.alarmClock, // Chế độ báo thức thật sự
+          androidScheduleMode: AndroidScheduleMode.alarmClock,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
@@ -447,7 +427,6 @@ class FirebaseNotificationService {
     }
   }
 
-  /// Cancel all notifications belonging to [reminder].
   Future<void> cancelCustomReminder(ReminderModel reminder) async {
     if (kIsWeb) return;
     for (int day = 1; day <= 7; day++) {
@@ -459,7 +438,6 @@ class FirebaseNotificationService {
     final now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime dt =
         tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
-    // Advance until we land on the correct weekday, and the time is in the future.
     for (int i = 0; i < 8; i++) {
       if (dt.weekday == weekday && dt.isAfter(now)) break;
       dt = dt.add(const Duration(days: 1));
@@ -467,9 +445,6 @@ class FirebaseNotificationService {
     return dt;
   }
 
-  // ─── Debug / Test ────────────────────────────────────────────────────────
-
-  /// Test báo thức sau [seconds] giây — tắt app rồi chờ
   Future<void> scheduleTestAlarm({int seconds = 10}) async {
     if (kIsWeb || !_initialized) return;
     final triggerTime =
@@ -486,9 +461,6 @@ class FirebaseNotificationService {
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-
-  /// Gọi sau khi đăng nhập thành công — token đã có trong _fcmToken
   Future<void> sendTokenToServer() async {
     if (_fcmToken == null) return;
     await _registerTokenToServer(_fcmToken!);
@@ -510,7 +482,7 @@ class FirebaseNotificationService {
         }),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ FCM token registered');
+        print(' FCM token registered');
       } else {
         print('⚠️ FCM register failed: ${response.statusCode}');
       }
@@ -518,8 +490,6 @@ class FirebaseNotificationService {
       print('❌ _registerTokenToServer error: $e');
     }
   }
-
-  /// Gửi thông báo đến một nhân viên cụ thể qua server
   Future<bool> sendNotification({
     required String maSo,
     required String title,
@@ -549,7 +519,6 @@ class FirebaseNotificationService {
     }
   }
 
-  /// Gọi khi đăng xuất — xóa token khỏi server
   Future<void> deleteFcmToken() async {
     try {
       final authToken = await TokenManager().getToken();

@@ -46,6 +46,16 @@
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="true" />
+        <!-- FCM default channel và icon khi app bị tắt (bắt buộc Android 8+) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="chamcong_channel" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_color" />
         <!-- Lên lịch lại thông báo sau khi reboot -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
