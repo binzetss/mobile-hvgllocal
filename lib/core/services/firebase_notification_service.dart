@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart' show Color;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -12,10 +13,62 @@ import '../navigation/navigator_key.dart';
 import '../routes/app_routes.dart';
 import '../utils/token_manager.dart';
 import '../../data/models/reminder_model.dart';
+import '../../firebase_options.dart';
 
+/// Chạy trong isolate riêng khi app bị tắt/background.
+/// Phải tự khởi tạo và hiển thị notification vì không có UI context.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('🔔 Background message: ${message.messageId}');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Lấy title/body từ notification payload hoặc data payload
+  final title = message.notification?.title
+      ?? message.data['title'] as String?
+      ?? 'Thông báo HVGL';
+  final body  = message.notification?.body
+      ?? message.data['body'] as String?
+      ?? '';
+
+  if (title.isEmpty && body.isEmpty) return;
+
+  // Khởi tạo local notifications trong isolate
+  final plugin = FlutterLocalNotificationsPlugin();
+  const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
+  const iosInit = DarwinInitializationSettings();
+  await plugin.initialize(const InitializationSettings(android: androidInit, iOS: iosInit));
+
+  // Tạo channel (bắt buộc Android 8+)
+  final androidPlugin = plugin.resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>();
+  await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+    'chamcong_channel',
+    'Chấm công',
+    description: 'Thông báo chấm công và hoạt động nội bộ',
+    importance: Importance.max,
+  ));
+
+  const details = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'chamcong_channel',
+      'Chấm công',
+      channelDescription: 'Thông báo chấm công và hoạt động nội bộ',
+      importance: Importance.max,
+      priority: Priority.max,
+      icon: '@drawable/ic_notification',
+      color: Color(0xFF1877F2),
+      playSound: true,
+      enableVibration: true,
+    ),
+    iOS: DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    ),
+  );
+
+  final id = DateTime.now().millisecondsSinceEpoch % 100000;
+  await plugin.show(id, title, body, details,
+      payload: message.data['screen'] as String?);
 }
 
 class FirebaseNotificationService {
