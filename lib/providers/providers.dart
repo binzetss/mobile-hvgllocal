@@ -16,3 +16,4 @@ export 'daotao_provider.dart';
 export 'doimatkhau_landau_provider.dart';
 export 'notification_settings_provider.dart';
 export 'lichtruc_provider.dart';
+export 'reminder_provider.dart';

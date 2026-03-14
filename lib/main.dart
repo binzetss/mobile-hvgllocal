@@ -8,12 +8,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'core/navigation/navigator_key.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/services/firebase_notification_service.dart';
 import 'providers/providers.dart';
 import 'providers/theme_provider.dart';
+import 'widgets/reminder/floating_reminder_button.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -79,6 +81,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DaotaoProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => NotificationSettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ReminderProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) => MaterialApp(
@@ -88,7 +91,14 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
+          navigatorKey: appNavigatorKey,
           onGenerateRoute: AppRoutes.onGenerateRoute,
+          builder: (context, child) => Stack(
+            children: [
+              child!,
+              const FloatingReminderButton(),
+            ],
+          ),
         ),
       ),
     );

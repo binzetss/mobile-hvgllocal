@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart' show Color;
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -7,7 +8,10 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../constants/api_endpoints.dart';
+import '../navigation/navigator_key.dart';
+import '../routes/app_routes.dart';
 import '../utils/token_manager.dart';
+import '../../data/models/reminder_model.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -61,6 +65,7 @@ class FirebaseNotificationService {
 
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         _fcmToken = newToken;
+        _registerTokenToServer(newToken); // Tự cập nhật server khi token đổi
       });
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
@@ -174,14 +179,38 @@ class FirebaseNotificationService {
   }
 
   void _handleNotificationTap(RemoteMessage message) {
-    print('👆 Notification tapped: ${message.messageId}');
-    print('📦 Data: ${message.data}');
-
+    final screen = message.data['screen'] as String?;
+    if (screen == null) return;
+    // Dùng addPostFrameCallback để đảm bảo navigator đã sẵn sàng
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToScreen(screen);
+    });
   }
 
   void _onNotificationTapped(NotificationResponse response) {
-    print('👆 Local notification tapped: ${response.payload}');
+    final payload = response.payload;
+    if (payload == null || payload.isEmpty) return;
+    // Payload là screen name (ví dụ: '/chamcong', '/reminder')
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToScreen(payload);
+    });
+  }
 
+  void _navigateToScreen(String screen) {
+    final nav = appNavigatorKey.currentState;
+    if (nav == null) return;
+    switch (screen) {
+      case 'reminder':
+        nav.pushNamed(AppRoutes.reminder);
+      case 'documents':
+        nav.pushNamed(AppRoutes.documents);
+      case 'profile':
+        nav.pushNamed(AppRoutes.profile);
+      case 'daotao':
+        nav.pushNamed(AppRoutes.daotao);
+      default:
+        nav.pushNamedAndRemoveUntil(AppRoutes.home, (r) => false);
+    }
   }
 
   Future<void> showChamcongNotification({
@@ -300,34 +329,124 @@ class FirebaseNotificationService {
     print('🗑️ Đã hủy thông báo nhắc chấm công');
   }
 
+  // ─── Custom reminders ────────────────────────────────────────────────────
+
+  static const NotificationDetails _reminderDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'reminder_channel',
+      'Nhắc nhở chấm công',
+      channelDescription: 'Nhắc nhở hàng ngày do người dùng tự đặt',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@drawable/ic_notification',
+      playSound: true,
+      enableVibration: true,
+    ),
+    iOS: DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: false,
+      presentSound: true,
+    ),
+  );
+
+  /// Schedule (or reschedule) all notifications for [reminder].
+  Future<void> scheduleCustomReminder(ReminderModel reminder) async {
+    if (kIsWeb || !_initialized) return;
+    await cancelCustomReminder(reminder);
+    if (!reminder.isEnabled) return;
+
+    final days = reminder.repeatDays.isEmpty
+        ? [1, 2, 3, 4, 5, 6, 7]
+        : reminder.repeatDays;
+
+    for (final day in days) {
+      final id = reminder.notifBaseId + day; // unique ID per weekday
+      try {
+        await _localNotifications.zonedSchedule(
+          id,
+          reminder.title,
+          reminder.note?.isNotEmpty == true ? reminder.note! : 'Nhắc nhở lúc ${reminder.timeLabel}',
+          _nextInstanceOfWeekdayAndTime(day, reminder.hour, reminder.minute),
+          _reminderDetails,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      } catch (e) {
+        print('❌ scheduleCustomReminder($day) error: $e');
+      }
+    }
+  }
+
+  /// Cancel all notifications belonging to [reminder].
+  Future<void> cancelCustomReminder(ReminderModel reminder) async {
+    if (kIsWeb) return;
+    for (int day = 1; day <= 7; day++) {
+      await _localNotifications.cancel(reminder.notifBaseId + day);
+    }
+  }
+
+  tz.TZDateTime _nextInstanceOfWeekdayAndTime(int weekday, int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime dt =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    // Advance until we land on the correct weekday, and the time is in the future.
+    for (int i = 0; i < 8; i++) {
+      if (dt.weekday == weekday && dt.isAfter(now)) break;
+      dt = dt.add(const Duration(days: 1));
+    }
+    return dt;
+  }
+
   // ─────────────────────────────────────────────────────────────────────────
 
-  Future<void> sendTokenToServer({required String maSo}) async {
-    if (_fcmToken == null || maSo.isEmpty) return;
+  /// Gọi sau khi đăng nhập thành công — token đã có trong _fcmToken
+  Future<void> sendTokenToServer() async {
+    if (_fcmToken == null) return;
+    await _registerTokenToServer(_fcmToken!);
+  }
+
+  Future<void> _registerTokenToServer(String token) async {
     try {
-      final tokenManager = TokenManager();
-      final authToken = await tokenManager.getToken();
+      final authToken = await TokenManager().getToken();
+      if (authToken == null || authToken.isEmpty) return;
       final response = await http.post(
         Uri.parse(ApiEndpoints.fcmToken),
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (authToken != null && authToken.isNotEmpty)
-            'Authorization': 'Bearer $authToken',
+          'Authorization': 'Bearer $authToken',
         },
         body: jsonEncode({
-          'maSo': maSo,
-          'fcmToken': _fcmToken,
+          'fcmToken': token,
           'platform': defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
         }),
       );
-      if (response.statusCode == 200) {
-        print('✅ FCM token registered: $_fcmToken');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ FCM token registered');
       } else {
-        print('⚠️ FCM token register failed: ${response.statusCode}');
+        print('⚠️ FCM register failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ sendTokenToServer error: $e');
+      print('❌ _registerTokenToServer error: $e');
+    }
+  }
+
+  /// Gọi khi đăng xuất — xóa token khỏi server
+  Future<void> deleteFcmToken() async {
+    try {
+      final authToken = await TokenManager().getToken();
+      if (authToken == null || authToken.isEmpty) return;
+      await http.delete(
+        Uri.parse(ApiEndpoints.fcmToken),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      print('✅ FCM token deleted');
+    } catch (e) {
+      print('❌ deleteFcmToken error: $e');
     }
   }
 }

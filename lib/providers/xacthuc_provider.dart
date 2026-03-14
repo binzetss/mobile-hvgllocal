@@ -122,7 +122,7 @@ class XacthucProvider extends ChangeNotifier {
 
         await refreshUserNameIfNeeded();
 
-        FirebaseNotificationService().sendTokenToServer(maSo: maSo);
+        FirebaseNotificationService().sendTokenToServer();
         FirebaseNotificationService().scheduleWorkReminders();
         ChamcongProvider.initAfterLoginStatic();
 
@@ -166,6 +166,7 @@ class XacthucProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    await FirebaseNotificationService().deleteFcmToken(); // Xóa token trước khi logout
     await _authService.logout();
     FirebaseNotificationService().cancelWorkReminders();
     ChamcongProvider.resetOnLogoutStatic();
