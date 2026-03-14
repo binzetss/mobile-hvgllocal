@@ -103,22 +103,20 @@ class FirebaseNotificationService {
         sound: true,
       );
 
-      final settings = await _firebaseMessaging.requestPermission(
+      await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
         provisional: false,
       );
 
-      if (settings.authorizationStatus != AuthorizationStatus.authorized &&
-          settings.authorizationStatus != AuthorizationStatus.provisional) {
-        return;
-      }
+      // Lấy FCM token bất kể user có cấp quyền hay không
+      // (token dùng để server push, không liên quan quyền hiện thông báo)
       _fcmToken = await _firebaseMessaging.getToken();
 
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         _fcmToken = newToken;
-        _registerTokenToServer(newToken); // Tự cập nhật server khi token đổi
+        _registerTokenToServer(newToken);
       });
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
