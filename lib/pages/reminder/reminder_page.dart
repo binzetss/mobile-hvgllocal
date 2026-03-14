@@ -6,6 +6,8 @@ import '../../core/extensions/theme_extensions.dart';
 import '../../core/navigation/navigator_key.dart';
 import '../../data/models/reminder_model.dart';
 import '../../providers/reminder_provider.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
+import '../../core/services/firebase_notification_service.dart';
 import '../../widgets/common/common_app_bar.dart';
 class ReminderPage extends StatefulWidget {
   const ReminderPage({super.key});
@@ -37,6 +39,19 @@ class _ReminderPageState extends State<ReminderPage> {
       appBar: CommonAppBar(
         title: 'Nhắc nhở',
         actions: [
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.bug_report_outlined, color: Colors.white),
+              tooltip: 'Test báo thức 10s',
+              onPressed: () async {
+                await FirebaseNotificationService().scheduleTestAlarm(seconds: 10);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('⏰ Báo thức sẽ kêu sau 10 giây — tắt app đi!')),
+                  );
+                }
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.add_rounded, color: Colors.white),
             onPressed: () => _openSheet(context),

@@ -116,6 +116,21 @@ class FirebaseNotificationService {
       );
       await androidPlugin?.createNotificationChannel(channel);
 
+      // Kênh báo thức — dùng âm thanh alarm hệ thống
+      final alarmChannel = AndroidNotificationChannel(
+        'alarm_channel',
+        'Báo thức nhắc nhở',
+        description: 'Báo thức nhắc nhở do người dùng đặt',
+        importance: Importance.max,
+        playSound: true,
+        sound: const UriAndroidNotificationSound(
+            'content://settings/system/alarm_alert'),
+        enableVibration: true,
+        enableLights: true,
+      );
+      await androidPlugin?.createNotificationChannel(alarmChannel);
+
+      // Kênh thông báo thường (giữ lại cho tương thích)
       const reminderChannel = AndroidNotificationChannel(
         'reminder_channel',
         'Nhắc nhở chấm công',
@@ -264,23 +279,7 @@ class FirebaseNotificationService {
     if (kIsWeb || !_initialized) return;
     await cancelWorkReminders();
 
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'reminder_channel',
-        'Nhắc nhở chấm công',
-        channelDescription: 'Nhắc nhở chấm công hàng ngày',
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: '@drawable/ic_notification',
-        playSound: true,
-        enableVibration: true,
-      ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: false,
-        presentSound: true,
-      ),
-    );
+    final details = _alarmDetails;
 
     await _scheduleDaily(_idNhacSangVao,  'Nhắc chấm công vào ca sáng',  'Ca sáng bắt đầu lúc 07:00 - Đừng quên chấm công!',   6, 50, details);
     await _scheduleDaily(_idNhacSangRa,   'Nhắc chấm công ra ca sáng',   'Ca sáng kết thúc lúc 11:30 - Đừng quên chấm công ra!', 11, 32, details);
@@ -300,7 +299,7 @@ class FirebaseNotificationService {
         body,
         _nextInstanceOfTime(hour, minute),
         details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
         matchDateTimeComponents: DateTimeComponents.time,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -331,21 +330,29 @@ class FirebaseNotificationService {
 
   // ─── Custom reminders ────────────────────────────────────────────────────
 
-  static const NotificationDetails _reminderDetails = NotificationDetails(
+  // Dùng getter thay vì const vì UriAndroidNotificationSound không const
+  static NotificationDetails get _alarmDetails => NotificationDetails(
     android: AndroidNotificationDetails(
-      'reminder_channel',
-      'Nhắc nhở chấm công',
-      channelDescription: 'Nhắc nhở hàng ngày do người dùng tự đặt',
-      importance: Importance.high,
-      priority: Priority.high,
+      'alarm_channel',
+      'Báo thức nhắc nhở',
+      channelDescription: 'Báo thức nhắc nhở do người dùng đặt',
+      importance: Importance.max,
+      priority: Priority.max,
       icon: '@drawable/ic_notification',
       playSound: true,
+      sound: const UriAndroidNotificationSound(
+          'content://settings/system/alarm_alert'),
       enableVibration: true,
+      enableLights: true,
+      fullScreenIntent: true,                    // Hiện khi màn hình khóa
+      category: AndroidNotificationCategory.alarm, // Hành xử như báo thức
+      audioAttributesUsage: AudioAttributesUsage.alarm, // Dùng luồng âm alarm
     ),
-    iOS: DarwinNotificationDetails(
+    iOS: const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: false,
       presentSound: true,
+      interruptionLevel: InterruptionLevel.timeSensitive, // Xuyên qua chế độ tập trung
     ),
   );
 
@@ -360,15 +367,17 @@ class FirebaseNotificationService {
         : reminder.repeatDays;
 
     for (final day in days) {
-      final id = reminder.notifBaseId + day; // unique ID per weekday
+      final id = reminder.notifBaseId + day;
       try {
         await _localNotifications.zonedSchedule(
           id,
           reminder.title,
-          reminder.note?.isNotEmpty == true ? reminder.note! : 'Nhắc nhở lúc ${reminder.timeLabel}',
+          reminder.note?.isNotEmpty == true
+              ? reminder.note!
+              : 'Nhắc nhở lúc ${reminder.timeLabel}',
           _nextInstanceOfWeekdayAndTime(day, reminder.hour, reminder.minute),
-          _reminderDetails,
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          _alarmDetails,
+          androidScheduleMode: AndroidScheduleMode.alarmClock, // Chế độ báo thức thật sự
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
@@ -397,6 +406,25 @@ class FirebaseNotificationService {
       dt = dt.add(const Duration(days: 1));
     }
     return dt;
+  }
+
+  // ─── Debug / Test ────────────────────────────────────────────────────────
+
+  /// Test báo thức sau [seconds] giây — tắt app rồi chờ
+  Future<void> scheduleTestAlarm({int seconds = 10}) async {
+    if (kIsWeb || !_initialized) return;
+    final triggerTime =
+        tz.TZDateTime.now(tz.local).add(Duration(seconds: seconds));
+    await _localNotifications.zonedSchedule(
+      9999,
+      '🔔 Test báo thức',
+      'Báo thức kêu sau $seconds giây — hoạt động khi tắt app!',
+      triggerTime,
+      _alarmDetails,
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -429,6 +457,36 @@ class FirebaseNotificationService {
       }
     } catch (e) {
       print('❌ _registerTokenToServer error: $e');
+    }
+  }
+
+  /// Gửi thông báo đến một nhân viên cụ thể qua server
+  Future<bool> sendNotification({
+    required String maSo,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final authToken = await TokenManager().getToken();
+      if (authToken == null || authToken.isEmpty) return false;
+      final response = await http.post(
+        Uri.parse(ApiEndpoints.sendNotification),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode({
+          'maSo': maSo,
+          'title': title,
+          'body': body,
+          'data': data,
+        }),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print('❌ sendNotification error: $e');
+      return false;
     }
   }
 
