@@ -11,6 +11,9 @@ import WidgetKit
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
+    // Đăng ký APNs ngay khi app khởi động để FCM có thể lấy token
+    application.registerForRemoteNotifications()
+
     let controller = window?.rootViewController as! FlutterViewController
     let widgetChannel = FlutterMethodChannel(
       name: "vn.hvgl.noibo/widget",

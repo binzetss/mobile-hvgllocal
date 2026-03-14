@@ -174,19 +174,19 @@ class _MealRegistrationCardState extends State<MealRegistrationCard> {
                   if (menuProvider.isLoading)
                     const _MealMenuShimmer()
                   else if (menuProvider.hasError)
-                    Padding(
-                      padding: const EdgeInsets.all(40),
+                    const Padding(
+                      padding: EdgeInsets.all(40),
                       child: Column(
                         children: [
-                          const FaIcon(
-                            FontAwesomeIcons.circleExclamation,
+                          FaIcon(
+                            FontAwesomeIcons.utensils,
                             size: 40,
-                            color: AppColors.error,
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
-                            menuProvider.errorMessage ?? 'Có lỗi xảy ra',
-                            style: const TextStyle(
+                            'Chưa có thực đơn hôm nay',
+                            style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),

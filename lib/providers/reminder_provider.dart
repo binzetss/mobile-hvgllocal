@@ -32,18 +32,18 @@ class ReminderProvider extends ChangeNotifier {
 
   Future<void> add(ReminderModel reminder) async {
     _reminders.add(reminder);
+    notifyListeners(); // Update UI ngay lập tức
     await _persist();
     await FirebaseNotificationService().scheduleCustomReminder(reminder);
-    notifyListeners();
   }
 
   Future<void> update(ReminderModel reminder) async {
     final idx = _reminders.indexWhere((r) => r.id == reminder.id);
     if (idx == -1) return;
     _reminders[idx] = reminder;
+    notifyListeners(); // Update UI ngay lập tức
     await _persist();
     await FirebaseNotificationService().scheduleCustomReminder(reminder);
-    notifyListeners();
   }
 
   Future<void> remove(String id) async {

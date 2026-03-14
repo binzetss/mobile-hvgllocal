@@ -464,6 +464,11 @@ class FirebaseNotificationService {
   Future<void> sendTokenToServer() async {
     // Nếu chưa có token, thử lấy lại (iOS cần APNs token đăng ký trước)
     _fcmToken ??= await _firebaseMessaging.getToken();
+    // iOS: APNs token có thể chưa sẵn sàng ngay, thử lại sau 3 giây
+    if (_fcmToken == null) {
+      await Future.delayed(const Duration(seconds: 3));
+      _fcmToken = await _firebaseMessaging.getToken();
+    }
     if (_fcmToken == null) return;
     await _registerTokenToServer(_fcmToken!);
   }

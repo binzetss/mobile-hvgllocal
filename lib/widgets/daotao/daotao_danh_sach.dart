@@ -44,20 +44,20 @@ class DaotaoDanhSach extends StatelessWidget {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Center(
                         child: FaIcon(
-                          FontAwesomeIcons.triangleExclamation,
+                          FontAwesomeIcons.graduationCap,
                           size: 32,
-                          color: AppColors.error.withValues(alpha: 0.6),
+                          color: AppColors.primary.withValues(alpha: 0.4),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Không thể tải dữ liệu',
+                      'Chưa có dữ liệu',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -65,52 +65,10 @@ class DaotaoDanhSach extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      provider.errorMessage ?? 'Đã xảy ra lỗi. Vui lòng thử lại.',
+                      'Các khóa học sẽ được hiển thị tại đây',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary.withValues(alpha: 0.7),
-                        height: 1.4,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    GestureDetector(
-                      onTap: () => provider.refresh(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.arrowRotateRight,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Thử lại',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
+                        color: AppColors.textSecondary.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

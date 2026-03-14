@@ -575,27 +575,18 @@ class _WebContent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FaIcon(FontAwesomeIcons.triangleExclamation,
+            FaIcon(FontAwesomeIcons.graduationCap,
                 size: 36,
-                color: AppColors.error.withValues(alpha: 0.5)),
+                color: AppColors.primary.withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             const Text(
-              'Không thể tải dữ liệu',
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600),
+              'Chưa có dữ liệu',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: provider.refresh,
-              icon: const FaIcon(FontAwesomeIcons.arrowsRotate,
-                  size: 13, color: Colors.white),
-              label: const Text('Thử lại'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
+            const SizedBox(height: 6),
+            Text(
+              'Các khóa học sẽ được hiển thị tại đây',
+              style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[500] : Colors.grey[500]),
             ),
           ],
         ),
