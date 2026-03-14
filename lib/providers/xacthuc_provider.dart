@@ -132,7 +132,7 @@ class XacthucProvider extends ChangeNotifier {
 
         await refreshUserNameIfNeeded();
 
-        FirebaseNotificationService().sendTokenToServer();
+        await FirebaseNotificationService().sendTokenToServer();
         FirebaseNotificationService().scheduleWorkReminders();
         ChamcongProvider.initAfterLoginStatic();
 

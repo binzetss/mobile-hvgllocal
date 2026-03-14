@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../core/services/firebase_notification_service.dart';
 import '../data/models/vanban_model.dart';
 import '../data/services/vanban_service.dart';
 import '../data/services/thongbao_service.dart';
@@ -47,6 +49,21 @@ class VanbanProvider extends ChangeNotifier {
     await fetchDocuments();
   }
 
+  static const _seenKey = 'hvgl_seen_vanban_ids';
+
+  Future<Set<String>> _loadSeenIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_seenKey)?.toSet() ?? {};
+  }
+
+  Future<void> _saveSeenIds(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    // Giữ tối đa 500 ID gần nhất để tránh phình bộ nhớ
+    final list = ids.toList();
+    if (list.length > 500) list.removeRange(0, list.length - 500);
+    await prefs.setStringList(_seenKey, list);
+  }
+
   Future<void> fetchDocuments() async {
     _isLoading = true;
     _errorMessage = null;
@@ -56,18 +73,40 @@ class VanbanProvider extends ChangeNotifier {
       final newDocuments = await _documentService.getDocuments();
 
       if (newDocuments.isNotEmpty) {
+        final recentDocs = newDocuments.where((doc) => _isRecent(doc.publishedDate)).toList();
+        recentDocs.sort((a, b) => a.publishedDate.compareTo(b.publishedDate));
 
-        final todayDocs = newDocuments.where((doc) => _isRecent(doc.publishedDate)).toList();
-
-        todayDocs.sort((a, b) => a.publishedDate.compareTo(b.publishedDate));
-
-        for (final doc in todayDocs) {
+        // Tạo thông báo nội bộ
+        for (final doc in recentDocs) {
           await _thongBaoService.createVanbanNotification(
             documentId: doc.fileId.toString(),
             documentName: doc.fileName,
             category: doc.categoryName,
             publishedDate: doc.publishedDate,
           );
+        }
+
+        // Gửi push notification cho văn bản chưa từng thông báo
+        if (!kIsWeb && _isInitialized) {
+          final seenIds = await _loadSeenIds();
+          final unnotified = recentDocs
+              .where((doc) => !seenIds.contains(doc.fileId.toString()))
+              .toList();
+          for (final doc in unnotified) {
+            await FirebaseNotificationService().showDocumentNotification(
+              documentName: doc.fileName,
+              category: doc.categoryName,
+            );
+          }
+          if (unnotified.isNotEmpty) {
+            seenIds.addAll(unnotified.map((d) => d.fileId.toString()));
+            await _saveSeenIds(seenIds);
+          }
+        } else if (!kIsWeb && !_isInitialized) {
+          // Lần đầu load: đánh dấu tất cả là đã thấy, không thông báo
+          final seenIds = await _loadSeenIds();
+          seenIds.addAll(recentDocs.map((d) => d.fileId.toString()));
+          await _saveSeenIds(seenIds);
         }
       }
 

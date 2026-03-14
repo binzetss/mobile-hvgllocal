@@ -47,13 +47,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarBrightness: Brightness.dark,       // iOS: icon trắng
-      statusBarIconBrightness: Brightness.light,  // Android: icon trắng
-    ));
-    return ClipRRect(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.dark,       // iOS: icon trắng (light content)
+        statusBarIconBrightness: Brightness.light,  // Android: icon trắng
+      ),
+      child: ClipRRect(
       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -301,7 +301,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
-    );
+    ), // ClipRRect
+    ); // AnnotatedRegion
   }
 
   Widget _buildInitialsWidget(String initials, BuildContext context) {

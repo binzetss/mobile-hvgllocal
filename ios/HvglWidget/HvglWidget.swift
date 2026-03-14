@@ -227,7 +227,7 @@ struct HvglWidgetEntryView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(.white)
                 .monospacedDigit()
-                .frame(width: 32, alignment: .leading)
+                .frame(width: 40, alignment: .leading)
             Text(punch.type)
                 .font(.system(size: 10))
                 .foregroundColor(.white.opacity(0.7))

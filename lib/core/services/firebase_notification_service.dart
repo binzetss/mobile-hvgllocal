@@ -275,6 +275,23 @@ class FirebaseNotificationService {
     }
   }
 
+  Future<void> showDocumentNotification({
+    required String documentName,
+    required String category,
+  }) async {
+    if (kIsWeb) return;
+    if (!_initialized) await initialize();
+    try {
+      await _showLocalNotification(
+        title: 'Văn bản mới: $category',
+        body: documentName,
+        payload: 'documents',
+      );
+    } catch (e) {
+      print(' showDocumentNotification error: $e');
+    }
+  }
+
   Future<void> showChamcongNotification({
     required DateTime time,
     String loai = 'Chấm công',
