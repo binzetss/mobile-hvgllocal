@@ -10,6 +10,7 @@ class HosoHeader extends StatelessWidget {
   final String name;
   final String birthYear;
   final String gender;
+  final String? chucDanh;
   final String? avatarUrl;
   final File? localAvatarFile;
   final bool isUploading;
@@ -20,6 +21,7 @@ class HosoHeader extends StatelessWidget {
     required this.name,
     required this.birthYear,
     required this.gender,
+    this.chucDanh,
     this.avatarUrl,
     this.localAvatarFile,
     this.isUploading = false,
@@ -70,6 +72,19 @@ class HosoHeader extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (chucDanh != null && chucDanh!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    chucDanh!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: context.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
                 const SizedBox(height: 8),
                 Row(
                   children: [

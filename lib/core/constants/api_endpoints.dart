@@ -22,6 +22,7 @@ class ApiEndpoints {
   static const String chamTruc = '$baseUrl/ChamTruc';
   static const String fcmToken = '$baseUrl/FcmToken';
   static const String sendNotification = '$baseUrl/SendNotification';
+  static const String thanNhan = '$baseUrl/ThanNhan';
   static const String logoHeader = '$imageBaseUrl/logodautrang.png';
   static const String logo = '$imageBaseUrl/logodautrang.png';
   static const String buildingLogin = '$imageBaseUrl/buildinglogin.png';

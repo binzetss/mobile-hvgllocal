@@ -18,13 +18,29 @@ import '../../widgets/hoso/hoso_section.dart';
 import '../../widgets/hoso/hoso_info_row.dart';
 import '../../widgets/hoso/hoso_sub_card.dart';
 
-class HosoPage extends StatelessWidget {
+class HosoPage extends StatefulWidget {
   const HosoPage({super.key});
 
-  Future<void> _pickAvatar(BuildContext context) async {
+  @override
+  State<HosoPage> createState() => _HosoPageState();
+}
+
+class _HosoPageState extends State<HosoPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final maSo = context.read<XacthucProvider>().user?.maSo ?? '';
+      context.read<HosoProvider>()
+        ..fetchNhanVien(maSo)
+        ..fetchThanNhan();
+    });
+  }
+
+  Future<void> _pickAvatar(BuildContext ctx) async {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: context.cardColor,
+      context: ctx,
+      backgroundColor: ctx.cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -39,7 +55,7 @@ class HosoPage extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: context.borderColor,
+                  color: ctx.borderColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -55,15 +71,15 @@ class HosoPage extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: context.primaryColor.withValues(alpha: 0.1),
+                    color: ctx.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.camera_alt_rounded, color: context.primaryColor),
+                  child: Icon(Icons.camera_alt_rounded, color: ctx.primaryColor),
                 ),
                 title: const Text('Chụp ảnh'),
                 onTap: () {
-                  Navigator.pop(context);
-                  _upload(context, ImageSource.camera);
+                  Navigator.pop(ctx);
+                  _upload(ctx, ImageSource.camera);
                 },
               ),
               ListTile(
@@ -71,15 +87,15 @@ class HosoPage extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: context.primaryColor.withValues(alpha: 0.1),
+                    color: ctx.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.photo_library_rounded, color: context.primaryColor),
+                  child: Icon(Icons.photo_library_rounded, color: ctx.primaryColor),
                 ),
                 title: const Text('Chọn từ thư viện'),
                 onTap: () {
-                  Navigator.pop(context);
-                  _upload(context, ImageSource.gallery);
+                  Navigator.pop(ctx);
+                  _upload(ctx, ImageSource.gallery);
                 },
               ),
               const SizedBox(height: 8),
@@ -124,9 +140,12 @@ class HosoPage extends StatelessWidget {
     final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 768;
     if (isDesktop) return const _WebHosoPage();
 
-    final profile = context.watch<HosoProvider>().profile;
+    final hoso = context.watch<HosoProvider>();
+    final nv = hoso.nhanVien;
     final auth = context.watch<XacthucProvider>();
     final avatarUrl = auth.user?.hinhAnh;
+    final chucDanh = nv?.chucVu ?? auth.user?.chucVu;
+    final profile = hoso.profile; // stub cho các section chưa có API
 
     return Scaffold(
       backgroundColor: context.bgColor,
@@ -136,9 +155,10 @@ class HosoPage extends StatelessWidget {
         child: Column(
           children: [
             HosoHeader(
-              name: profile.fullName,
-              birthYear: profile.birthYear,
-              gender: profile.gender,
+              name: nv?.hoVaTen ?? auth.user?.hoVaTen ?? '',
+              birthYear: nv?.namSinh ?? '',
+              gender: nv?.gioiTinh ?? '',
+              chucDanh: chucDanh,
               avatarUrl: avatarUrl,
               localAvatarFile: auth.localAvatarFile,
               isUploading: auth.isUploadingAvatar,
@@ -148,38 +168,43 @@ class HosoPage extends StatelessWidget {
             HosoSection(
               title: 'Thông tin cá nhân',
               icon: FontAwesomeIcons.idCard,
-              children: [
-                HosoInfoRow(label: 'Họ và tên', value: profile.fullName),
-                HosoInfoRow(label: 'Năm sinh', value: profile.birthYear),
-                HosoInfoRow(label: 'Giới tính', value: profile.gender),
-                HosoInfoRow(
-                    label: 'Tình trạng hôn nhân', value: profile.maritalStatus),
-                HosoInfoRow(
-                    label: 'Chỗ ở hiện tại', value: profile.currentAddress),
-                HosoInfoRow(
-                    label: 'Thường trú',
-                    value: profile.permanentAddress,
-                    isLast: true),
-              ],
+              children: hoso.isLoadingNhanVien
+                  ? [const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
+                    )]
+                  : [
+                      HosoInfoRow(label: 'Họ và tên', value: nv?.hoVaTen ?? ''),
+                      HosoInfoRow(label: 'Năm sinh', value: nv?.namSinh ?? ''),
+                      HosoInfoRow(label: 'Giới tính', value: nv?.gioiTinh ?? ''),
+                      HosoInfoRow(label: 'Khoa phòng', value: nv?.khoaPhongTen ?? ''),
+                      HosoInfoRow(label: 'Chức vụ', value: nv?.tenChucVu ?? ''),
+                      HosoInfoRow(label: 'Số điện thoại', value: nv?.soDienThoai ?? ''),
+                      HosoInfoRow(label: 'Chỗ ở hiện tại', value: nv?.diaChi ?? '', isLast: true),
+                    ],
             ),
             HosoSection(
               title: 'Thân nhân',
               icon: FontAwesomeIcons.peopleGroup,
               iconColor: const Color(0xFF10B981),
-              children: profile.relatives.asMap().entries.map((entry) {
-                final relative = entry.value;
-                return HosoSubCard(
-                  index: entry.key,
-                  children: [
-                    HosoInfoRow(label: 'Quan hệ', value: relative.relation),
-                    HosoInfoRow(label: 'Họ và tên', value: relative.fullName),
-                    HosoInfoRow(label: 'Năm sinh', value: relative.birthYear),
-                    HosoInfoRow(label: 'CCCD', value: relative.cccd),
-                    HosoInfoRow(
-                        label: 'BHYT', value: relative.bhyt, isLast: true),
-                  ],
-                );
-              }).toList(),
+              children: hoso.isLoadingThanNhan
+                  ? [const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
+                    )]
+                  : hoso.thanNhans.isEmpty
+                      ? [const HosoInfoRow(label: 'Thân nhân', value: 'Chưa có dữ liệu', isLast: true)]
+                      : hoso.thanNhans.asMap().entries.map((entry) {
+                          final t = entry.value;
+                          return HosoSubCard(
+                            index: entry.key,
+                            children: [
+                              HosoInfoRow(label: 'Quan hệ', value: t.moiQuanHe),
+                              HosoInfoRow(label: 'Họ và tên', value: t.tenThanNhan),
+                              HosoInfoRow(label: 'Số CCCD', value: t.soCCCD, isLast: true),
+                            ],
+                          );
+                        }).toList(),
             ),
             HosoSection(
               title: 'Điều chuyển',
