@@ -73,6 +73,7 @@ class XacthucProvider extends ChangeNotifier {
       _status = AuthStatus.authenticated;
       HomeWidgetService.saveUserName(_user?.hoVaTen ?? '');
       FirebaseNotificationService().scheduleWorkReminders();
+      FirebaseNotificationService().sendTokenToServer();
       ChamcongProvider.initAfterLoginStatic();
       notifyListeners();
       return true;
