@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hvgl/core/utils/local.dart';
 import '../core/services/firebase_notification_service.dart';
 import '../core/services/home_widget_service.dart';
+import '../core/utils/token_manager.dart';
 import '../data/models/user_model.dart';
 import '../data/services/xacthuc_service.dart';
 import './chamcong_provider.dart';
@@ -58,7 +59,7 @@ class XacthucProvider extends ChangeNotifier {
     final savedUser = await _authService.getSavedUser();
     if (savedUser != null) {
       _user = savedUser;
-      // Bust avatar cache mỗi lần khởi động để tránh hiển thị ảnh cũ
+
       final maSo = _user?.maSo ?? '';
       if (maSo.isNotEmpty) {
         final baseUrl = _authService.buildAvatarUrl(maSo);
@@ -69,6 +70,12 @@ class XacthucProvider extends ChangeNotifier {
             hinhAnh: '$baseUrl?t=${DateTime.now().millisecondsSinceEpoch}',
           );
         }
+      }
+    
+      final savedToken = await Local.getLocal("token") as String?;
+      if (savedToken != null && savedToken.isNotEmpty) {
+        _token = savedToken;
+        await TokenManager().saveToken(savedToken);
       }
       _status = AuthStatus.authenticated;
       HomeWidgetService.saveUserName(_user?.hoVaTen ?? '');
@@ -95,7 +102,7 @@ class XacthucProvider extends ChangeNotifier {
         _user = mapUser["user"];
 
         final maSoStr = _user?.maSo ?? '';
-        // Luôn dùng URL có timestamp để tránh cache ảnh cũ
+  
         if (maSoStr.isNotEmpty) {
           final baseUrl = _authService.buildAvatarUrl(maSoStr);
           _user = _user!.copyWith(
@@ -107,6 +114,7 @@ class XacthucProvider extends ChangeNotifier {
         HomeWidgetService.saveUserName(_user?.hoVaTen ?? '');
         _token = mapUser["token"];
         await Local.saveLocal("token", _token);
+        await TokenManager().saveToken(_token);
 
         if (_user != null) {
           await _authService.saveUser(_user!);
@@ -205,7 +213,7 @@ class XacthucProvider extends ChangeNotifier {
           : '${_authService.buildAvatarUrl(maSo)}?t=$ts';
       _user = _user!.copyWith(hinhAnh: newUrl);
       await _authService.saveUser(_user!);
-      // Xoá file local sau khi upload thành công, hiển thị từ URL mới
+   
       _localAvatarFile = null;
       _isUploadingAvatar = false;
       notifyListeners();
