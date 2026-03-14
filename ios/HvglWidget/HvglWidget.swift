@@ -105,15 +105,12 @@ struct HvglWidgetEntryView: View {
 
     private var headerRow: some View {
         HStack(spacing: 6) {
-            // Logo badge — white "H" on blue circle
-            ZStack {
-                Circle()
-                    .fill(Color.white)
-                    .frame(width: 22, height: 22)
-                Text("H")
-                    .font(.system(size: 13, weight: .black))
-                    .foregroundColor(.hvglBlue)
-            }
+            // Logo3D
+            Image("Logo3D")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 26, height: 26)
+                .cornerRadius(6)
             Text("HVGL Nội Bộ")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(.white.opacity(0.9))

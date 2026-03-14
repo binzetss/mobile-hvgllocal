@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.RemoteViews
 import org.json.JSONArray
 import java.text.SimpleDateFormat
@@ -32,33 +33,50 @@ class HvglWidgetProvider : AppWidgetProvider() {
             val userName    = prefs.getString("widget_user_name", "Người dùng") ?: "Người dùng"
             val punchesJson = prefs.getString("widget_punches", "[]") ?: "[]"
 
+            // Định dạng ngày hiện tại
             val sdf = SimpleDateFormat("EEE dd/MM", Locale("vi", "VN"))
             val today = sdf.format(Date())
 
-            // Build punches display text
-            val punchesText = try {
+            // Parse danh sách lần chấm công → lấy lần đầu (VÀO) và lần cuối (RA)
+            val checkinTime: String
+            val checkoutTime: String
+            val hasData: Boolean
+
+            try {
                 val arr = JSONArray(punchesJson)
                 if (arr.length() == 0) {
-                    "Chưa chấm công hôm nay"
+                    checkinTime  = "--:--"
+                    checkoutTime = "--:--"
+                    hasData = false
                 } else {
-                    (0 until arr.length()).joinToString("\n") { i ->
-                        val obj  = arr.getJSONObject(i)
-                        val time = obj.optString("time", "--")
-                        val type = obj.optString("type", "")
-                        // Even index (0,2,4…) = vào, odd (1,3,5…) = ra
-                        val arrow = if (i % 2 == 0) "↑" else "↓"
-                        "$arrow $time  $type"
+                    val firstObj = arr.getJSONObject(0)
+                    checkinTime = firstObj.optString("time", "--:--")
+
+                    checkoutTime = if (arr.length() > 1) {
+                        val lastObj = arr.getJSONObject(arr.length() - 1)
+                        lastObj.optString("time", "--:--")
+                    } else {
+                        "--:--"
                     }
+                    hasData = true
                 }
             } catch (e: Exception) {
-                "Chưa chấm công"
+                checkinTime  = "--:--"
+                checkoutTime = "--:--"
+                hasData = false
             }
 
             val views = RemoteViews(context.packageName, R.layout.hvgl_widget_layout)
             views.setTextViewText(R.id.widget_user_name, userName)
             views.setTextViewText(R.id.widget_date, today)
-            views.setTextViewText(R.id.widget_punches, punchesText)
+            views.setTextViewText(R.id.widget_checkin, checkinTime)
+            views.setTextViewText(R.id.widget_checkout, checkoutTime)
+            views.setViewVisibility(
+                R.id.widget_status,
+                if (hasData) View.GONE else View.VISIBLE
+            )
 
+            // Tap để mở app
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
