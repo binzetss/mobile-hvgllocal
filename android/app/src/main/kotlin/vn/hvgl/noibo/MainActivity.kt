@@ -27,6 +27,9 @@ class MainActivity : FlutterActivity() {
                     call.argument<String>("checkout")?.let {
                         editor.putString("widget_checkout", it)
                     }
+                    call.argument<String>("punches")?.let {
+                        editor.putString("widget_punches", it)
+                    }
                     editor.apply()
 
                     val manager = AppWidgetManager.getInstance(applicationContext)

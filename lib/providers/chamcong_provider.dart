@@ -220,13 +220,14 @@ class ChamcongProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   void _updateHomeWidget() {
     final att = _todayAttendance;
-    final checkin = att != null && att.punches.isNotEmpty
-        ? _fmt(att.punches.first.time)
-        : null;
-    final checkout = att != null && att.punches.length > 1
-        ? _fmt(att.punches.last.time)
-        : null;
-    HomeWidgetService.updateAttendance(checkin: checkin, checkout: checkout);
+    final punches = att?.punches ?? [];
+    HomeWidgetService.updateAttendance(
+      checkin: punches.isNotEmpty ? _fmt(punches.first.time) : null,
+      checkout: punches.length > 1 ? _fmt(punches.last.time) : null,
+      punches: punches
+          .map((p) => {'time': _fmt(p.time), 'type': p.loaiChamCong})
+          .toList(),
+    );
   }
 
   static String _fmt(DateTime dt) =>

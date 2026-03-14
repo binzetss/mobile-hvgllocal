@@ -32,6 +32,9 @@ import WidgetKit
         if let checkout = args["checkout"] as? String {
           defaults?.set(checkout, forKey: "widget_checkout")
         }
+        if let punches = args["punches"] as? String {
+          defaults?.set(punches, forKey: "widget_punches")
+        }
         defaults?.synchronize()
         if #available(iOS 14.0, *) {
           WidgetCenter.shared.reloadAllTimelines()

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -18,12 +19,14 @@ class HomeWidgetService {
   static Future<void> updateAttendance({
     required String? checkin,
     required String? checkout,
+    List<Map<String, String>>? punches,
   }) async {
     if (kIsWeb) return;
     try {
       await _channel.invokeMethod<void>('updateWidget', {
         'checkin': checkin ?? '--',
         'checkout': checkout ?? '--',
+        'punches': jsonEncode(punches ?? []),
       });
     } catch (e) {
       debugPrint('HomeWidget updateAttendance error: $e');

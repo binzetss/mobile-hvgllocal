@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
-    android:padding="14dp"
-    android:gravity="center_vertical">
+    android:padding="12dp">
 
-    <!-- Header row -->
+    <!-- Header row: logo + app name + date -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,8 +15,8 @@
         android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@mipmap/ic_launcher"
             android:scaleType="fitCenter" />
 
@@ -25,10 +24,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="7dp"
             android:text="HVGL N&#x1ED9;i B&#x1ED9;"
             android:textColor="#FFFFFF"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
@@ -36,16 +35,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--"
-            android:textColor="#B3D4FF"
-            android:textSize="11sp" />
+            android:textColor="#AACCFF"
+            android:textSize="10sp" />
     </LinearLayout>
 
     <!-- Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.7dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="0.6dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"
         android:background="#33FFFFFF" />
 
     <!-- User name -->
@@ -55,66 +54,22 @@
         android:layout_height="wrap_content"
         android:text="Ng&#432;&#x1EDD;i d&#xF9;ng"
         android:textColor="#FFFFFF"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:singleLine="true"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:layout_marginBottom="6dp" />
 
-    <!-- Check-in / check-out row -->
-    <LinearLayout
+    <!-- Punches list -->
+    <TextView
+        android:id="@+id/widget_punches"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Ch&#x01B0;a ch&#x1EA5;m c&#xF4;ng"
+        android:textColor="#E0EEFF"
+        android:textSize="11sp"
+        android:lineSpacingExtra="2dp"
+        android:gravity="top" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="V&#192;O"
-                android:textColor="#80FFFFFF"
-                android:textSize="9sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/widget_checkin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="--"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RA"
-                android:textColor="#80FFFFFF"
-                android:textSize="9sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/widget_checkout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="--"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-    </LinearLayout>
 </LinearLayout>
