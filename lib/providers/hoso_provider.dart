@@ -10,6 +10,16 @@ import '../data/models/nhansu_model.dart';
 import '../data/services/nhansu_service.dart';
 
 class HosoProvider extends ChangeNotifier {
+  static HosoProvider? _globalInstance;
+
+  HosoProvider() {
+    _globalInstance = this;
+  }
+
+  static void resetOnLogoutStatic() {
+    _globalInstance?.reset();
+  }
+
   File? _localAvatar;
   NhansuModel? _nhanVien;
   List<ThanNhanModel> _thanNhans = [];
@@ -20,21 +30,6 @@ class HosoProvider extends ChangeNotifier {
   bool _thanNhanLoaded = false;
 
   File? get localAvatar => _localAvatar;
-
-  // Stub - các section BHYT/BHXH/CCCD/CCHN sẽ thay thế bằng API riêng sau
-  HosoData get profile => const HosoData(
-    avatarUrl: '', fullName: '', birthYear: '', gender: '', maritalStatus: '',
-    relatives: [],
-    transfer: HosoTransfer(content: '', date: ''),
-    currentAddress: '', permanentAddress: '',
-    bhytNumber: '', bhytRegisterPlace: '', bhxhNumber: '',
-    bankNumber: '', bankAccountName: '', bankName: '', taxCode: '',
-    cccdNumber: '', cccdIssueDate: '', cccdIssuePlace: '',
-    cchnNumber: '', cchnIssueDate: '', cchnIssuePlace: '',
-    cchnDegree: '', cchnScope: '', cchnFile: '', cchnPlannedDate: '',
-    titleName: '', titleCouncil: '', titleIssueDate: '',
-    degrees: [], certificates: [], continuousTrainingHours: '',
-  );
   NhansuModel? get nhanVien => _nhanVien;
   List<ThanNhanModel> get thanNhans => _thanNhans;
   bool get isLoadingNhanVien => _isLoadingNhanVien;

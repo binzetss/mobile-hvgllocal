@@ -15,6 +15,9 @@ class NhansuModel {
   final String? diaChi;
   final bool isHead;
   final bool doiMatKhau;
+  final String? tenTinhTrangHonNhan;
+  final String? tenTonGiao;
+  final String? tenToDoi;
 
   NhansuModel({
     required this.id,
@@ -31,6 +34,9 @@ class NhansuModel {
     this.diaChi,
     this.isHead = false,
     this.doiMatKhau = false,
+    this.tenTinhTrangHonNhan,
+    this.tenTonGiao,
+    this.tenToDoi,
   });
 
   static String? _buildAvatarUrl(Map<String, dynamic> json) {
@@ -44,6 +50,16 @@ class NhansuModel {
     final dailyKey =
         '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
     return '$raw?t=$dailyKey';
+  }
+
+  static String? _parseYear(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      final dt = DateTime.parse(raw);
+      return dt.year.toString();
+    } catch (_) {
+      return raw;
+    }
   }
 
   factory NhansuModel.fromJson(Map<String, dynamic> json) {
@@ -63,10 +79,15 @@ class NhansuModel {
       khoaPhongTen: json['tenKhoaPhong']?.toString() ?? '',
       anhDaiDienUrl: _buildAvatarUrl(json),
       gioiTinh: json['gioiTinh']?.toString(),
-      namSinh: json['namSinh']?.toString() ?? json['ngaySinh']?.toString(),
+      namSinh: _parseYear(
+        json['namSinh']?.toString() ?? json['ngaySinh']?.toString(),
+      ),
       diaChi: json['noiOHienTai']?.toString(),
       isHead: tenChucVu.toLowerCase().contains('trưởng'),
       doiMatKhau: json['doiMatKhau'] == true,
+      tenTinhTrangHonNhan: json['tenTinhTrangHonNhan']?.toString(),
+      tenTonGiao: json['tenTonGiao']?.toString(),
+      tenToDoi: json['tenToDoi']?.toString(),
     );
   }
 
@@ -82,6 +103,9 @@ class NhansuModel {
       'gioiTinh': gioiTinh,
       'namSinh': namSinh,
       'noiOHienTai': diaChi,
+      'tenTinhTrangHonNhan': tenTinhTrangHonNhan,
+      'tenTonGiao': tenTonGiao,
+      'tenToDoi': tenToDoi,
     };
   }
 }

@@ -73,7 +73,10 @@ class FirebaseNotificationService {
 
       final initialMessage = await _firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
-        _handleNotificationTap(initialMessage);
+        // App vừa mở từ notification — delay để Navigator kịp mount
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          _handleNotificationTap(initialMessage);
+        });
       }
     } catch (e) {
       print('❌ Firebase init error: $e');
@@ -215,6 +218,9 @@ class FirebaseNotificationService {
     final nav = appNavigatorKey.currentState;
     if (nav == null) return;
     switch (screen) {
+      case 'chamcong':
+      case 'chamtruc':
+        nav.pushNamedAndRemoveUntil(AppRoutes.home, (r) => false);
       case 'reminder':
         nav.pushNamed(AppRoutes.reminder);
       case 'documents':
@@ -223,6 +229,8 @@ class FirebaseNotificationService {
         nav.pushNamed(AppRoutes.profile);
       case 'daotao':
         nav.pushNamed(AppRoutes.daotao);
+      case 'clinicSchedule':
+        nav.pushNamed(AppRoutes.clinicSchedule);
       default:
         nav.pushNamedAndRemoveUntil(AppRoutes.home, (r) => false);
     }

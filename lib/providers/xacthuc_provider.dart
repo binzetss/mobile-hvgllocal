@@ -6,6 +6,7 @@ import '../core/services/home_widget_service.dart';
 import '../data/models/user_model.dart';
 import '../data/services/xacthuc_service.dart';
 import './chamcong_provider.dart';
+import './hoso_provider.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -170,6 +171,7 @@ class XacthucProvider extends ChangeNotifier {
     await _authService.logout();
     FirebaseNotificationService().cancelWorkReminders();
     ChamcongProvider.resetOnLogoutStatic();
+    HosoProvider.resetOnLogoutStatic();
     _user = null;
     _token = "";
     _status = AuthStatus.unauthenticated;
